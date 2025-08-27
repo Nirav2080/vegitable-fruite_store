@@ -33,8 +33,8 @@ export default function AdminLoginPage() {
         title: 'Success',
         description: 'Logged in successfully.',
       });
-      // In a real app, you'd receive a token and save it to local storage or a cookie.
-      // For now, we'll just redirect.
+      // In a real app, you'd receive a token. We'll simulate this by setting a flag.
+      localStorage.setItem('isAdminLoggedIn', 'true');
       router.push('/admin');
     } else {
       toast({

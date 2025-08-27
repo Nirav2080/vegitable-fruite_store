@@ -15,7 +15,8 @@ import {
   Gift,
   LineChart
 } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +28,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AdminLayout({
   children,
@@ -34,9 +36,51 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
+      if (!isLoggedIn && pathname !== '/admin/login') {
+        router.push('/admin/login');
+      }
+    }
+  }, [pathname, router]);
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
+  }
+
+  if (!isClient) {
+    return (
+       <div className="flex min-h-screen">
+        <div className="w-64 border-r p-4">
+            <Skeleton className="h-10 w-40 mb-8" />
+            <div className="space-y-4">
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+            </div>
+        </div>
+        <div className="flex-1 p-6">
+            <Skeleton className="h-12 w-1/3 mb-6" />
+            <Skeleton className="h-64 w-full" />
+        </div>
+    </div>
+    );
+  }
+  
+  const isLoggedIn = typeof window !== 'undefined' ? localStorage.getItem('isAdminLoggedIn') === 'true' : false;
+
+  if (!isLoggedIn) {
+      return null;
   }
   
   return (
