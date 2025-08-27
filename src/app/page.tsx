@@ -156,7 +156,7 @@ export default function Home() {
         </Carousel>
       </section>
 
-      <section className="container mx-auto px-4 -mt-4">
+      <section className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {promoCards.map((card, index) => (
             <Link href={card.href} key={index} className="group relative rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
