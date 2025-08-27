@@ -1,3 +1,7 @@
+
+'use client'
+
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -5,6 +9,71 @@ import { blogPosts, products } from "@/lib/data";
 import { ArrowRight, Leaf, Package, Carrot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay"
+
+
+const heroSlides = [
+  {
+    supertitle: "SALE UP TO 30% OFF",
+    title: "Shop Badam Milk & Badam Drink",
+    subtitle: "The Real Taste And Boost Your Day With The Power",
+    image: "https://picsum.photos/seed/badam-milk/1200/600",
+    hint: "almond milk",
+    href: "/products",
+  },
+  {
+    supertitle: "FRESH & ORGANIC",
+    title: "Naturally Fresh, Locally Sourced",
+    subtitle: "Experience the taste of Aotearoa with our premium selection of organic fruits and vegetables.",
+    image: "https://picsum.photos/1800/1200",
+    hint: "fresh produce",
+    href: "/products",
+  },
+   {
+    supertitle: "SEASON'S BEST",
+    title: "Crisp, Sweet Apples",
+    subtitle: "Straight from local orchards, bursting with flavor.",
+    image: "https://picsum.photos/seed/apples-orchard/1200/600",
+    hint: "apple orchard",
+    href: "/products?category=Fruits",
+  },
+];
+
+const promoCards = [
+  {
+    title: 'The Ultimate Coffee',
+    supertitle: 'CUBAN COFFEE',
+    href: '/products',
+    image: 'https://picsum.photos/seed/coffee-beans/400/250',
+    hint: 'coffee beans',
+    bgColor: 'bg-[#6F4E37]/90'
+  },
+  {
+    title: 'A Grade Black Grapes',
+    supertitle: 'SWEET AND ROBUST',
+    href: '/products',
+    image: 'https://picsum.photos/seed/black-grapes/400/250',
+    hint: 'black grapes',
+    bgColor: 'bg-[#3d3d5c]/90'
+  },
+  {
+    title: 'Online Shopping For Meat',
+    supertitle: 'THE RED MEAT',
+    href: '/products',
+    image: 'https://picsum.photos/seed/salmon-package/400/250',
+    hint: 'packaged salmon',
+    bgColor: 'bg-[#008080]/90'
+  },
+  {
+    title: '100% Organic Mangoes',
+    supertitle: 'BUY MANGOES',
+    href: '/products',
+    image: 'https://picsum.photos/seed/mangoes/400/250',
+    hint: 'ripe mangoes',
+    bgColor: 'bg-[#FFD700]/90 text-yellow-900'
+  }
+];
 
 const categories = [
   { name: 'Fresh Fruits', href: '/products?category=Fruits', icon: <Leaf className="w-8 h-8 text-primary" />, description: 'The best seasonal fruits, locally sourced.' },
@@ -15,60 +84,79 @@ const categories = [
 export default function Home() {
   const weeklySpecials = products.filter(p => p.isSeasonal).slice(0, 4);
   const featuredBlogs = blogPosts.slice(0, 3);
+  const plugin = React.useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  )
 
   return (
-    <div className="flex flex-col gap-16 md:gap-24">
-      <section className="relative h-[60vh] md:h-[80vh] w-full">
-        <Image
-          src="https://picsum.photos/1800/1200"
-          alt="Fresh produce on a wooden table"
-          data-ai-hint="fresh produce"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white p-4">
-          <h1 className="text-4xl md:text-6xl font-headline font-bold drop-shadow-lg">
-            Naturally Fresh, Locally Sourced
-          </h1>
-          <p className="mt-4 text-lg md:text-xl max-w-2xl drop-shadow-md">
-            Experience the taste of Aotearoa with our premium selection of organic fruits and vegetables.
-          </p>
-          <Button asChild size="lg" className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-            <Link href="/products">Shop All Produce</Link>
-          </Button>
-        </div>
+    <div className="flex flex-col gap-8 md:gap-12">
+      <section className="w-full">
+         <Carousel 
+          plugins={[plugin.current]}
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+          className="w-full"
+          opts={{loop: true}}
+        >
+          <CarouselContent>
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-[50vh] md:h-[60vh] w-full">
+                  <Image
+                    src={slide.image}
+                    alt={slide.title}
+                    data-ai-hint={slide.hint}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
+                  <div className="relative z-10 flex flex-col items-start justify-center h-full text-left text-white p-8 md:p-16 max-w-3xl">
+                    <p className="text-sm font-semibold uppercase tracking-widest text-orange-300">{slide.supertitle}</p>
+                    <h1 className="text-4xl md:text-6xl font-headline font-bold drop-shadow-lg mt-2">
+                      {slide.title}
+                    </h1>
+                    <p className="mt-4 text-lg md:text-xl max-w-xl drop-shadow-md">
+                      {slide.subtitle}
+                    </p>
+                    <Button asChild size="lg" className="mt-8 bg-white hover:bg-gray-200 text-black font-bold">
+                      <Link href={slide.href}>Shop Now</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+            <CarouselPrevious className="static -translate-x-8 translate-y-0 bg-white/50 hover:bg-white/80 text-black border-none" />
+            <CarouselNext className="static translate-x-8 translate-y-0 bg-white/50 hover:bg-white/80 text-black border-none" />
+          </div>
+        </Carousel>
       </section>
 
-      <section className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center font-headline">Shop by Category</h2>
-        <p className="mt-2 text-center text-muted-foreground max-w-xl mx-auto">Explore our diverse range of fresh produce, carefully selected for quality and taste.</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          {categories.map((category) => (
-            <Link href={category.href} key={category.name} className="group">
-              <Card className="h-full flex flex-col text-center items-center hover:shadow-xl transition-shadow duration-300">
-                <CardHeader>
-                  <div className="mx-auto bg-primary/10 p-4 rounded-full">
-                    {category.icon}
-                  </div>
-                  <CardTitle className="font-headline mt-4">{category.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{category.description}</p>
-                </CardContent>
-                <CardFooter className="mt-auto justify-center">
-                  <span className="font-semibold text-primary group-hover:underline">
-                    Shop Now
-                  </span>
-                </CardFooter>
-              </Card>
+      <section className="container mx-auto px-4 -mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {promoCards.map((card, index) => (
+            <Link href={card.href} key={index} className="group relative rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+               <Image
+                  src={card.image}
+                  alt={card.title}
+                  data-ai-hint={card.hint}
+                  width={400}
+                  height={250}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              <div className={`absolute inset-0 ${card.bgColor} flex flex-col justify-end p-4`}>
+                <p className="text-xs font-bold uppercase text-white/80">{card.supertitle}</p>
+                <h3 className="text-white text-lg font-bold font-headline">{card.title}</h3>
+                <p className="mt-2 text-sm font-semibold text-white underline decoration-2 underline-offset-4 opacity-80 group-hover:opacity-100 transition-opacity">Shop Now</p>
+              </div>
             </Link>
           ))}
         </div>
       </section>
       
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 mt-8">
         <h2 className="text-3xl font-bold text-center font-headline">Weekly Specials</h2>
         <p className="mt-2 text-center text-muted-foreground max-w-xl mx-auto">Check out this week's seasonal picks, offering the best value and freshness.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
