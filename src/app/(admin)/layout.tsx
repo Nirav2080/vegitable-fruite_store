@@ -15,6 +15,7 @@ import {
   Gift,
   LineChart
 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +33,12 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+  
   return (
     <SidebarProvider>
       <Sidebar>
