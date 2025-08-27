@@ -72,13 +72,14 @@ export function Header() {
                     <link.icon className="h-4 w-4" />
                     {link.label}
                   </Link>
-                  {index < topNavLinks.length - 1 && <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />}
+                  <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
                 </React.Fragment>
               ))}
             </div>
           </div>
         </div>
       </div>
+      <Separator/>
 
       {/* Main Header */}
       <div className="bg-primary text-primary-foreground">
