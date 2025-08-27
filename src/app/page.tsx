@@ -148,7 +148,7 @@ export default function Home() {
               <button
                 key={index}
                 onClick={() => api?.scrollTo(index)}
-                className={`h-2 w-2 rounded-full transition-all ${current === index ? 'w-4 bg-primary' : 'bg-white'}`}
+                className={`h-2 w-2 rounded-full transition-all ${current === index ? 'w-4 bg-green-500' : 'bg-white'}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
@@ -156,7 +156,7 @@ export default function Home() {
         </Carousel>
       </section>
 
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {promoCards.map((card, index) => (
             <Link href={card.href} key={index} className="group relative rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
