@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Search, ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const topNavLinks = [
   { href: "/store-locator", label: "Store Locator", icon: MapPin },
@@ -39,25 +40,28 @@ export function Header() {
             <p>Get Up To 50% OFF New Season Styles, Limited Time Only.</p>
           </div>
           <div className="hidden md:flex items-center gap-4">
-             <Select defaultValue="en">
-                <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">En</SelectItem>
-                  <SelectItem value="es">Es</SelectItem>
-                </SelectContent>
-              </Select>
-               <Select defaultValue="usd">
-                <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
-                   <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="usd">$ USD</SelectItem>
-                  <SelectItem value="nzd">$ NZD</SelectItem>
-                  <SelectItem value="aud">$ AUD</SelectItem>
-                </SelectContent>
-              </Select>
+             <div className="flex items-center gap-2">
+                <Select defaultValue="en">
+                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                    <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <SelectItem value="en">En</SelectItem>
+                    <SelectItem value="es">Es</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
+                <Select defaultValue="usd">
+                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                    <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <SelectItem value="usd">$ USD</SelectItem>
+                    <SelectItem value="nzd">$ NZD</SelectItem>
+                    <SelectItem value="aud">$ AUD</SelectItem>
+                    </SelectContent>
+                </Select>
+             </div>
             <div className="flex items-center gap-4">
               {topNavLinks.map((link) => (
                 <Link key={link.label} href={link.href} className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
@@ -72,17 +76,17 @@ export function Header() {
 
       {/* Main Header */}
       <div className="bg-primary text-primary-foreground">
-          <div className="container mx-auto flex h-20 items-center justify-between gap-8 px-4">
+          <div className="container mx-auto flex h-20 items-center justify-between gap-4 md:gap-8 px-4">
             <Link href="/" className="flex items-center">
                 <EcoOrganicLogo className="h-12 w-auto" />
             </Link>
 
-            <div className="flex-1 max-w-xl relative">
+            <div className="hidden md:flex flex-1 max-w-xl relative">
                 <Input type="search" placeholder="Search Product Here..." className="w-full pr-10 bg-white text-black rounded-full h-12" />
                 <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
                  <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/compare">
                     <GitCompareArrows className="h-6 w-6" />
@@ -104,43 +108,18 @@ export function Header() {
                     <span className="sr-only">Shopping Cart</span>
                     </Link>
                 </Button>
-            </div>
-          </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="bg-background">
-         <div className="container mx-auto flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-6">
-                <Button variant="outline" className="hidden md:flex">
-                    <Menu className="mr-2 h-5 w-5" />
-                    All Department
-                </Button>
-                 <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                    {mainNavLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
-                        {link.label}
-                    </Link>
-                    ))}
-                </nav>
-            </div>
-            <div className="flex items-center gap-6">
-                <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                    {secondaryNavLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
-                        {link.label}
-                    </Link>
-                    ))}
-                </nav>
                  <div className="md:hidden">
                     <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
                         <Menu className="h-6 w-6" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="right">
                         <nav className="flex flex-col gap-4 mt-8">
+                        <Link href="/" className="mb-4">
+                           <EcoOrganicLogo className="h-10 w-auto text-foreground"/>
+                        </Link>
                         {[...mainNavLinks, ...secondaryNavLinks].map((link) => (
                             <Link key={link.href} href={link.href} className="text-lg font-medium">
                             {link.label}
@@ -152,6 +131,34 @@ export function Header() {
                     </SheetContent>
                     </Sheet>
                 </div>
+            </div>
+          </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="bg-background hidden md:block">
+         <div className="container mx-auto flex h-14 items-center justify-between px-4">
+            <div className="flex items-center gap-6">
+                <Button variant="outline" className="flex">
+                    <Menu className="mr-2 h-5 w-5" />
+                    All Department
+                </Button>
+                 <nav className="flex items-center gap-6 text-sm font-medium">
+                    {mainNavLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
+                        {link.label}
+                    </Link>
+                    ))}
+                </nav>
+            </div>
+            <div className="flex items-center gap-6">
+                <nav className="flex items-center gap-6 text-sm font-medium">
+                    {secondaryNavLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
+                        {link.label}
+                    </Link>
+                    ))}
+                </nav>
             </div>
          </div>
       </div>

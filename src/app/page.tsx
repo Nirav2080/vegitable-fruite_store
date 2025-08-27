@@ -117,7 +117,7 @@ export default function Home() {
           <CarouselContent>
             {heroSlides.map((slide, index) => (
               <CarouselItem key={index}>
-                <div className="relative h-[50vh] md:h-[60vh] w-full">
+                <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] w-full">
                   <Image
                     src={slide.image}
                     alt={slide.title}
@@ -127,7 +127,7 @@ export default function Home() {
                     priority={index === 0}
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
-                  <div className="relative z-10 flex flex-col items-start justify-center h-full text-left text-white p-8 md:p-16 max-w-3xl">
+                  <div className="relative z-10 flex flex-col items-start justify-center h-full text-left text-white p-8 md:p-16 lg:p-24 max-w-3xl">
                     <p className="text-sm font-semibold uppercase tracking-widest text-orange-300">{slide.supertitle}</p>
                     <h1 className="text-4xl md:text-6xl font-headline font-bold drop-shadow-lg mt-2">
                       {slide.title}
@@ -157,7 +157,7 @@ export default function Home() {
       </section>
 
       <section className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {promoCards.map((card, index) => (
             <Link href={card.href} key={index} className="group relative rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
                <Image
@@ -178,10 +178,10 @@ export default function Home() {
         </div>
       </section>
       
-      <section className="container mx-auto px-4 mt-8">
+      <section className="container mx-auto px-4 mt-8 md:mt-12">
         <h2 className="text-3xl font-bold text-center font-headline">Weekly Specials</h2>
         <p className="mt-2 text-center text-muted-foreground max-w-xl mx-auto">Check out this week's seasonal picks, offering the best value and freshness.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-8">
           {weeklySpecials.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -202,7 +202,7 @@ export default function Home() {
             {featuredBlogs.map((post) => (
               <Link href={`/blog/${post.slug}`} key={post.id} className="group">
                 <Card className="overflow-hidden h-full flex flex-col hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative h-48 w-full">
+                  <div className="relative h-56 w-full">
                     <Image src={post.imageUrl} alt={post.title} fill className="object-cover"/>
                   </div>
                   <CardHeader>
