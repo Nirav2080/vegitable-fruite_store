@@ -44,7 +44,7 @@ export function Header() {
           <div className="hidden md:flex items-center gap-4">
              <div className="flex items-center gap-2">
                 <Select defaultValue="en">
-                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0 focus:ring-offset-0">
                     <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -54,7 +54,7 @@ export function Header() {
                 </Select>
                 <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
                 <Select defaultValue="usd">
-                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                    <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0 focus:ring-offset-0">
                     <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -141,6 +141,7 @@ export function Header() {
             </div>
           </div>
       </div>
+      <Separator />
 
       {/* Bottom Bar */}
       <div className="bg-background hidden md:block">
