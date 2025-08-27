@@ -1,6 +1,7 @@
 
 "use client"
 
+import React from "react";
 import Link from "next/link";
 import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
@@ -65,11 +66,14 @@ export function Header() {
              </div>
             <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
             <div className="flex items-center gap-4">
-              {topNavLinks.map((link) => (
-                <Link key={link.label} href={link.href} className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
-                  <link.icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
+              {topNavLinks.map((link, index) => (
+                <React.Fragment key={link.label}>
+                   <Link href={link.href} className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
+                    <link.icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                  {index < topNavLinks.length - 1 && <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />}
+                </React.Fragment>
               ))}
             </div>
           </div>
