@@ -9,7 +9,7 @@ import { blogPosts, products } from "@/lib/data";
 import { ArrowRight, Leaf, Package, Carrot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"
 
 
@@ -87,11 +87,27 @@ export default function Home() {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   )
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+ 
+  React.useEffect(() => {
+    if (!api) {
+      return
+    }
+ 
+    setCurrent(api.selectedScrollSnap())
+ 
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api])
+
 
   return (
     <div className="flex flex-col gap-8 md:gap-12">
       <section className="w-full">
          <Carousel 
+          setApi={setApi}
           plugins={[plugin.current]}
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}
@@ -127,9 +143,15 @@ export default function Home() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
-            <CarouselPrevious className="static -translate-x-8 translate-y-0 bg-white/50 hover:bg-white/80 text-black border-none" />
-            <CarouselNext className="static translate-x-8 translate-y-0 bg-white/50 hover:bg-white/80 text-black border-none" />
+           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex space-x-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                className={`h-2 w-2 rounded-full transition-all ${current === index ? 'w-4 bg-white' : 'bg-white/50'}`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </Carousel>
       </section>
@@ -167,6 +189,7 @@ export default function Home() {
         <div className="text-center mt-8">
           <Button asChild variant="outline">
             <Link href="/products">View All Products <ArrowRight className="ml-2 h-4 w-4" /></Link>
+
           </Button>
         </div>
       </section>
