@@ -1,4 +1,5 @@
-import { products } from "@/lib/data";
+
+import { getProducts } from "@/lib/actions/products";
 import { ProductCard } from "@/components/products/ProductCard";
 import {
   Accordion,
@@ -23,7 +24,8 @@ const filters = [
   { id: 'seasonal', label: 'Seasonal' }
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getProducts();
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
