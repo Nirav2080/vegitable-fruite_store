@@ -148,7 +148,7 @@ export default function Home() {
               <button
                 key={index}
                 onClick={() => api?.scrollTo(index)}
-                className={`h-2 w-2 rounded-full transition-all ${current === index ? 'w-4 bg-primary' : 'bg-white/50'}`}
+                className={`h-2 w-2 rounded-full transition-all ${current === index ? 'w-4 bg-primary' : 'bg-white'}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
