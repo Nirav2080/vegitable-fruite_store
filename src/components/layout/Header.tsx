@@ -1,89 +1,161 @@
 "use client"
 
 import Link from "next/link";
-import { Logo } from "@/components/icons/Logo";
+import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, ShoppingCart, User, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from "lucide-react";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/products", label: "Products" },
-  { href: "/blog", label: "Blog" },
+const topNavLinks = [
+  { href: "/store-locator", label: "Store Locator", icon: MapPin },
+  { href: "/track-order", label: "Track Your Order", icon: Truck },
+  { href: "/account", label: "My Account", icon: User },
 ];
+
+const mainNavLinks = [
+  { href: "/products", label: "Organic Products" },
+  { href: "/products?category=Tomatoes", label: "Tomatoes" },
+  { href: "/products?category=Mushrooms", label: "Mushrooms" },
+  { href: "/products?category=Melon", label: "Melon" },
+  { href: "/products?category=all-brands", label: "All brands" },
+  { href: "/blog", label: "News" },
+];
+
+const secondaryNavLinks = [
+    { href: "/offers", label: "Offer Zone" },
+    { href: "/gift-cards", label: "Gift Cards" },
+]
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-8 w-auto text-primary" />
-          </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex relative">
-            <Input type="search" placeholder="Search products..." className="w-64 pr-10" />
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      {/* Top Bar */}
+      <div className="bg-primary text-primary-foreground">
+        <div className="container mx-auto flex h-10 items-center justify-between px-4 text-xs">
+          <div className="flex-1 text-center md:text-left">
+            <p>Get Up To 50% OFF New Season Styles, Limited Time Only.</p>
           </div>
-
-          <Select defaultValue="nzd">
-            <SelectTrigger className="w-[80px] hidden sm:flex">
-              <SelectValue placeholder="Currency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="nzd">NZD</SelectItem>
-              <SelectItem value="usd">USD</SelectItem>
-              <SelectItem value="aud">AUD</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/cart">
-              <ShoppingCart className="h-5 w-5" />
-              <Badge className="absolute top-0 right-0 h-4 w-4 p-0 flex items-center justify-center text-xs">3</Badge>
-              <span className="sr-only">Shopping Cart</span>
-            </Link>
-          </Button>
-
-          <Button variant="ghost" size="icon" className="hidden md:inline-flex">
-            <User className="h-5 w-5" />
-            <span className="sr-only">Login</span>
-          </Button>
-
-          <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <nav className="flex flex-col gap-4 mt-8">
-                  {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} className="text-lg font-medium">
-                      {link.label}
-                    </Link>
-                  ))}
-                  <hr/>
-                  <Button>Login</Button>
-                </nav>
-              </SheetContent>
-            </Sheet>
+          <div className="hidden md:flex items-center gap-4">
+             <Select defaultValue="en">
+                <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">En</SelectItem>
+                  <SelectItem value="es">Es</SelectItem>
+                </SelectContent>
+              </Select>
+               <Select defaultValue="usd">
+                <SelectTrigger className="w-auto h-auto bg-transparent border-none p-0 focus:ring-0">
+                   <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="usd">$ USD</SelectItem>
+                  <SelectItem value="nzd">$ NZD</SelectItem>
+                  <SelectItem value="aud">$ AUD</SelectItem>
+                </SelectContent>
+              </Select>
+            <div className="flex items-center gap-4">
+              {topNavLinks.map((link) => (
+                <Link key={link.label} href={link.href} className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Main Header */}
+      <div className="bg-primary text-primary-foreground">
+          <div className="container mx-auto flex h-20 items-center justify-between gap-8 px-4">
+            <Link href="/" className="flex items-center">
+                <EcoOrganicLogo className="h-12 w-auto" />
+            </Link>
+
+            <div className="flex-1 max-w-xl relative">
+                <Input type="search" placeholder="Search Product Here..." className="w-full pr-10 bg-white text-black rounded-full h-12" />
+                <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            </div>
+
+            <div className="flex items-center gap-4">
+                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
+                    <Link href="/compare">
+                    <GitCompareArrows className="h-6 w-6" />
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">0</Badge>
+                    <span className="sr-only">Compare Products</span>
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
+                    <Link href="/wishlist">
+                    <Heart className="h-6 w-6" />
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">0</Badge>
+                    <span className="sr-only">Wishlist</span>
+                    </Link>
+                </Button>
+                <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
+                    <Link href="/cart">
+                    <ShoppingCart className="h-6 w-6" />
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">3</Badge>
+                    <span className="sr-only">Shopping Cart</span>
+                    </Link>
+                </Button>
+            </div>
+          </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="bg-background">
+         <div className="container mx-auto flex h-14 items-center justify-between px-4">
+            <div className="flex items-center gap-6">
+                <Button variant="outline" className="hidden md:flex">
+                    <Menu className="mr-2 h-5 w-5" />
+                    All Department
+                </Button>
+                 <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                    {mainNavLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
+                        {link.label}
+                    </Link>
+                    ))}
+                </nav>
+            </div>
+            <div className="flex items-center gap-6">
+                <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+                    {secondaryNavLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-foreground/80 transition-colors hover:text-foreground">
+                        {link.label}
+                    </Link>
+                    ))}
+                </nav>
+                 <div className="md:hidden">
+                    <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                        <Menu className="h-6 w-6" />
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right">
+                        <nav className="flex flex-col gap-4 mt-8">
+                        {[...mainNavLinks, ...secondaryNavLinks].map((link) => (
+                            <Link key={link.href} href={link.href} className="text-lg font-medium">
+                            {link.label}
+                            </Link>
+                        ))}
+                        <hr/>
+                        <Button>Login</Button>
+                        </nav>
+                    </SheetContent>
+                    </Sheet>
+                </div>
+            </div>
+         </div>
+      </div>
+
     </header>
   );
 }
