@@ -1,3 +1,4 @@
+
 "use client"
 
 import Link from "next/link";
@@ -62,6 +63,7 @@ export function Header() {
                     </SelectContent>
                 </Select>
              </div>
+            <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
             <div className="flex items-center gap-4">
               {topNavLinks.map((link) => (
                 <Link key={link.label} href={link.href} className="flex items-center gap-1.5 hover:text-white/80 transition-colors">
