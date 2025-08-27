@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -8,7 +9,11 @@ import {
   Package2,
   ShoppingCart,
   Users,
-  BookOpen
+  BookOpen,
+  Image as ImageIcon,
+  Menu as MenuIcon,
+  Gift,
+  LineChart
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -39,12 +44,16 @@ export default function AdminLayout({
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin" asChild>
-                <Link href="/admin">
-                  <Home className="h-4 w-4" />
-                  Dashboard
-                </Link>
+              <SidebarMenuButton href="/admin">
+                <Home className="h-4 w-4" />
+                Dashboard
               </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/orders">
+                    <ShoppingCart className="h-4 w-4" />
+                    Orders
+                </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton href="/admin/products">
@@ -52,11 +61,41 @@ export default function AdminLayout({
                 Products
               </SidebarMenuButton>
             </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/users">
+                    <Users className="h-4 w-4" />
+                    Customers
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/analytics">
+                    <LineChart className="h-4 w-4" />
+                    Analytics
+                </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton href="/admin/blog">
                 <BookOpen className="h-4 w-4" />
                 Blog
               </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/banners">
+                    <ImageIcon className="h-4 w-4" />
+                    Banners
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/menu">
+                    <MenuIcon className="h-4 w-4" />
+                    Header Menu
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton href="/admin/coupons">
+                    <Gift className="h-4 w-4" />
+                    Coupons
+                </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
