@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   slug: string;
@@ -12,6 +13,7 @@ export interface Product {
   stock: number;
   rating: number;
   reviews: number;
+  createdAt?: Date;
 }
 
 export interface Blog {
