@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useForm } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,9 @@ import type { Product } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import Image from "next/image"
+import { Upload, X } from "lucide-react"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -51,6 +54,8 @@ export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const isEditing = !!product;
+  
+  const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
 
   const defaultValues = isEditing && product ? {
       ...product,
@@ -91,6 +96,31 @@ export function ProductForm({ product }: ProductFormProps) {
       });
     }
   }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    
+    // For prototyping, we'll use placeholder URLs since we don't have file storage.
+    // In a real app, you would upload files to a service and get back URLs.
+    const newImageUrls = files.map((_, i) => `https://picsum.photos/seed/${Math.random()}/400`);
+
+    const existingUrls = form.getValues('images') ? form.getValues('images').split(', ') : [];
+    const updatedUrls = [...existingUrls, ...newImageUrls].filter(Boolean);
+
+    form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
+    setImagePreviews(prev => [...prev, ...newPreviews]);
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    const currentUrls = form.getValues('images').split(', ').filter(Boolean);
+    const updatedUrls = currentUrls.filter((_, index) => index !== indexToRemove);
+    form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
+
+    const updatedPreviews = imagePreviews.filter((_, index) => index !== indexToRemove);
+    setImagePreviews(updatedPreviews);
+  };
+
 
   return (
     <Form {...form}>
@@ -136,22 +166,58 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                 )}
                 />
-                 <FormField
+                <FormField
                     control={form.control}
                     name="images"
-                    render={({ field }) => (
+                    render={() => (
                         <FormItem>
-                        <FormLabel>Image URLs</FormLabel>
-                        <FormControl>
-                            <Textarea placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                            Enter comma-separated URLs for product images.
-                        </FormDescription>
-                        <FormMessage />
+                            <FormLabel>Product Images</FormLabel>
+                            <FormControl>
+                                <div className="w-full p-4 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                                    <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
+                                        <Upload className="w-8 h-8 text-muted-foreground" />
+                                        <span className="text-sm text-muted-foreground">Click or drag to upload images</span>
+                                    </label>
+                                    <Input 
+                                        id="image-upload" 
+                                        type="file" 
+                                        multiple 
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleImageChange}
+                                    />
+                                </div>
+                            </FormControl>
+                             {imagePreviews.length > 0 && (
+                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mt-4">
+                                    {imagePreviews.map((preview, index) => (
+                                    <div key={index} className="relative aspect-square">
+                                        <Image
+                                        src={preview}
+                                        alt={`Preview ${index}`}
+                                        fill
+                                        className="rounded-md object-cover"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-1 right-1 h-6 w-6"
+                                            onClick={() => removeImage(index)}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                    ))}
+                                </div>
+                            )}
+                            <FormDescription>
+                                Upload one or more images for your product.
+                            </FormDescription>
+                            <FormMessage />
                         </FormItem>
                     )}
-                />
+                    />
             </div>
             <div className="space-y-8">
                 <FormField
@@ -186,7 +252,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select onValuechange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
