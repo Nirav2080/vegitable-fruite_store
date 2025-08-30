@@ -33,19 +33,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getOrders } from '@/lib/actions/orders';
 
-
-const navItems = [
-  { href: '/admin', icon: Home, label: 'Admin Dashboard' },
-  { href: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: 6 },
-  { href: '/admin/products', icon: Package, label: 'Products' },
-  { href: '/admin/users', icon: Users, label: 'Customers' },
-  { href: '/admin/analytics', icon: LineChart, label: 'Analytics' },
-  { href: '/admin/blog', icon: BookOpen, label: 'Blog' },
-  { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
-  { href: '/admin/menu', icon: MenuIcon, label: 'Header Menu' },
-  { href: '/admin/coupons', icon: Gift, label: 'Coupons' },
-];
 
 export default function AdminLayout({
   children,
@@ -55,9 +44,16 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
 
   useEffect(() => {
     setIsClient(true);
+    async function fetchOrderCount() {
+      const orders = await getOrders();
+      const pendingCount = orders.filter(order => order.status === 'Pending').length;
+      setPendingOrdersCount(pendingCount);
+    }
+    fetchOrderCount();
   }, []);
 
   const handleLogout = () => {
@@ -73,6 +69,18 @@ export default function AdminLayout({
       }
     }
   }, [pathname, router]);
+  
+  const navItems = [
+    { href: '/admin', icon: Home, label: 'Admin Dashboard' },
+    { href: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: pendingOrdersCount > 0 ? pendingOrdersCount : undefined },
+    { href: '/admin/products', icon: Package, label: 'Products' },
+    { href: '/admin/users', icon: Users, label: 'Customers' },
+    { href: '/admin/analytics', icon: LineChart, label: 'Analytics' },
+    { href: '/admin/blog', icon: BookOpen, label: 'Blog' },
+    { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
+    { href: '/admin/menu', icon: MenuIcon, label: 'Header Menu' },
+    { href: '/admin/coupons', icon: Gift, label: 'Coupons' },
+  ];
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
@@ -144,7 +152,7 @@ export default function AdminLayout({
           </div>
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" className="rounded-full">
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted">
                 <CircleUser className="h-5 w-5" />
                 <span className="sr-only">Toggle user menu</span>
               </Button>
