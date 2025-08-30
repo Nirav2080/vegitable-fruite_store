@@ -1,4 +1,5 @@
 
+
 export interface Product {
   id: string;
   slug: string;
@@ -25,4 +26,20 @@ export interface Blog {
   imageUrl: string;
   author: string;
   date: string;
+}
+
+export interface OrderItem {
+  productId: string;
+  quantity: number;
+  price: number; // Price at the time of order
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  email: string;
+  date: Date;
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  total: number;
+  items: OrderItem[];
 }

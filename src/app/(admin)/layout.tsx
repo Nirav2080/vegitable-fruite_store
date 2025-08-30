@@ -4,7 +4,10 @@
 import Link from 'next/link';
 import {
   Bell,
+  ChevronDown,
+  CircleUser,
   Home,
+  LogOut,
   Package,
   Package2,
   ShoppingCart,
@@ -20,15 +23,29 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+
+
+const navItems = [
+  { href: '/admin', icon: Home, label: 'Admin Dashboard' },
+  { href: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: 6 },
+  { href: '/admin/products', icon: Package, label: 'Products' },
+  { href: '/admin/users', icon: Users, label: 'Customers' },
+  { href: '/admin/analytics', icon: LineChart, label: 'Analytics' },
+  { href: '/admin/blog', icon: BookOpen, label: 'Blog' },
+  { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
+  { href: '/admin/menu', icon: MenuIcon, label: 'Header Menu' },
+  { href: '/admin/coupons', icon: Gift, label: 'Coupons' },
+];
 
 export default function AdminLayout({
   children,
@@ -42,6 +59,11 @@ export default function AdminLayout({
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdminLoggedIn');
+    router.push('/admin/login');
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -83,7 +105,7 @@ export default function AdminLayout({
       return null;
   }
   
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href));
 
   return (
     <SidebarProvider>
@@ -96,91 +118,49 @@ export default function AdminLayout({
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <Link href="/admin">
-                <SidebarMenuButton isActive={isActive('/admin')}>
-                  <Home className="h-4 w-4" />
-                  Admin Dashboard
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <Link href="/admin/orders">
-                <SidebarMenuButton isActive={isActive('/admin/orders')}>
-                    <ShoppingCart className="h-4 w-4" />
-                    Orders
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/admin/products">
-                <SidebarMenuButton isActive={isActive('/admin/products')}>
-                  <Package className="h-4 w-4" />
-                  Products
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <Link href="/admin/users">
-                <SidebarMenuButton isActive={isActive('/admin/users')}>
-                    <Users className="h-4 w-4" />
-                    Customers
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <Link href="/admin/analytics">
-                <SidebarMenuButton isActive={isActive('/admin/analytics')}>
-                    <LineChart className="h-4 w-4" />
-                    Analytics
-                </SidebarMenuButton>
-               </Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/admin/blog">
-                <SidebarMenuButton isActive={isActive('/admin/blog')}>
-                  <BookOpen className="h-4 w-4" />
-                  Blog
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-               <Link href="/admin/banners">
-                <SidebarMenuButton isActive={isActive('/admin/banners')}>
-                    <ImageIcon className="h-4 w-4" />
-                    Banners
-                </SidebarMenuButton>
-               </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-               <Link href="/admin/menu">
-                <SidebarMenuButton isActive={isActive('/admin/menu')}>
-                    <MenuIcon className="h-4 w-4" />
-                    Header Menu
-                </SidebarMenuButton>
-               </Link>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-               <Link href="/admin/coupons">
-                <SidebarMenuButton isActive={isActive('/admin/coupons')}>
-                    <Gift className="h-4 w-4" />
-                    Coupons
-                </SidebarMenuButton>
-               </Link>
-            </SidebarMenuItem>
+            {navItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <Link href={item.href}>
+                  <SidebarMenuButton isActive={isActive(item.href)}>
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                    {item.badge && (
+                       <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-muted px-4 lg:h-[60px] lg:px-6">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="w-full flex-1">
             {/* Can add search here */}
           </div>
-          <Button variant="outline" size="icon" className="h-8 w-8">
-            <Bell className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {children}
