@@ -42,6 +42,19 @@ export async function getProducts(): Promise<Product[]> {
     return products.map(toProduct);
 }
 
+export async function searchProducts(query: string): Promise<Product[]> {
+    if (!query) {
+        return [];
+    }
+    const productsCollection = await getProductsCollection();
+    const products = await productsCollection.find({
+        name: { $regex: query, $options: 'i' }
+    }).limit(10).toArray();
+
+    return products.map(toProduct);
+}
+
+
 export async function getProductById(id: string): Promise<Product | null> {
     if (!ObjectId.isValid(id)) {
         return null;

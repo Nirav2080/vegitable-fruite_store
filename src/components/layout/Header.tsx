@@ -5,12 +5,12 @@ import React from "react";
 import Link from "next/link";
 import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from "lucide-react";
+import { ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { DynamicSearch } from "@/components/search/DynamicSearch";
 
 const topNavLinks = [
   { href: "/store-locator", label: "Store Locator", icon: MapPin },
@@ -89,8 +89,7 @@ export function Header() {
             </Link>
 
             <div className="hidden md:flex flex-1 max-w-xl relative">
-                <Input type="search" placeholder="Search Product Here..." className="w-full pr-10 bg-white text-black rounded-full h-12" />
-                <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <DynamicSearch />
             </div>
 
             <div className="flex items-center gap-2 md:gap-4">
