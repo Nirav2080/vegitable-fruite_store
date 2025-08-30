@@ -20,12 +20,15 @@ import type { Banner } from "@/lib/types"
 import { createBanner, updateBanner } from "@/lib/actions/banners"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Upload, X } from "lucide-react"
+import Image from "next/image"
 
 const formSchema = z.object({
   supertitle: z.string().min(1, "Supertitle is required"),
   title: z.string().min(1, "Title is required"),
   subtitle: z.string().min(1, "Subtitle is required"),
-  image: z.string().url("A valid image URL is required"),
+  image: z.string().min(1, "An image is required"),
   href: z.string().url("A valid link URL is required"),
   isActive: z.boolean().default(true),
 })
@@ -40,6 +43,8 @@ export function BannerForm({ banner }: BannerFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const isEditing = !!banner;
+
+  const [imagePreview, setImagePreview] = useState<string | null>(isEditing && banner ? banner.image : null);
 
   const defaultValues = isEditing && banner ? banner : {
       supertitle: "",
@@ -74,6 +79,25 @@ export function BannerForm({ banner }: BannerFormProps) {
       });
     }
   }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const newPreview = URL.createObjectURL(file);
+    setImagePreview(newPreview);
+    
+    // In a real scenario, you'd upload the file and get a URL.
+    // For this demo, we'll use a placeholder image.
+    const newImageUrl = `https://picsum.photos/seed/${Math.random()}/1200/600`;
+    form.setValue('image', newImageUrl, { shouldValidate: true, shouldDirty: true });
+  };
+
+  const removeImage = () => {
+    form.setValue('image', '', { shouldValidate: true, shouldDirty: true });
+    setImagePreview(null);
+  };
+
 
   return (
     <Form {...form}>
@@ -117,22 +141,54 @@ export function BannerForm({ banner }: BannerFormProps) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://picsum.photos/1200/600" {...field} />
-              </FormControl>
-              <FormDescription>
-                Provide a full URL for the banner image.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+         <FormField
+            control={form.control}
+            name="image"
+            render={() => (
+                <FormItem>
+                    <FormLabel>Banner Image</FormLabel>
+                    {imagePreview ? (
+                         <div className="relative aspect-video w-full max-w-lg">
+                            <Image
+                            src={imagePreview}
+                            alt="Banner preview"
+                            fill
+                            className="rounded-md object-cover"
+                            />
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-2 right-2 h-7 w-7"
+                                onClick={removeImage}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ) : (
+                        <FormControl>
+                            <div className="w-full p-8 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                                <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
+                                    <Upload className="w-8 h-8 text-muted-foreground" />
+                                    <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
+                                </label>
+                                <Input 
+                                    id="image-upload" 
+                                    type="file" 
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            </div>
+                        </FormControl>
+                    )}
+                    <FormDescription>
+                        The main image for the hero banner. Recommended size: 1200x600 pixels.
+                    </FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+            />
         <FormField
           control={form.control}
           name="href"
