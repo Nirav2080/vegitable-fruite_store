@@ -95,8 +95,8 @@ export function ProductForm({ product }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="space-y-8 lg:col-span-2">
                 <FormField
                 control={form.control}
                 name="name"
@@ -110,93 +110,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                 )}
                 />
-                <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                        <Input type="number" step="0.01" placeholder="6.99" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="stock"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Stock Quantity</FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="150" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectItem value="Fruits">Fruits</SelectItem>
-                                <SelectItem value="Vegetables">Vegetables</SelectItem>
-                                <SelectItem value="Organic Boxes">Organic Boxes</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                 <div className="flex items-center gap-8">
-                    <FormField
-                        control={form.control}
-                        name="isOrganic"
-                        render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel>Organic</FormLabel>
-                                <FormDescription>
-                                    Is this product certified organic?
-                                </FormDescription>
-                            </div>
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="isSeasonal"
-                        render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel>Seasonal</FormLabel>
-                                <FormDescription>
-                                Is this product a seasonal item?
-                                </FormDescription>
-                            </div>
-                        </FormItem>
-                        )}
-                    />
-                </div>
-            </div>
-            <div className="space-y-8">
-                <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
@@ -238,6 +152,92 @@ export function ProductForm({ product }: ProductFormProps) {
                         </FormItem>
                     )}
                 />
+            </div>
+            <div className="space-y-8">
+                <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                        <Input type="number" step="0.01" placeholder="6.99" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="stock"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Stock Quantity</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="150" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                 <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select onValuechange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="Fruits">Fruits</SelectItem>
+                                <SelectItem value="Vegetables">Vegetables</SelectItem>
+                                <SelectItem value="Organic Boxes">Organic Boxes</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                 <div className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="isOrganic"
+                        render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                                <FormLabel>Organic</FormLabel>
+                                <FormDescription>
+                                    Is this product certified organic?
+                                </FormDescription>
+                            </div>
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="isSeasonal"
+                        render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                                <FormLabel>Seasonal</FormLabel>
+                                <FormDescription>
+                                Is this product a seasonal item?
+                                </FormDescription>
+                            </div>
+                        </FormItem>
+                        )}
+                    />
+                </div>
             </div>
         </div>
 
