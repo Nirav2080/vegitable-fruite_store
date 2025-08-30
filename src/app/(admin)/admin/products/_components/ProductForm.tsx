@@ -125,172 +125,168 @@ export function ProductForm({ product }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="space-y-8 lg:col-span-2">
-                <FormField
+        <div className="space-y-8">
+            <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Product Name</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g. Organic Royal Gala Apples" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                    <Textarea placeholder="Describe the product" className="min-h-[200px]" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
                 control={form.control}
-                name="name"
-                render={({ field }) => (
+                name="images"
+                render={() => (
                     <FormItem>
-                    <FormLabel>Product Name</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g. Organic Royal Gala Apples" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                        <Textarea placeholder="Describe the product" className="min-h-[200px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                    control={form.control}
-                    name="images"
-                    render={() => (
-                        <FormItem>
-                            <FormLabel>Product Images</FormLabel>
-                            <FormControl>
-                                <div className="w-full p-4 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
-                                    <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
-                                        <Upload className="w-8 h-8 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Click or drag to upload images</span>
-                                    </label>
-                                    <Input 
-                                        id="image-upload" 
-                                        type="file" 
-                                        multiple 
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={handleImageChange}
+                        <FormLabel>Product Images</FormLabel>
+                        <FormControl>
+                            <div className="w-full p-4 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                                <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
+                                    <Upload className="w-8 h-8 text-muted-foreground" />
+                                    <span className="text-sm text-muted-foreground">Click or drag to upload images</span>
+                                </label>
+                                <Input 
+                                    id="image-upload" 
+                                    type="file" 
+                                    multiple 
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            </div>
+                        </FormControl>
+                            {imagePreviews.length > 0 && (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mt-4">
+                                {imagePreviews.map((preview, index) => (
+                                <div key={index} className="relative aspect-square">
+                                    <Image
+                                    src={preview}
+                                    alt={`Preview ${index}`}
+                                    fill
+                                    className="rounded-md object-cover"
                                     />
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="icon"
+                                        className="absolute top-1 right-1 h-6 w-6"
+                                        onClick={() => removeImage(index)}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
                                 </div>
-                            </FormControl>
-                             {imagePreviews.length > 0 && (
-                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 mt-4">
-                                    {imagePreviews.map((preview, index) => (
-                                    <div key={index} className="relative aspect-square">
-                                        <Image
-                                        src={preview}
-                                        alt={`Preview ${index}`}
-                                        fill
-                                        className="rounded-md object-cover"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="icon"
-                                            className="absolute top-1 right-1 h-6 w-6"
-                                            onClick={() => removeImage(index)}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                    ))}
-                                </div>
-                            )}
-                            <FormDescription>
-                                Upload one or more images for your product.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-            </div>
-            <div className="space-y-8">
-                <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                        <Input type="number" step="0.01" placeholder="6.99" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="stock"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Stock Quantity</FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="150" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                 <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                <SelectItem value="Fruits">Fruits</SelectItem>
-                                <SelectItem value="Vegetables">Vegetables</SelectItem>
-                                <SelectItem value="Organic Boxes">Organic Boxes</SelectItem>
-                            </SelectContent>
-                        </Select>
+                                ))}
+                            </div>
+                        )}
+                        <FormDescription>
+                            Upload one or more images for your product.
+                        </FormDescription>
                         <FormMessage />
-                        </FormItem>
+                    </FormItem>
+                )}
+                />
+            <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Price</FormLabel>
+                <FormControl>
+                    <Input type="number" step="0.01" placeholder="6.99" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Stock Quantity</FormLabel>
+                <FormControl>
+                    <Input type="number" placeholder="150" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+                <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="Fruits">Fruits</SelectItem>
+                            <SelectItem value="Vegetables">Vegetables</SelectItem>
+                            <SelectItem value="Organic Boxes">Organic Boxes</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+                <div className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="isOrganic"
+                    render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                            <FormLabel>Organic</FormLabel>
+                            <FormDescription>
+                                Is this product certified organic?
+                            </FormDescription>
+                        </div>
+                    </FormItem>
                     )}
                 />
-                 <div className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="isOrganic"
-                        render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel>Organic</FormLabel>
-                                <FormDescription>
-                                    Is this product certified organic?
-                                </FormDescription>
-                            </div>
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="isSeasonal"
-                        render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel>Seasonal</FormLabel>
-                                <FormDescription>
-                                Is this product a seasonal item?
-                                </FormDescription>
-                            </div>
-                        </FormItem>
-                        )}
-                    />
-                </div>
+                <FormField
+                    control={form.control}
+                    name="isSeasonal"
+                    render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                            <FormLabel>Seasonal</FormLabel>
+                            <FormDescription>
+                            Is this product a seasonal item?
+                            </FormDescription>
+                        </div>
+                    </FormItem>
+                    )}
+                />
             </div>
         </div>
 
