@@ -22,7 +22,6 @@ const mainNavLinks = [
   { href: "/products", label: "Organic Products" },
   { href: "/products?category=Vegetables", label: "Vegetables" },
   { href: "/products?category=Fruits", label: "Fruits" },
-  { href: "/blog", label: "News" },
 ];
 
 const secondaryNavLinks = [

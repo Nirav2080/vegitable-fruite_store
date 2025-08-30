@@ -19,18 +19,6 @@ export interface Product {
   createdAt: Date;
 }
 
-export interface Blog {
-  _id?: ObjectId;
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  imageUrl: string;
-  author: string;
-  date: string;
-}
-
 export interface OrderItem {
   productId: string;
   quantity: number;
