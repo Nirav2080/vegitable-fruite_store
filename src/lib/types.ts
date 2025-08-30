@@ -1,6 +1,8 @@
 
+import { ObjectId } from 'mongodb';
 
 export interface Product {
+  _id?: ObjectId;
   id: string;
   slug: string;
   name: string;
@@ -18,6 +20,7 @@ export interface Product {
 }
 
 export interface Blog {
+  _id?: ObjectId;
   id: string;
   slug: string;
   title: string;
@@ -35,6 +38,7 @@ export interface OrderItem {
 }
 
 export interface Order {
+  _id?: ObjectId;
   id: string;
   customerName: string;
   email: string;

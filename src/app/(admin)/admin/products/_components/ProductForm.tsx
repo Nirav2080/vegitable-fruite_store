@@ -101,6 +101,8 @@ export function ProductForm({ product }: ProductFormProps) {
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
     
+    // In a real scenario, you'd upload the file and get a URL.
+    // For this demo, we'll use placeholder images.
     const newImageUrls = files.map(() => `https://picsum.photos/seed/${Math.random()}/400`);
 
     const existingUrls = form.getValues('images') ? form.getValues('images').split(', ').filter(Boolean) : [];

@@ -1,8 +1,10 @@
 
+
 import { notFound } from 'next/navigation';
 import { getProducts, getProductById } from '@/lib/actions/products';
 import { ProductDetailsClient } from './_components/ProductDetailsClient';
 import type { Metadata } from 'next'
+import type { Product } from '@/lib/types';
 
 type ProductPageProps = {
   params: {
@@ -26,15 +28,34 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 }
 
+async function getProductAndRelated(slug: string) {
+    const allProducts = await getProducts();
+    const product = allProducts.find((p) => p.slug === slug);
+    
+    if (!product) {
+      return { product: null, relatedProducts: [] };
+    }
+
+    const relatedProducts = allProducts
+        .filter(p => p.category === product.category && p.id !== product.id)
+        .slice(0, 4);
+    
+    return { product, relatedProducts };
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
-  const products = await getProducts();
-  const product = products.find((p) => p.slug === params.slug);
+  const { product, relatedProducts } = await getProductAndRelated(params.slug);
 
   if (!product) {
     notFound();
   }
-  
-  const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return <ProductDetailsClient product={product} relatedProducts={relatedProducts} />;
+}
+
+export async function generateStaticParams() {
+    const products = await getProducts();
+    return products.map((product) => ({
+        slug: product.slug,
+    }));
 }
