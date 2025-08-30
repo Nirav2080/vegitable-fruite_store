@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
@@ -31,6 +30,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
+import { RichTextEditor } from "@/components/shared/RichTextEditor"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -54,7 +54,6 @@ export function ProductForm({ product }: ProductFormProps) {
   const { toast } = useToast();
   const isEditing = !!product;
   
-  // For editing, we use the actual product images.
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
 
   const defaultValues = isEditing && product ? {
@@ -102,8 +101,6 @@ export function ProductForm({ product }: ProductFormProps) {
 
     const newPreviews = files.map(file => URL.createObjectURL(file));
     
-    // For prototyping, we'll use placeholder URLs since we don't have file storage.
-    // In a real app, you would upload files to a service and get back URLs.
     const newImageUrls = files.map(() => `https://picsum.photos/seed/${Math.random()}/400`);
 
     const existingUrls = form.getValues('images') ? form.getValues('images').split(', ').filter(Boolean) : [];
@@ -111,8 +108,6 @@ export function ProductForm({ product }: ProductFormProps) {
 
     form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
     
-    // When creating a new product, we generate previews from the files.
-    // When editing, we rely on the URLs from the database.
     const existingPreviews = imagePreviews;
     setImagePreviews([...existingPreviews, ...newPreviews]);
   };
@@ -152,7 +147,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                        <Textarea rows={8} placeholder="Describe the product in detail..." {...field} />
+                        <RichTextEditor {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
