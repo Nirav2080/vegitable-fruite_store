@@ -2,7 +2,6 @@
 'use server'
 
 import type { Order } from '@/lib/types';
-import { products } from '@/lib/data';
 
 // Simulate a database of orders
 const orders: Order[] = [
