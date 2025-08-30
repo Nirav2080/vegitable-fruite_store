@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { X, Plus, Minus, Loader2 } from 'lucide-react'
+import { X, Plus, Minus, Loader2, Tag } from 'lucide-react'
 import type { Product } from '@/lib/types'
+import { Separator } from '@/components/ui/separator'
 
 type CartItem = Product & { quantity: number };
 
@@ -127,6 +128,11 @@ export default function CartPage() {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
+                 <div className="flex items-center gap-2">
+                    <Input placeholder="Enter coupon code" />
+                    <Button variant="outline">Apply</Button>
+                </div>
+                <Separator />
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
@@ -135,6 +141,11 @@ export default function CartPage() {
                   <span>Shipping</span>
                   <span>${shipping.toFixed(2)}</span>
                 </div>
+                 <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>-$0.00</span>
+                </div>
+                <Separator />
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
