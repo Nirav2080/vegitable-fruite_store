@@ -97,7 +97,7 @@ export default function AdminLayout({
             <SidebarMenuItem>
               <SidebarMenuButton href="/admin">
                 <Home className="h-4 w-4" />
-                Dashboard
+                Admin Dashboard
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
