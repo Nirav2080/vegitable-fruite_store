@@ -7,41 +7,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"
-
-const heroSlides = [
-  {
-    supertitle: "SALE UP TO 30% OFF",
-    title: "Shop Badam Milk & Badam Drink",
-    subtitle: "The Real Taste And Boost Your Day With The Power",
-    image: "https://picsum.photos/seed/badam-milk/1200/600",
-    hint: "almond milk",
-    href: "/products",
-  },
-  {
-    supertitle: "FRESH & ORGANIC",
-    title: "Naturally Fresh, Locally Sourced",
-    subtitle: "Experience the taste of Aotearoa with our premium selection of organic fruits and vegetables.",
-    image: "https://picsum.photos/seed/produce/1200/600",
-    hint: "fresh produce",
-    href: "/products",
-  },
-   {
-    supertitle: "SEASON'S BEST",
-    title: "Crisp, Sweet Apples",
-    subtitle: "Straight from local orchards, bursting with flavor.",
-    image: "https://picsum.photos/seed/apples-orchard/1200/600",
-    hint: "apple orchard",
-    href: "/products?category=Fruits",
-  },
-];
-
+import type { Banner } from "@/lib/types";
+import { getActiveBanners } from "@/lib/actions/banners";
+import { Loader2 } from "lucide-react";
 
 export function HeroCarousel() {
+  const [heroSlides, setHeroSlides] = React.useState<Banner[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   )
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
+
+  React.useEffect(() => {
+    async function fetchBanners() {
+      try {
+        const banners = await getActiveBanners();
+        setHeroSlides(banners);
+      } catch (error) {
+        console.error("Failed to fetch banners", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBanners();
+  }, [])
  
   React.useEffect(() => {
     if (!api) {
@@ -54,6 +46,25 @@ export function HeroCarousel() {
       setCurrent(api.selectedScrollSnap())
     })
   }, [api])
+
+  if (isLoading) {
+    return (
+      <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] w-full flex items-center justify-center bg-muted">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (heroSlides.length === 0) {
+    return (
+       <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] w-full bg-muted flex items-center justify-center">
+        <div className="text-center">
+            <h2 className="text-2xl font-semibold">No active banners</h2>
+            <p className="text-muted-foreground">Add some banners in the admin dashboard to see them here.</p>
+        </div>
+       </div>
+    )
+  }
 
   return (
     <Carousel 
@@ -71,7 +82,7 @@ export function HeroCarousel() {
               <Image
                 src={slide.image}
                 alt={slide.title}
-                data-ai-hint={slide.hint}
+                data-ai-hint="hero banner image"
                 fill
                 className="object-cover"
                 priority={index === 0}

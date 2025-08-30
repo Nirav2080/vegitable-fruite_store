@@ -46,3 +46,15 @@ export interface User {
   orderCount: number;
   totalSpent: number;
 }
+
+export interface Banner {
+    _id?: ObjectId;
+    id: string;
+    supertitle: string;
+    title: string;
+    subtitle: string;
+    image: string;
+    href: string;
+    isActive: boolean;
+    createdAt: Date;
+}
