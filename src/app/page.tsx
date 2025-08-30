@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProductCard } from "@/components/products/ProductCard";
-import { blogPosts } from "@/lib/data";
+import { getBlogPosts } from "@/lib/actions/blog";
 import { ArrowRight, Leaf, Package, Carrot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,6 +56,7 @@ const categories = [
 
 export default async function Home() {
   const allProducts = await getProducts();
+  const blogPosts = await getBlogPosts();
   const weeklySpecials = allProducts.filter(p => p.isSeasonal).slice(0, 4);
   const featuredBlogs = blogPosts.slice(0, 3);
   

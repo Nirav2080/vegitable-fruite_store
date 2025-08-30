@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { blogPosts } from "@/lib/data";
+import { getBlogPosts } from "@/lib/actions/blog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">
