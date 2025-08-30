@@ -2,11 +2,13 @@
 'use server'
 
 import { z } from 'zod';
-import clientPromise from '@/lib/db';
-import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 import type { Product } from '@/lib/types';
 import { notFound } from 'next/navigation';
+import { blogPosts, products as staticProducts } from '@/lib/data';
+
+// Simulate a database
+let products: Product[] = [...staticProducts];
 
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -18,105 +20,72 @@ const productSchema = z.object({
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
   images: z.string().min(1, { message: "Please add at least one image URL."}),
-}).transform(data => ({
-  ...data,
-  images: data.images.split(',').map(s => s.trim()).filter(s => s),
-}));
-
-// Helper function to connect to DB and get collection
-async function getProductsCollection() {
-  const client = await clientPromise;
-  const db = client.db();
-  return db.collection<Omit<Product, 'id'>>('products');
-}
-
-
-function toProduct(doc: any): Product {
-    const { _id, ...rest } = doc;
-    return {
-        id: _id.toHexString(),
-        ...rest
-    } as Product;
-}
+});
 
 export async function getProducts(): Promise<Product[]> {
-    const productsCollection = await getProductsCollection();
-    const products = await productsCollection.find({}).sort({ name: 1 }).toArray();
-    return products.map(toProduct);
+    // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return JSON.parse(JSON.stringify(products));
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
+    await new Promise(resolve => setTimeout(resolve, 100));
     if (!query) {
         return [];
     }
-    const productsCollection = await getProductsCollection();
-    const products = await productsCollection.find({
-        name: { $regex: query, $options: 'i' }
-    }).limit(10).toArray();
-
-    return products.map(toProduct);
+    return JSON.parse(JSON.stringify(products.filter(p => p.name.toLowerCase().includes(query.toLowerCase()))));
 }
 
 
 export async function getProductById(id: string): Promise<Product | null> {
-    if (!ObjectId.isValid(id)) {
-        return null;
-    }
-    const productsCollection = await getProductsCollection();
-    const product = await productsCollection.findOne({ _id: new ObjectId(id) });
+    await new Promise(resolve => setTimeout(resolve, 50));
+    const product = products.find(p => p.id === id);
     if (!product) {
         return null;
     }
-    return toProduct(product);
+    return JSON.parse(JSON.stringify(product));
 }
 
 
 export async function createProduct(data: unknown) {
     const parsedData = productSchema.parse(data);
-    const productsCollection = await getProductsCollection();
-
+    
     const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-    const newProduct = {
+    const newProduct: Product = {
+      id: new Date().getTime().toString(),
       ...parsedData,
+      images: parsedData.images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
       rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3, // default rating
       reviews: Math.floor(Math.random() * 100), // default reviews
       createdAt: new Date(),
     };
 
-    await productsCollection.insertOne(newProduct);
-
+    products.unshift(newProduct);
+    
     revalidatePath('/admin/products');
     revalidatePath('/products');
 }
 
 export async function updateProduct(id: string, data: unknown) {
-  if (!ObjectId.isValid(id)) {
-    throw new Error("Invalid product ID");
-  }
   const parsedData = productSchema.parse(data);
-  const productsCollection = await getProductsCollection();
+  const productIndex = products.findIndex(p => p.id === id);
+
+  if (productIndex === -1) {
+      notFound();
+  }
 
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  
-  const { images, ...restOfParsedData } = parsedData;
 
-  const updatedProduct = {
-      ...restOfParsedData,
-      images: Array.isArray(images) ? images : [images],
+  const updatedProduct: Product = {
+      ...products[productIndex],
+      ...parsedData,
+      images: parsedData.images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
   };
 
-
-  const result = await productsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updatedProduct }
-  );
-
-  if (result.matchedCount === 0) {
-      notFound();
-  }
+  products[productIndex] = updatedProduct;
 
   revalidatePath('/admin/products');
   revalidatePath(`/admin/products/${id}/edit`);
@@ -125,28 +94,23 @@ export async function updateProduct(id: string, data: unknown) {
 }
 
 export async function deleteProduct(id: string) {
-    if (!ObjectId.isValid(id)) {
-        throw new Error("Invalid product ID");
-    }
-    const productsCollection = await getProductsCollection();
-    
-    const result = await productsCollection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
+    const productIndex = products.findIndex(p => p.id === id);
+    if (productIndex === -1) {
         notFound();
     }
+    products.splice(productIndex, 1);
 
     revalidatePath('/admin/products');
     revalidatePath('/products');
 }
 
 export async function getDashboardData() {
-    const productsCollection = await getProductsCollection();
-    const products = await productsCollection.find({}).toArray();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const currentProducts = products;
 
-    const totalRevenue = products.reduce((acc, p) => acc + (p.price * (100 - p.stock)), 0);
-    const totalSales = products.reduce((acc, p) => acc + (100-p.stock), 0);
-    const totalProducts = products.length;
+    const totalRevenue = currentProducts.reduce((acc, p) => acc + (p.price * (Math.floor(Math.random() * 50))), 0);
+    const totalSales = currentProducts.reduce((acc, p) => acc + (Math.floor(Math.random() * 50)), 0);
+    const totalProducts = currentProducts.length;
 
     const salesData = [
         { name: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
@@ -163,8 +127,8 @@ export async function getDashboardData() {
         { name: 'Dec', total: Math.floor(Math.random() * 5000) + 1000 },
     ];
 
-    const recentTransactions = products.slice(0, 5).map(p => ({
-        id: p._id.toHexString(),
+    const recentTransactions = currentProducts.slice(0, 5).map(p => ({
+        id: p.id,
         name: `Customer ${Math.floor(Math.random() * 100)}`,
         email: `customer${Math.floor(Math.random() * 100)}@example.com`,
         amount: p.price * (Math.floor(Math.random() * 3) + 1),
@@ -179,131 +143,8 @@ export async function getDashboardData() {
     }
 }
 
-// Seeding function - only run once if needed
+// Seeding function - not used with in-memory data
 export async function seedDatabase() {
-  const productsCollection = await getProductsCollection();
-  const count = await productsCollection.countDocuments();
-  if (count > 0) {
-    // console.log('Database already seeded.');
-    return;
-  }
-  console.log('Seeding database...');
-  
-  const productsToSeed: Omit<Product, 'id' | 'createdAt'>[] = [
-      {
-        slug: 'organic-royal-gala-apples',
-        name: 'Organic Royal Gala Apples',
-        description: 'Crisp, sweet, and perfect for snacking.',
-        longDescription: 'Our Organic Royal Gala Apples are sourced from local orchards in the Hawke\'s Bay region. Known for their reddish-pink skin and sweet, crisp flesh, they are perfect for eating fresh, adding to salads, or baking into pies. Grown without synthetic pesticides, they are a healthy and delicious choice.',
-        price: 6.99,
-        images: ['https://picsum.photos/seed/apple/800/800', 'https://picsum.photos/seed/apple2/800/800', 'https://picsum.photos/seed/apple3/800/800'],
-        category: 'Fruits',
-        isOrganic: true,
-        isSeasonal: true,
-        stock: 150,
-        rating: 4.8,
-        reviews: 120,
-      },
-      {
-        slug: 'hass-avocados',
-        name: 'Hass Avocados',
-        description: 'Creamy and rich, ideal for toast or salads.',
-        longDescription: 'These creamy Hass Avocados are grown in the Bay of Plenty. They have a rich, nutty flavor and a buttery texture that makes them perfect for spreading on toast, adding to smoothies, or making guacamole. Packed with healthy fats and nutrients.',
-        price: 2.50,
-        images: ['https://picsum.photos/seed/avocado/800/800', 'https://picsum.photos/seed/avocado2/800/800'],
-        category: 'Fruits',
-        isOrganic: false,
-        isSeasonal: true,
-        stock: 200,
-        rating: 4.9,
-        reviews: 250,
-      },
-      {
-        slug: 'agria-potatoes',
-        name: 'Agria Potatoes',
-        description: 'Fluffy texture, excellent for roasting and mashing.',
-        longDescription: 'Agria Potatoes from Canterbury are a versatile favorite. Their yellow flesh and fluffy texture make them ideal for roasting, mashing, and making chips. A staple in any Kiwi kitchen, they offer a delicious, earthy flavor.',
-        price: 4.50,
-        images: ['https://picsum.photos/seed/potato/800/800', 'https://picsum.photos/seed/potato2/800/800'],
-        category: 'Vegetables',
-        isOrganic: false,
-        isSeasonal: false,
-        stock: 300,
-        rating: 4.7,
-        reviews: 95,
-      },
-      {
-        slug: 'organic-carrots',
-        name: 'Organic Carrots',
-        description: 'Sweet and crunchy, packed with vitamins.',
-        longDescription: 'Our organic carrots are grown in the fertile soils of Pukekohe. They are known for their sweet flavor and satisfying crunch. Perfect for snacking, juicing, or adding to stews and roasts. Certified organic and full of beta-carotene.',
-        price: 3.99,
-        images: ['https://picsum.photos/seed/carrot/800/800', 'https://picsum.photos/seed/carrot2/800/800'],
-        category: 'Vegetables',
-        isOrganic: true,
-        isSeasonal: false,
-        stock: 180,
-        rating: 4.6,
-        reviews: 88,
-      },
-      {
-        slug: 'gold-kiwifruit',
-        name: 'Gold Kiwifruit',
-        description: 'Sweet, tropical, and bursting with Vitamin C.',
-        longDescription: 'A true New Zealand icon, our Gold Kiwifruit is sweeter and less acidic than its green counterpart. With a smooth, hairless skin and a tropical flavor, it\'s a delicious way to boost your Vitamin C intake. Sourced from Te Puke, the kiwifruit capital of the world.',
-        price: 7.50,
-        images: ['https://picsum.photos/seed/kiwi/800/800', 'https://picsum.photos/seed/kiwi2/800/800'],
-        category: 'Fruits',
-        isOrganic: false,
-        isSeasonal: true,
-        stock: 120,
-        rating: 5.0,
-        reviews: 310,
-      },
-       {
-        slug: 'fresh-broccoli',
-        name: 'Fresh Broccoli',
-        description: 'Nutrient-dense and great for steaming or stir-frying.',
-        longDescription: 'This fresh broccoli is harvested at its peak to ensure maximum flavor and nutritional value. With its firm stalks and vibrant green florets, it\'s a versatile vegetable that can be steamed, roasted, or added to stir-fries. A fantastic source of vitamins K and C.',
-        price: 3.20,
-        images: ['https://picsum.photos/seed/broccoli/800/800'],
-        category: 'Vegetables',
-        isOrganic: false,
-        isSeasonal: false,
-        stock: 90,
-        rating: 4.5,
-        reviews: 75,
-      },
-      {
-        slug: 'seasonal-organic-box',
-        name: 'Seasonal Organic Box',
-        description: 'A curated mix of the best seasonal organic produce.',
-        longDescription: 'Our Seasonal Organic Box is a fantastic way to enjoy the best of what the season has to offer. Each week, we curate a selection of fresh, certified organic fruits and vegetables from our partner farms. The contents vary based on availability, ensuring you always get the freshest, most flavorful produce.',
-        price: 55.00,
-        images: ['https://picsum.photos/seed/box/800/800', 'https://picsum.photos/seed/box2/800/800'],
-        category: 'Organic Boxes',
-        isOrganic: true,
-        isSeasonal: true,
-        stock: 50,
-        rating: 4.9,
-        reviews: 150,
-      },
-      {
-        slug: 'mixed-leaf-salad',
-        name: 'Mixed Leaf Salad',
-        description: 'A fresh and zesty mix of organic salad greens.',
-        longDescription: 'Ready for your favorite dressing, our Mixed Leaf Salad is a convenient and healthy choice. It features a blend of organic lettuce varieties, spinach, and rocket, offering a range of textures and flavors. Triple-washed and ready to eat.',
-        price: 5.50,
-        images: ['https://picsum.photos/seed/salad/800/800'],
-        category: 'Vegetables',
-        isOrganic: true,
-        isSeasonal: false,
-        stock: 110,
-        rating: 4.7,
-        reviews: 65,
-      },
-  ];
-
-  await productsCollection.insertMany(productsToSeed.map(p => ({...p, createdAt: new Date()})) as any);
-  console.log('Database seeded successfully.');
+  // This function is not needed when using in-memory static data
+  return;
 }

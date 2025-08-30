@@ -9,7 +9,7 @@ import { ArrowRight, Leaf, Package, Carrot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { getProducts, seedDatabase } from "@/lib/actions/products";
+import { getProducts } from "@/lib/actions/products";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 
 
@@ -55,7 +55,6 @@ const categories = [
 ]
 
 export default async function Home() {
-  await seedDatabase();
   const allProducts = await getProducts();
   const weeklySpecials = allProducts.filter(p => p.isSeasonal).slice(0, 4);
   const featuredBlogs = blogPosts.slice(0, 3);
