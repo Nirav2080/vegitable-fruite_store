@@ -1,0 +1,53 @@
+diff --git a/node_modules/react-quill/lib/index.js b/node_modules/react-quill/lib/index.js
+index 794f5ad..404f216 100644
+--- a/node_modules/react-quill/lib/index.js
++++ b/node_modules/react-quill/lib/index.js
+@@ -534,7 +534,7 @@
+ 	},
+ 
+ 	getEditingArea: function() {
+-		return ReactDOM.findDOMNode(this.editingArea);
++		return this.editingArea;
+ 	},
+ 
+ 	getEditor: function() {
+@@ -547,7 +547,7 @@
+ 	/*
+ 	 componentDidMount is is called when the component is first rendered into the document.
+ 	 */
+-	componentDidMount: function() {
++	componentDidMount: function () {
+ 		this.instantiateEditor();
+ 		this.setEditorContents(this.getEditor(), this.props.value);
+ 		this.setEditorSelection(this.getEditor(), this.state.selection);
+@@ -569,7 +569,7 @@
+ 		this.setEditorContents(editor, this.props.value);
+ 		this.setEditorSelection(editor, this.state.selection);
+ 		this.setEditorTabIndex(editor, this.props.tabIndex);
+-		editor.setEnable(this.props.readOnly === false);
++		editor.enable(this.props.readOnly === false);
+ 	},
+ 
+ 	/*
+@@ -628,7 +628,7 @@
+ 	},
+ 
+ 	renderEditingArea: function() {
+-		var self = this;
++		const self = this;
+ 		var properties = {
+ 			ref: function(input) {
+ 				self.editingArea = input;
+@@ -642,8 +642,10 @@
+ 		};
+ 
+ 		var children = this.props.children;
+-		return React.createElement(
+-			children ? children.type : 'div',
++		const Tag = children ? children.type : 'div';
++
++		return React.createElement (
++			Tag,
+ 			properties,
+ 			children ? children.props.children : null
+ 		);
