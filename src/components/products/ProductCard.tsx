@@ -16,7 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardHeader className="p-0 relative">
         <Link href={`/products/${product.slug}`} className="block">
           <Image
-            src={product.images[0]}
+            src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/400'}
             alt={product.name}
             data-ai-hint="product image"
             width={400}

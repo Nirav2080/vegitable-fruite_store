@@ -23,20 +23,22 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
     setQuantity((prev) => Math.max(1, prev + amount));
   };
   
+  const images = Array.isArray(product.images) ? product.images : [product.images];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         <div>
           <div className="aspect-square relative rounded-lg overflow-hidden border">
             <Image
-              src={product.images[selectedImage]}
+              src={images[selectedImage]}
               alt={product.name}
               fill
               className="object-cover"
             />
           </div>
           <div className="flex gap-2 mt-2">
-            {product.images.map((img, index) => (
+            {images.map((img, index) => (
               <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-primary' : 'border-transparent'}`}>
                 <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-cover" />
               </button>

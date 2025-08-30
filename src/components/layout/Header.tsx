@@ -20,10 +20,8 @@ const topNavLinks = [
 
 const mainNavLinks = [
   { href: "/products", label: "Organic Products" },
-  { href: "/products?category=Tomatoes", label: "Tomatoes" },
-  { href: "/products?category=Mushrooms", label: "Mushrooms" },
-  { href: "/products?category=Melon", label: "Melon" },
-  { href: "/products?category=all-brands", label: "All brands" },
+  { href: "/products?category=Vegetables", label: "Vegetables" },
+  { href: "/products?category=Fruits", label: "Fruits" },
   { href: "/blog", label: "News" },
 ];
 
@@ -72,7 +70,7 @@ export function Header() {
                     <link.icon className="h-4 w-4" />
                     {link.label}
                   </Link>
-                  <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" />
+                  { index < topNavLinks.length -1 && <Separator orientation="vertical" className="h-4 bg-primary-foreground/50" /> }
                 </React.Fragment>
               ))}
             </div>

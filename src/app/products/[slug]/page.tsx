@@ -2,12 +2,29 @@
 import { notFound } from 'next/navigation';
 import { getProducts } from '@/lib/actions/products';
 import { ProductDetailsClient } from './_components/ProductDetailsClient';
+import type { Metadata } from 'next'
 
 type ProductPageProps = {
   params: {
     slug: string;
   };
 };
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const products = await getProducts();
+  const product = products.find((p) => p.slug === params.slug);
+
+  if (!product) {
+    return {
+      title: 'Product not found',
+    }
+  }
+ 
+  return {
+    title: `${product.name} | Aotearoa Organics`,
+    description: product.description,
+  }
+}
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const products = await getProducts();

@@ -12,12 +12,12 @@ const productSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(10),
   longDescription: z.string().min(20),
-  price: z.number().min(0.01),
+  price: z.coerce.number().min(0.01),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
-  stock: z.number().int().min(0),
+  stock: z.coerce.number().int().min(0),
   isOrganic: z.boolean(),
   isSeasonal: z.boolean(),
-  images: z.array(z.string().url()),
+  images: z.string().min(1).transform(val => val.split(',').map(s => s.trim())),
 });
 
 // Helper function to connect to DB and get collection
@@ -77,8 +77,8 @@ export async function createProduct(data: unknown) {
     const newProduct = {
       ...parsedData,
       slug,
-      rating: 0, // default rating
-      reviews: 0, // default reviews
+      rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3, // default rating
+      reviews: Math.floor(Math.random() * 100), // default reviews
       createdAt: new Date(),
     };
 
@@ -97,10 +97,14 @@ export async function updateProduct(id: string, data: unknown) {
 
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+  const { images, ...restOfParsedData } = parsedData;
+
   const updatedProduct = {
-      ...parsedData,
+      ...restOfParsedData,
+      images: Array.isArray(images) ? images : [images],
       slug,
   };
+
 
   const result = await productsCollection.updateOne(
       { _id: new ObjectId(id) },
@@ -131,4 +135,91 @@ export async function deleteProduct(id: string) {
 
     revalidatePath('/admin/products');
     revalidatePath('/products');
+}
+
+// Seeding function - only run once if needed
+export async function seedDatabase() {
+  const productsCollection = await getProductsCollection();
+  const count = await productsCollection.countDocuments();
+  if (count > 0) {
+    console.log('Database already seeded.');
+    return;
+  }
+  console.log('Seeding database...');
+  
+  const productsToSeed: Omit<Product, 'id'>[] = [
+      {
+        slug: 'organic-royal-gala-apples',
+        name: 'Organic Royal Gala Apples',
+        description: 'Crisp, sweet, and perfect for snacking.',
+        longDescription: 'Our Organic Royal Gala Apples are sourced from local orchards in the Hawke\'s Bay region. Known for their reddish-pink skin and sweet, crisp flesh, they are perfect for eating fresh, adding to salads, or baking into pies. Grown without synthetic pesticides, they are a healthy and delicious choice.',
+        price: 6.99,
+        images: ['https://picsum.photos/seed/apple/800/800', 'https://picsum.photos/seed/apple2/800/800', 'https://picsum.photos/seed/apple3/800/800'],
+        category: 'Fruits',
+        isOrganic: true,
+        isSeasonal: true,
+        stock: 150,
+        rating: 4.8,
+        reviews: 120,
+      },
+      {
+        slug: 'hass-avocados',
+        name: 'Hass Avocados',
+        description: 'Creamy and rich, ideal for toast or salads.',
+        longDescription: 'These creamy Hass Avocados are grown in the Bay of Plenty. They have a rich, nutty flavor and a buttery texture that makes them perfect for spreading on toast, adding to smoothies, or making guacamole. Packed with healthy fats and nutrients.',
+        price: 2.50,
+        images: ['https://picsum.photos/seed/avocado/800/800', 'https://picsum.photos/seed/avocado2/800/800'],
+        category: 'Fruits',
+        isOrganic: false,
+        isSeasonal: true,
+        stock: 200,
+        rating: 4.9,
+        reviews: 250,
+      },
+      {
+        slug: 'agria-potatoes',
+        name: 'Agria Potatoes',
+        description: 'Fluffy texture, excellent for roasting and mashing.',
+        longDescription: 'Agria Potatoes from Canterbury are a versatile favorite. Their yellow flesh and fluffy texture make them ideal for roasting, mashing, and making chips. A staple in any Kiwi kitchen, they offer a delicious, earthy flavor.',
+        price: 4.50,
+        images: ['https://picsum.photos/seed/potato/800/800', 'https://picsum.photos/seed/potato2/800/800'],
+        category: 'Vegetables',
+        isOrganic: false,
+        isSeasonal: false,
+        stock: 300,
+        rating: 4.7,
+        reviews: 95,
+      },
+      {
+        slug: 'organic-carrots',
+        name: 'Organic Carrots',
+        description: 'Sweet and crunchy, packed with vitamins.',
+        longDescription: 'Our organic carrots are grown in the fertile soils of Pukekohe. They are known for their sweet flavor and satisfying crunch. Perfect for snacking, juicing, or adding to stews and roasts. Certified organic and full of beta-carotene.',
+        price: 3.99,
+        images: ['https://picsum.photos/seed/carrot/800/800', 'https://picsum.photos/seed/carrot2/800/800'],
+        category: 'Vegetables',
+        isOrganic: true,
+        isSeasonal: false,
+        stock: 180,
+        rating: 4.6,
+        reviews: 88,
+      },
+      {
+        slug: 'gold-kiwifruit',
+        name: 'Gold Kiwifruit',
+        description: 'Sweet, tropical, and bursting with Vitamin C.',
+        longDescription: 'A true New Zealand icon, our Gold Kiwifruit is sweeter and less acidic than its green counterpart. With a smooth, hairless skin and a tropical flavor, it\'s a delicious way to boost your Vitamin C intake. Sourced from Te Puke, the kiwifruit capital of the world.',
+        price: 7.50,
+        images: ['https://picsum.photos/seed/kiwi/800/800', 'https://picsum.photos/seed/kiwi2/800/800'],
+        category: 'Fruits',
+        isOrganic: false,
+        isSeasonal: true,
+        stock: 120,
+        rating: 5.0,
+        reviews: 310,
+      },
+  ];
+
+  await productsCollection.insertMany(productsToSeed as any);
+  console.log('Database seeded successfully.');
 }

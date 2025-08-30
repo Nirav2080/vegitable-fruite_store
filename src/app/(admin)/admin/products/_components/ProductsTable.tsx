@@ -84,11 +84,11 @@ export function ProductsTable({ data }: { data: Product[] }) {
           {data.map((product) => (
             <TableRow key={product.id}>
               <TableCell className="hidden sm:table-cell">
-                <Image
+                 <Image
                   alt={product.name}
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src={product.images[0] || 'https://picsum.photos/64'}
+                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/64'}
                   width="64"
                 />
               </TableCell>
@@ -111,7 +111,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                       <Link href={`/admin/products/${product.id}/edit`}><Pencil className="mr-2 h-4 w-4" /> Edit</Link>
+                       <Link href={`/admin/products/edit/${product.id}`}><Pencil className="mr-2 h-4 w-4" /> Edit</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => openDeleteDialog(product.id)}>
                         <Trash2 className="mr-2 h-4 w-4" /> Delete

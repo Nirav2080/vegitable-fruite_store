@@ -18,14 +18,11 @@ export function DynamicSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const popoverContentRef = useRef<HTMLDivElement>(null);
-
 
   const fetchResults = useCallback(async () => {
     if (!debouncedQuery) {
       setResults([]);
       setIsLoading(false);
-      if (isOpen) setIsOpen(false);
       return;
     }
     setIsLoading(true);
@@ -45,15 +42,8 @@ export function DynamicSearch() {
     setIsOpen(false);
   }
 
-  const handleOpenChange = (open: boolean) => {
-    // Only close if the new state is 'false' and the input doesn't have focus
-     if (!open && document.activeElement !== inputRef.current) {
-        setIsOpen(false);
-    }
-  }
-
   return (
-    <Popover open={isOpen} onOpenChange={handleOpenChange}>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <div className="w-full relative">
           <Input
@@ -83,10 +73,9 @@ export function DynamicSearch() {
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        ref={popoverContentRef}
         className="w-[var(--radix-popover-trigger-width)] mt-2" 
         align="start"
-        onOpenAutoFocus={(e) => e.preventDefault()} // Prevent popover from stealing focus
+        onOpenAutoFocus={(e) => e.preventDefault()}
         >
         {results.length > 0 ? (
           <div className="space-y-4">
@@ -98,7 +87,7 @@ export function DynamicSearch() {
                 onClick={handleLinkClick}
               >
                 <Image
-                  src={product.images[0]}
+                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/40'}
                   alt={product.name}
                   width={40}
                   height={40}

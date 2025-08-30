@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Toaster } from "@/components/ui/toaster"
 import { MainLayout } from '@/components/layout/MainLayout';
 
 export const metadata: Metadata = {
@@ -23,7 +22,6 @@ export default function RootLayout({
       </head>
       <body className={cn("min-h-screen bg-background font-body antialiased")}>
         <MainLayout>{children}</MainLayout>
-        <Toaster />
       </body>
     </html>
   );

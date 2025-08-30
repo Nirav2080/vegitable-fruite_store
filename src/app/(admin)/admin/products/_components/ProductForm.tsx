@@ -38,7 +38,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
-  images: z.string().min(1, { message: "Please add at least one image URL."}).transform(val => val.split(',').map(s => s.trim())),
+  images: z.string().min(1, { message: "Please add at least one image URL."}),
 })
 
 type ProductFormValues = z.infer<typeof formSchema>
@@ -54,7 +54,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const defaultValues = isEditing && product ? {
       ...product,
-      images: product.images.join(', '),
+      images: Array.isArray(product.images) ? product.images.join(', ') : product.images,
   } : {
       name: "",
       description: "",
