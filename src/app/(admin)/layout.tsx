@@ -49,9 +49,13 @@ export default function AdminLayout({
   useEffect(() => {
     setIsClient(true);
     async function fetchOrderCount() {
-      const orders = await getOrders();
-      const pendingCount = orders.filter(order => order.status === 'Pending').length;
-      setPendingOrdersCount(pendingCount);
+      try {
+        const orders = await getOrders();
+        const pendingCount = orders.filter(order => order.status === 'Pending').length;
+        setPendingOrdersCount(pendingCount);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error)
+      }
     }
     fetchOrderCount();
   }, []);

@@ -25,11 +25,13 @@ export default function CheckoutPage() {
        // In a real app, you'd fetch this from localStorage or a DB
       // For this demo, we'll randomly pick some products
       const allProducts = await getProducts();
-      const items = [
-        { ...allProducts[0], quantity: 2 },
-        { ...allProducts[2], quantity: 1 },
-      ].filter(Boolean);
-      setCartItems(items);
+      if (allProducts.length > 2) {
+        const items = [
+            { ...allProducts[0], quantity: 2 },
+            { ...allProducts[2], quantity: 1 },
+        ].filter(Boolean);
+        setCartItems(items);
+      }
       setIsLoading(false);
     }
     fetchCartItems();

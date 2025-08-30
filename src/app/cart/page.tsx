@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -23,12 +24,14 @@ export default function CartPage() {
       // In a real app, you'd fetch this from localStorage or a DB
       // For this demo, we'll randomly pick some products
       const allProducts = await getProducts();
-      const items = [
-        { ...allProducts[0], quantity: 2 },
-        { ...allProducts[2], quantity: 1 },
-        { ...allProducts[4], quantity: 3 },
-      ].filter(Boolean); // filter out undefined if products length is small
-      setCartItems(items);
+      if (allProducts.length > 4) {
+        const items = [
+            { ...allProducts[0], quantity: 2 },
+            { ...allProducts[2], quantity: 1 },
+            { ...allProducts[4], quantity: 3 },
+        ].filter(Boolean); // filter out undefined if products length is small
+        setCartItems(items);
+      }
       setIsLoading(false);
     }
     fetchCartItems();

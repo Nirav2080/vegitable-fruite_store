@@ -26,8 +26,12 @@ export function DynamicSearch() {
       return;
     }
     setIsLoading(true);
-    const fetchedResults = await searchProducts(debouncedQuery);
-    setResults(fetchedResults);
+    try {
+        const fetchedResults = await searchProducts(debouncedQuery);
+        setResults(fetchedResults);
+    } catch(error) {
+        console.error("Failed to search products: ", error)
+    }
     setIsLoading(false);
     if (!isOpen) setIsOpen(true);
   }, [debouncedQuery, isOpen]);
