@@ -97,7 +97,7 @@ export default function AdminLayout({
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <Link href="/admin" legacyBehavior passHref>
+              <Link href="/admin">
                 <SidebarMenuButton isActive={isActive('/admin')}>
                   <Home className="h-4 w-4" />
                   Admin Dashboard
@@ -105,7 +105,7 @@ export default function AdminLayout({
               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <Link href="/admin/orders" legacyBehavior passHref>
+              <Link href="/admin/orders">
                 <SidebarMenuButton isActive={isActive('/admin/orders')}>
                     <ShoppingCart className="h-4 w-4" />
                     Orders
@@ -113,7 +113,7 @@ export default function AdminLayout({
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Link href="/admin/products" legacyBehavior passHref>
+              <Link href="/admin/products">
                 <SidebarMenuButton isActive={isActive('/admin/products')}>
                   <Package className="h-4 w-4" />
                   Products
@@ -121,7 +121,7 @@ export default function AdminLayout({
               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <Link href="/admin/users" legacyBehavior passHref>
+              <Link href="/admin/users">
                 <SidebarMenuButton isActive={isActive('/admin/users')}>
                     <Users className="h-4 w-4" />
                     Customers
@@ -129,7 +129,7 @@ export default function AdminLayout({
               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <Link href="/admin/analytics" legacyBehavior passHref>
+              <Link href="/admin/analytics">
                 <SidebarMenuButton isActive={isActive('/admin/analytics')}>
                     <LineChart className="h-4 w-4" />
                     Analytics
@@ -137,7 +137,7 @@ export default function AdminLayout({
                </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <Link href="/admin/blog" legacyBehavior passHref>
+              <Link href="/admin/blog">
                 <SidebarMenuButton isActive={isActive('/admin/blog')}>
                   <BookOpen className="h-4 w-4" />
                   Blog
@@ -145,7 +145,7 @@ export default function AdminLayout({
               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-               <Link href="/admin/banners" legacyBehavior passHref>
+               <Link href="/admin/banners">
                 <SidebarMenuButton isActive={isActive('/admin/banners')}>
                     <ImageIcon className="h-4 w-4" />
                     Banners
@@ -153,7 +153,7 @@ export default function AdminLayout({
                </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-               <Link href="/admin/menu" legacyBehavior passHref>
+               <Link href="/admin/menu">
                 <SidebarMenuButton isActive={isActive('/admin/menu')}>
                     <MenuIcon className="h-4 w-4" />
                     Header Menu
@@ -161,7 +161,7 @@ export default function AdminLayout({
                </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-               <Link href="/admin/coupons" legacyBehavior passHref>
+               <Link href="/admin/coupons">
                 <SidebarMenuButton isActive={isActive('/admin/coupons')}>
                     <Gift className="h-4 w-4" />
                     Coupons
@@ -189,4 +189,5 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
+
 
