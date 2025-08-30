@@ -83,6 +83,8 @@ export default function AdminLayout({
       return null;
   }
   
+  const isActive = (href: string) => pathname === href;
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -95,58 +97,76 @@ export default function AdminLayout({
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin">
-                <Home className="h-4 w-4" />
-                Admin Dashboard
-              </SidebarMenuButton>
+              <Link href="/admin" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin')}>
+                  <Home className="h-4 w-4" />
+                  Admin Dashboard
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/orders">
+              <Link href="/admin/orders" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/orders')}>
                     <ShoppingCart className="h-4 w-4" />
                     Orders
                 </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin/products">
-                <Package className="h-4 w-4" />
-                Products
-              </SidebarMenuButton>
+              <Link href="/admin/products" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/products')}>
+                  <Package className="h-4 w-4" />
+                  Products
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/users">
+              <Link href="/admin/users" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/users')}>
                     <Users className="h-4 w-4" />
                     Customers
                 </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/analytics">
+              <Link href="/admin/analytics" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/analytics')}>
                     <LineChart className="h-4 w-4" />
                     Analytics
                 </SidebarMenuButton>
+               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/admin/blog">
-                <BookOpen className="h-4 w-4" />
-                Blog
-              </SidebarMenuButton>
+              <Link href="/admin/blog" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/blog')}>
+                  <BookOpen className="h-4 w-4" />
+                  Blog
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/banners">
+               <Link href="/admin/banners" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/banners')}>
                     <ImageIcon className="h-4 w-4" />
                     Banners
                 </SidebarMenuButton>
+               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/menu">
+               <Link href="/admin/menu" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/menu')}>
                     <MenuIcon className="h-4 w-4" />
                     Header Menu
                 </SidebarMenuButton>
+               </Link>
             </SidebarMenuItem>
              <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/coupons">
+               <Link href="/admin/coupons" legacyBehavior passHref>
+                <SidebarMenuButton isActive={isActive('/admin/coupons')}>
                     <Gift className="h-4 w-4" />
                     Coupons
                 </SidebarMenuButton>
+               </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
@@ -169,3 +189,4 @@ export default function AdminLayout({
     </SidebarProvider>
   );
 }
+
