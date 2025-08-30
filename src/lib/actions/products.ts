@@ -13,7 +13,7 @@ let products: Product[] = [...staticProducts];
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  price: z.coerce.number().min(0.01, { message: "Price must be a positive number." }),
+  price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),

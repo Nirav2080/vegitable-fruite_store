@@ -35,7 +35,7 @@ import { Textarea } from "@/components/ui/textarea"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  price: z.coerce.number().min(0.01, { message: "Price must be a positive number." }),
+  price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
@@ -125,8 +125,7 @@ export function ProductForm({ product }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="space-y-8">
-            <FormField
+          <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
@@ -139,7 +138,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 </FormItem>
             )}
             />
-            <FormField
+          <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
@@ -152,7 +151,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 </FormItem>
             )}
             />
-            <FormField
+          <FormField
                 control={form.control}
                 name="images"
                 render={() => (
@@ -211,7 +210,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                    <Input type="number" step="0.01" placeholder="6.99" {...field} />
+                    <Input type="number" step="0.01" min="0" placeholder="6.99" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -224,13 +223,13 @@ export function ProductForm({ product }: ProductFormProps) {
                 <FormItem>
                 <FormLabel>Stock Quantity</FormLabel>
                 <FormControl>
-                    <Input type="number" placeholder="150" {...field} />
+                    <Input type="number" min="0" placeholder="150" {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
             )}
             />
-                <FormField
+          <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
@@ -252,8 +251,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                 )}
             />
-                <div className="space-y-4">
-                <FormField
+          <FormField
                     control={form.control}
                     name="isOrganic"
                     render={({ field }) => (
@@ -270,7 +268,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                     )}
                 />
-                <FormField
+          <FormField
                     control={form.control}
                     name="isSeasonal"
                     render={({ field }) => (
@@ -287,9 +285,6 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                     )}
                 />
-            </div>
-        </div>
-
         <Button type="submit" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Product')}
         </Button>
