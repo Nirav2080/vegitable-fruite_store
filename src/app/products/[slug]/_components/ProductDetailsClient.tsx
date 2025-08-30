@@ -62,7 +62,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             )}
           </div>
           <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <p className="text-muted-foreground mt-4">{product.longDescription}</p>
+          <p className="text-muted-foreground mt-4">{product.description}</p>
 
           <div className="mt-6">
             <div className="flex items-center gap-4">

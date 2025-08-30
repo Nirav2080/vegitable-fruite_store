@@ -13,7 +13,6 @@ let products: Product[] = [...staticProducts];
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  longDescription: z.string().min(20, { message: "Long description must be at least 20 characters." }),
   price: z.coerce.number().min(0.01, { message: "Price must be a positive number." }),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
@@ -55,6 +54,7 @@ export async function createProduct(data: unknown) {
     const newProduct: Product = {
       id: new Date().getTime().toString(),
       ...parsedData,
+      longDescription: parsedData.description, // Keep for data consistency
       images: parsedData.images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
       rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3, // default rating
@@ -81,6 +81,7 @@ export async function updateProduct(id: string, data: unknown) {
   const updatedProduct: Product = {
       ...products[productIndex],
       ...parsedData,
+      longDescription: parsedData.description, // Keep for data consistency
       images: parsedData.images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
   };
@@ -145,6 +146,6 @@ export async function getDashboardData() {
 
 // Seeding function - not used with in-memory data
 export async function seedDatabase() {
-  // This function is not needed when using in-memory static data
+  // This function is not needed when using in-memory data
   return;
 }

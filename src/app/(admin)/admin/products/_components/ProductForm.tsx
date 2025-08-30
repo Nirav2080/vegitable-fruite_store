@@ -35,7 +35,6 @@ import { Upload, X } from "lucide-react"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  longDescription: z.string().min(20, { message: "Long description must be at least 20 characters." }),
   price: z.coerce.number().min(0.01, { message: "Price must be a positive number." }),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
@@ -64,7 +63,6 @@ export function ProductForm({ product }: ProductFormProps) {
   } : {
       name: "",
       description: "",
-      longDescription: "",
       price: 0,
       category: "Vegetables" as const,
       stock: 0,
@@ -115,7 +113,7 @@ export function ProductForm({ product }: ProductFormProps) {
     
     // When creating a new product, we generate previews from the files.
     // When editing, we rely on the URLs from the database.
-    const existingPreviews = isEditing ? (form.getValues('images').split(', ').filter(Boolean)) : imagePreviews;
+    const existingPreviews = imagePreviews;
     setImagePreviews([...existingPreviews, ...newPreviews]);
   };
   
@@ -147,27 +145,14 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                 )}
                 />
-                 <FormField
+                <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Short Description</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                        <Textarea placeholder="Crisp, sweet, and perfect for snacking." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="longDescription"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Long Description</FormLabel>
-                    <FormControl>
-                        <Textarea rows={5} placeholder="Describe the product in more detail..." {...field} />
+                        <Textarea rows={8} placeholder="Describe the product in detail..." {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
