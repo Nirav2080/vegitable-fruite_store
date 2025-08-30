@@ -55,11 +55,12 @@ export function ProductForm({ product }: ProductFormProps) {
   const { toast } = useToast();
   const isEditing = !!product;
   
+  // For editing, we use the actual product images.
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
 
   const defaultValues = isEditing && product ? {
       ...product,
-      images: Array.isArray(product.images) ? product.images.join(', ') : product.images,
+      images: Array.isArray(product.images) ? product.images.join(', ') : '',
   } : {
       name: "",
       description: "",
@@ -99,19 +100,25 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
     const newPreviews = files.map(file => URL.createObjectURL(file));
     
     // For prototyping, we'll use placeholder URLs since we don't have file storage.
     // In a real app, you would upload files to a service and get back URLs.
-    const newImageUrls = files.map((_, i) => `https://picsum.photos/seed/${Math.random()}/400`);
+    const newImageUrls = files.map(() => `https://picsum.photos/seed/${Math.random()}/400`);
 
-    const existingUrls = form.getValues('images') ? form.getValues('images').split(', ') : [];
-    const updatedUrls = [...existingUrls, ...newImageUrls].filter(Boolean);
+    const existingUrls = form.getValues('images') ? form.getValues('images').split(', ').filter(Boolean) : [];
+    const updatedUrls = [...existingUrls, ...newImageUrls];
 
     form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
-    setImagePreviews(prev => [...prev, ...newPreviews]);
+    
+    // When creating a new product, we generate previews from the files.
+    // When editing, we rely on the URLs from the database.
+    const existingPreviews = isEditing ? (form.getValues('images').split(', ').filter(Boolean)) : imagePreviews;
+    setImagePreviews([...existingPreviews, ...newPreviews]);
   };
-
+  
   const removeImage = (indexToRemove: number) => {
     const currentUrls = form.getValues('images').split(', ').filter(Boolean);
     const updatedUrls = currentUrls.filter((_, index) => index !== indexToRemove);
