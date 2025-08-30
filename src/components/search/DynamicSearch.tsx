@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -18,32 +18,42 @@ export function DynamicSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const popoverContentRef = useRef<HTMLDivElement>(null);
+
+
+  const fetchResults = useCallback(async () => {
+    if (!debouncedQuery) {
+      setResults([]);
+      setIsLoading(false);
+      if (isOpen) setIsOpen(false);
+      return;
+    }
+    setIsLoading(true);
+    const fetchedResults = await searchProducts(debouncedQuery);
+    setResults(fetchedResults);
+    setIsLoading(false);
+    if (!isOpen) setIsOpen(true);
+  }, [debouncedQuery, isOpen]);
+
 
   useEffect(() => {
-    const fetchResults = async () => {
-      if (!debouncedQuery) {
-        setResults([]);
-        setIsLoading(false);
-        setIsOpen(false);
-        return;
-      }
-      setIsLoading(true);
-      const fetchedResults = await searchProducts(debouncedQuery);
-      setResults(fetchedResults);
-      setIsLoading(false);
-      setIsOpen(true);
-    };
-
     fetchResults();
-  }, [debouncedQuery]);
+  }, [fetchResults]);
 
   const handleLinkClick = () => {
     setQuery('');
     setIsOpen(false);
   }
 
+  const handleOpenChange = (open: boolean) => {
+    // Only close if the new state is 'false' and the input doesn't have focus
+     if (!open && document.activeElement !== inputRef.current) {
+        setIsOpen(false);
+    }
+  }
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <div className="w-full relative">
           <Input
@@ -53,12 +63,18 @@ export function DynamicSearch() {
             className="w-full pr-10 bg-white text-black rounded-full h-12"
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value)
-              if(e.target.value) {
+              const newQuery = e.target.value;
+              setQuery(newQuery);
+              if (newQuery && !isOpen) {
                 setIsOpen(true);
-              } else {
+              } else if (!newQuery && isOpen) {
                 setIsOpen(false);
               }
+            }}
+             onFocus={() => {
+                if (query) {
+                    setIsOpen(true);
+                }
             }}
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground">
@@ -66,7 +82,12 @@ export function DynamicSearch() {
           </div>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] mt-2" align="start">
+      <PopoverContent 
+        ref={popoverContentRef}
+        className="w-[var(--radix-popover-trigger-width)] mt-2" 
+        align="start"
+        onOpenAutoFocus={(e) => e.preventDefault()} // Prevent popover from stealing focus
+        >
         {results.length > 0 ? (
           <div className="space-y-4">
             {results.map((product) => (
