@@ -1,23 +1,53 @@
+
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { products } from '@/lib/data'
-import { CreditCard, Truck } from 'lucide-react'
+import { getProducts } from '@/lib/actions/products'
+import { CreditCard, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import type { Product } from '@/lib/types'
 
-const cartItems = [
-  { ...products[0], quantity: 2 },
-  { ...products[2], quantity: 1 },
-]
-
-const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-const shipping = 10.00
-const total = subtotal + shipping
+type CartItem = Product & { quantity: number };
 
 export default function CheckoutPage() {
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCartItems() {
+      setIsLoading(true);
+       // In a real app, you'd fetch this from localStorage or a DB
+      // For this demo, we'll randomly pick some products
+      const allProducts = await getProducts();
+      const items = [
+        { ...allProducts[0], quantity: 2 },
+        { ...allProducts[2], quantity: 1 },
+      ].filter(Boolean);
+      setCartItems(items);
+      setIsLoading(false);
+    }
+    fetchCartItems();
+  }, []);
+
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
+  const shipping = 10.00
+  const total = subtotal + shipping
+
+  if (isLoading) {
+    return (
+        <div className="container mx-auto px-4 py-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+            <p className="mt-2 text-muted-foreground">Loading checkout...</p>
+        </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">

@@ -1,5 +1,4 @@
 
-
 'use server'
 
 import { z } from 'zod';
@@ -10,16 +9,19 @@ import type { Product } from '@/lib/types';
 import { notFound } from 'next/navigation';
 
 const productSchema = z.object({
-  name: z.string().min(2),
-  description: z.string().min(10),
-  longDescription: z.string().min(20),
-  price: z.coerce.number().min(0.01),
+  name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters." }),
+  longDescription: z.string().min(20, { message: "Long description must be at least 20 characters." }),
+  price: z.coerce.number().min(0.01, { message: "Price must be a positive number." }),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
-  stock: z.coerce.number().int().min(0),
-  isOrganic: z.boolean(),
-  isSeasonal: z.boolean(),
-  images: z.string().min(1).transform(val => val.split(',').map(s => s.trim())),
-});
+  stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
+  isOrganic: z.boolean().default(false),
+  isSeasonal: z.boolean().default(false),
+  images: z.string().min(1, { message: "Please add at least one image URL."}),
+}).transform(data => ({
+  ...data,
+  images: data.images.split(',').map(s => s.trim()).filter(s => s),
+}));
 
 // Helper function to connect to DB and get collection
 async function getProductsCollection() {
@@ -97,7 +99,7 @@ export async function updateProduct(id: string, data: unknown) {
   const productsCollection = await getProductsCollection();
 
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
+  
   const { images, ...restOfParsedData } = parsedData;
 
   const updatedProduct = {
@@ -143,7 +145,7 @@ export async function getDashboardData() {
     const products = await productsCollection.find({}).toArray();
 
     const totalRevenue = products.reduce((acc, p) => acc + (p.price * (100 - p.stock)), 0);
-    const totalSales = 100 - products.reduce((acc, p) => acc + p.stock, 0) / products.length;
+    const totalSales = products.reduce((acc, p) => acc + (100-p.stock), 0);
     const totalProducts = products.length;
 
     const salesData = [
@@ -182,12 +184,12 @@ export async function seedDatabase() {
   const productsCollection = await getProductsCollection();
   const count = await productsCollection.countDocuments();
   if (count > 0) {
-    console.log('Database already seeded.');
+    // console.log('Database already seeded.');
     return;
   }
   console.log('Seeding database...');
   
-  const productsToSeed: Omit<Product, 'id'>[] = [
+  const productsToSeed: Omit<Product, 'id' | 'createdAt'>[] = [
       {
         slug: 'organic-royal-gala-apples',
         name: 'Organic Royal Gala Apples',
@@ -258,8 +260,50 @@ export async function seedDatabase() {
         rating: 5.0,
         reviews: 310,
       },
+       {
+        slug: 'fresh-broccoli',
+        name: 'Fresh Broccoli',
+        description: 'Nutrient-dense and great for steaming or stir-frying.',
+        longDescription: 'This fresh broccoli is harvested at its peak to ensure maximum flavor and nutritional value. With its firm stalks and vibrant green florets, it\'s a versatile vegetable that can be steamed, roasted, or added to stir-fries. A fantastic source of vitamins K and C.',
+        price: 3.20,
+        images: ['https://picsum.photos/seed/broccoli/800/800'],
+        category: 'Vegetables',
+        isOrganic: false,
+        isSeasonal: false,
+        stock: 90,
+        rating: 4.5,
+        reviews: 75,
+      },
+      {
+        slug: 'seasonal-organic-box',
+        name: 'Seasonal Organic Box',
+        description: 'A curated mix of the best seasonal organic produce.',
+        longDescription: 'Our Seasonal Organic Box is a fantastic way to enjoy the best of what the season has to offer. Each week, we curate a selection of fresh, certified organic fruits and vegetables from our partner farms. The contents vary based on availability, ensuring you always get the freshest, most flavorful produce.',
+        price: 55.00,
+        images: ['https://picsum.photos/seed/box/800/800', 'https://picsum.photos/seed/box2/800/800'],
+        category: 'Organic Boxes',
+        isOrganic: true,
+        isSeasonal: true,
+        stock: 50,
+        rating: 4.9,
+        reviews: 150,
+      },
+      {
+        slug: 'mixed-leaf-salad',
+        name: 'Mixed Leaf Salad',
+        description: 'A fresh and zesty mix of organic salad greens.',
+        longDescription: 'Ready for your favorite dressing, our Mixed Leaf Salad is a convenient and healthy choice. It features a blend of organic lettuce varieties, spinach, and rocket, offering a range of textures and flavors. Triple-washed and ready to eat.',
+        price: 5.50,
+        images: ['https://picsum.photos/seed/salad/800/800'],
+        category: 'Vegetables',
+        isOrganic: true,
+        isSeasonal: false,
+        stock: 110,
+        rating: 4.7,
+        reviews: 65,
+      },
   ];
 
-  await productsCollection.insertMany(productsToSeed as any);
+  await productsCollection.insertMany(productsToSeed.map(p => ({...p, createdAt: new Date()})) as any);
   console.log('Database seeded successfully.');
 }

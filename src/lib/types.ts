@@ -13,7 +13,7 @@ export interface Product {
   stock: number;
   rating: number;
   reviews: number;
-  createdAt?: Date;
+  createdAt: Date;
 }
 
 export interface Blog {

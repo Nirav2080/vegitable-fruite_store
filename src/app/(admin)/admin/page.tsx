@@ -1,16 +1,13 @@
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { getDashboardData } from "@/lib/actions/products";
-import { DollarSign, Package, Users, CreditCard, ArrowUpRight } from "lucide-react";
+import { DollarSign, Package, Users, CreditCard } from "lucide-react";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { SalesChart } from "./_components/SalesChart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -89,7 +86,7 @@ export default async function AdminDashboard() {
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
             <CardDescription>
-              You made 265 sales this month.
+              You made {data.totalSales} sales this month.
             </CardDescription>
           </CardHeader>
           <CardContent>

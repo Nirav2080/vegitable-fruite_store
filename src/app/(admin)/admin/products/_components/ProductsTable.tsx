@@ -113,7 +113,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
                     <DropdownMenuItem asChild>
                        <Link href={`/admin/products/edit/${product.id}`}><Pencil className="mr-2 h-4 w-4" /> Edit</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => openDeleteDialog(product.id)}>
+                    <DropdownMenuItem onClick={() => openDeleteDialog(product.id)} className='text-destructive focus:text-destructive'>
                         <Trash2 className="mr-2 h-4 w-4" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -134,7 +134,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

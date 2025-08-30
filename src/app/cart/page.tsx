@@ -1,23 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { products } from '@/lib/data'
+import { getProducts } from '@/lib/actions/products'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { X, Plus, Minus } from 'lucide-react'
+import { X, Plus, Minus, Loader2 } from 'lucide-react'
+import type { Product } from '@/lib/types'
 
-const initialCartItems = [
-  { ...products[0], quantity: 2 },
-  { ...products[2], quantity: 1 },
-  { ...products[4], quantity: 3 },
-]
+type CartItem = Product & { quantity: number };
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems)
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchCartItems() {
+      setIsLoading(true);
+      // In a real app, you'd fetch this from localStorage or a DB
+      // For this demo, we'll randomly pick some products
+      const allProducts = await getProducts();
+      const items = [
+        { ...allProducts[0], quantity: 2 },
+        { ...allProducts[2], quantity: 1 },
+        { ...allProducts[4], quantity: 3 },
+      ].filter(Boolean); // filter out undefined if products length is small
+      setCartItems(items);
+      setIsLoading(false);
+    }
+    fetchCartItems();
+  }, []);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return
@@ -31,6 +46,15 @@ export default function CartPage() {
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
   const shipping = 10.00
   const total = subtotal + shipping
+
+  if (isLoading) {
+    return (
+        <div className="container mx-auto px-4 py-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+            <p className="mt-2 text-muted-foreground">Loading your cart...</p>
+        </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
