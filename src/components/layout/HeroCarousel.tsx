@@ -21,7 +21,7 @@ const heroSlides = [
     supertitle: "FRESH & ORGANIC",
     title: "Naturally Fresh, Locally Sourced",
     subtitle: "Experience the taste of Aotearoa with our premium selection of organic fruits and vegetables.",
-    image: "https://picsum.photos/1800/1200",
+    image: "https://picsum.photos/seed/produce/1200/600",
     hint: "fresh produce",
     href: "/products",
   },
