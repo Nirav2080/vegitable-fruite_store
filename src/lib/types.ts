@@ -47,3 +47,14 @@ export interface Order {
   total: number;
   items: OrderItem[];
 }
+
+export interface User {
+  _id?: ObjectId;
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  registeredAt: Date;
+  orderCount: number;
+  totalSpent: number;
+}
