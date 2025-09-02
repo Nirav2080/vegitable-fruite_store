@@ -6,11 +6,10 @@ import type { Product } from '@/lib/types';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
-import { ProductReviews } from './ProductReviews';
 
 
 interface ProductDetailsClientProps {
@@ -32,8 +31,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
   };
   
   const images = Array.isArray(product.images) ? product.images : [product.images];
-  const reviewsCount = Array.isArray(product.reviews) ? product.reviews.length : 0;
-
+  
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
@@ -58,12 +56,6 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         <div className='md:col-span-3'>
           <h1 className="text-3xl lg:text-4xl font-bold font-headline">{product.name}</h1>
           <div className="flex items-center gap-4 mt-2">
-            <div className="flex items-center">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`h-5 w-5 ${i < Math.round(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-              ))}
-              <span className="ml-2 text-muted-foreground">({reviewsCount} reviews)</span>
-            </div>
             {product.stock > 0 ? (
                 <Badge variant="secondary" className='bg-green-100 text-green-800'>In Stock</Badge>
             ) : (
@@ -71,7 +63,8 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             )}
           </div>
           <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <p className="text-muted-foreground mt-4">{product.description}</p>
+          <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+
 
           <div className="mt-6">
             <div className="flex items-center gap-4">
@@ -96,10 +89,6 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         </div>
       </div>
       
-      <Separator className="my-12" />
-
-      <ProductReviews product={product} />
-
       <Separator className="my-12" />
 
       <div>

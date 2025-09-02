@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart, Heart, Expand } from "lucide-react";
+import { ShoppingCart, Heart, Expand } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -60,8 +60,6 @@ export function ProductCard({ product }: ProductCardProps) {
     return diffDays <= 7;
   }
   
-  const rating = product.rating || 0;
-
   return (
     <Card 
         className="flex flex-col h-full overflow-hidden group transition-all duration-300 border"
@@ -113,13 +111,6 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </Link>
         </h3>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`h-4 w-4 ${i < Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-            ))}
-          </div>
-        </div>
         <div className="flex items-center gap-2 mt-2">
             <p className="text-lg font-bold text-primary">${product.price.toFixed(2)}</p>
             {product.originalPrice && <p className="text-sm text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</p>}

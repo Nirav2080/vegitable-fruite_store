@@ -33,11 +33,10 @@ const productSchema = z.object({
 
 function serializeProduct(product: any): Product {
     if (!product) return product;
-    const { _id, reviews, ...rest } = product;
+    const { _id, ...rest } = product;
     return {
         ...rest,
         id: _id.toString(),
-        reviews: Array.isArray(reviews) ? reviews.map((r: any) => ({...r, id: r._id.toString()})) : [],
     } as Product;
 }
 
@@ -79,8 +78,6 @@ export async function createProduct(data: unknown) {
       images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
-      rating: 0,
-      reviews: [],
       createdAt: new Date(),
     };
 
@@ -108,9 +105,6 @@ export async function updateProduct(id: string, data: unknown) {
       ...parsedData,
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
-      // Preserve existing reviews and rating
-      reviews: existingProduct.reviews || [],
-      rating: existingProduct.rating || 0,
   };
 
   const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
