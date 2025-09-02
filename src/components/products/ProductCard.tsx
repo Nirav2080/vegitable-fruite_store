@@ -59,6 +59,8 @@ export function ProductCard({ product }: ProductCardProps) {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays <= 7;
   }
+  
+  const rating = product.rating || 0;
 
   return (
     <Card 
@@ -114,7 +116,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`h-4 w-4 ${i < Math.round(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+              <Star key={i} className={`h-4 w-4 ${i < Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
             ))}
           </div>
         </div>

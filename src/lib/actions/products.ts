@@ -32,10 +32,12 @@ const productSchema = z.object({
 });
 
 function serializeProduct(product: any): Product {
-    const { _id, ...rest } = product;
+    if (!product) return product;
+    const { _id, reviews, ...rest } = product;
     return {
         ...rest,
         id: _id.toString(),
+        reviews: Array.isArray(reviews) ? reviews.map((r: any) => ({...r, id: r._id.toString()})) : [],
     } as Product;
 }
 
@@ -77,8 +79,8 @@ export async function createProduct(data: unknown) {
       images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
-      rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3,
-      reviews: Math.floor(Math.random() * 100),
+      rating: 0,
+      reviews: [],
       createdAt: new Date(),
     };
 

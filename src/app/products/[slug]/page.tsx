@@ -35,12 +35,14 @@ async function getProductAndRelated(slug: string) {
     if (!product) {
       return { product: null, relatedProducts: [] };
     }
+    
+    const fullProduct = await getProductById(product.id);
 
     const relatedProducts = allProducts
         .filter(p => p.category === product.category && p.id !== product.id)
         .slice(0, 4);
     
-    return { product, relatedProducts };
+    return { product: fullProduct, relatedProducts };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {

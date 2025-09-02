@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Product, Review } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,105 +13,90 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-
-export const mockReviews: Review[] = [
-  {
-    id: '1',
-    author: 'Jane Doe',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-    rating: 5,
-    title: 'Absolutely Fresh!',
-    comment: 'These are the best apples I have ever tasted. So crisp and juicy. Will definitely buy again!',
-    date: '2023-05-20',
-  },
-  {
-    id: '2',
-    author: 'John Smith',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026705d',
-    rating: 4,
-    title: 'Great quality',
-    comment: 'Very good quality, but a bit pricey. Still, you get what you pay for. Recommended.',
-    date: '2023-05-18',
-  },
-   {
-    id: '3',
-    author: 'Peter Jones',
-    avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026706d',
-    rating: 5,
-    title: 'Perfect for my organic box',
-    comment: 'I love that these are organic. They taste amazing and are perfect for my family\'s health.',
-    date: '2023-05-15',
-  },
-];
+import { addReview } from '@/lib/actions/reviews';
+import { format } from 'date-fns';
 
 
 interface ProductReviewsProps {
   product: Product;
-  reviews: Review[];
 }
 
-export function ProductReviews({ product, reviews: initialReviews }: ProductReviewsProps) {
+export function ProductReviews({ product }: ProductReviewsProps) {
   const { toast } = useToast();
-  const [reviews, setReviews] = useState(initialReviews);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 0, title: '', comment: '' });
   const [hoverRating, setHoverRating] = useState(0);
 
-  const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+  const reviews = Array.isArray(product.reviews) ? product.reviews : [];
+  const averageRating = reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
+  
   const ratingDistribution = [5, 4, 3, 2, 1].map(star => {
     const count = reviews.filter(r => r.rating === star).length;
-    return { star, count, percentage: (count / reviews.length) * 100 };
+    const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+    return { star, count, percentage };
   });
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(newReview.rating === 0 || !newReview.title || !newReview.comment) {
-        toast({
-            title: "Incomplete review",
-            description: "Please provide a rating, title, and comment.",
-            variant: "destructive"
-        })
-        return;
+    if (newReview.rating === 0 || !newReview.title || !newReview.comment) {
+      toast({
+        title: "Incomplete review",
+        description: "Please provide a rating, title, and comment.",
+        variant: "destructive"
+      });
+      return;
     }
-    const submittedReview: Review = {
-        id: (reviews.length + 1).toString(),
-        author: 'New User', // Replace with actual user data
-        avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026707d',
-        rating: newReview.rating,
-        title: newReview.title,
-        comment: newReview.comment,
-        date: new Date().toISOString().split('T')[0],
-    };
-    setReviews([submittedReview, ...reviews]);
-    setNewReview({ rating: 0, title: '', comment: '' });
-     toast({
+    setIsSubmitting(true);
+    try {
+      await addReview(product.id, newReview);
+      toast({
         title: "Review submitted",
         description: "Thank you for your feedback!",
-    })
+      });
+      setNewReview({ rating: 0, title: '', comment: '' });
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error submitting review",
+        description: error instanceof Error ? error.message : "An unexpected error occurred.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className="grid md:grid-cols-5 gap-8">
       <div className="md:col-span-2">
         <h3 className="text-2xl font-bold font-headline mb-4">Customer Reviews</h3>
-        <div className="flex items-center gap-2 mb-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`h-5 w-5 ${i < Math.round(averageRating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-            ))}
-          </div>
-          <span className="font-semibold">{averageRating.toFixed(1)} out of 5</span>
-        </div>
-        <p className="text-sm text-muted-foreground mb-4">Based on {reviews.length} reviews</p>
+        {reviews.length > 0 ? (
+          <>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-5 w-5 ${i < Math.round(averageRating) ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+                ))}
+              </div>
+              <span className="font-semibold">{averageRating.toFixed(1)} out of 5</span>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">Based on {reviews.length} reviews</p>
 
-        <div className="space-y-2">
-            {ratingDistribution.map(({star, count, percentage}) => (
+            <div className="space-y-2">
+              {ratingDistribution.map(({ star, count, percentage }) => (
                 <div key={star} className="flex items-center gap-2">
-                    <span className="text-xs w-6">{star} ★</span>
-                    <Progress value={percentage} className="w-full h-2" />
-                    <span className="text-xs text-muted-foreground w-8 text-right">{count}</span>
+                  <span className="text-xs w-6">{star} ★</span>
+                  <Progress value={percentage} className="w-full h-2" />
+                  <span className="text-xs text-muted-foreground w-8 text-right">{count}</span>
                 </div>
-            ))}
-        </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted-foreground">This product has no reviews yet.</p>
+        )}
         
         <Card className="mt-8">
             <CardHeader>
@@ -155,7 +141,9 @@ export function ProductReviews({ product, reviews: initialReviews }: ProductRevi
                             onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
                         />
                      </div>
-                     <Button type="submit">Submit Review</Button>
+                     <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                     </Button>
                 </form>
             </CardContent>
         </Card>
@@ -163,7 +151,7 @@ export function ProductReviews({ product, reviews: initialReviews }: ProductRevi
       <div className="md:col-span-3">
          <h3 className="text-2xl font-bold font-headline mb-4">What others are saying</h3>
          <div className="space-y-6 max-h-[800px] overflow-y-auto pr-4">
-            {reviews.map((review) => (
+            {reviews.length > 0 ? reviews.map((review) => (
                 <div key={review.id} className="flex gap-4">
                     <Avatar>
                         <AvatarImage src={review.avatar} />
@@ -172,7 +160,7 @@ export function ProductReviews({ product, reviews: initialReviews }: ProductRevi
                     <div className="flex-1">
                         <div className="flex items-center justify-between">
                             <h4 className="font-semibold">{review.author}</h4>
-                            <span className="text-xs text-muted-foreground">{review.date}</span>
+                            <span className="text-xs text-muted-foreground">{format(new Date(review.date), 'dd MMM yyyy')}</span>
                         </div>
                          <div className="flex items-center gap-1 mt-1">
                             {[...Array(5)].map((_, i) => (
@@ -183,7 +171,9 @@ export function ProductReviews({ product, reviews: initialReviews }: ProductRevi
                         <p className="text-sm text-muted-foreground mt-1">{review.comment}</p>
                     </div>
                 </div>
-            ))}
+            )) : (
+              <p className="text-sm text-muted-foreground text-center py-8">Be the first to review this product!</p>
+            )}
          </div>
       </div>
     </div>
