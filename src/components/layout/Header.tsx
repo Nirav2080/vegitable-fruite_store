@@ -86,16 +86,16 @@ export function Header() {
 
       {/* Main Header */}
       <div className="bg-primary text-primary-foreground">
-          <div className="container mx-auto flex h-20 items-center justify-between gap-4 md:gap-8 px-4">
+          <div className="container mx-auto flex h-16 md:h-20 items-center justify-between gap-4 md:gap-8 px-4">
             <Link href="/" className="flex items-center">
-                <EcoOrganicLogo className="h-12 w-auto" />
+                <EcoOrganicLogo className="h-10 md:h-12 w-auto" />
             </Link>
 
             <div className="hidden md:flex flex-1 max-w-xl relative">
                 <DynamicSearch />
             </div>
 
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-1 md:gap-4">
                  <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/compare">
                     <GitCompareArrows className="h-6 w-6" />
