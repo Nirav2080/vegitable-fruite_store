@@ -7,7 +7,7 @@ import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useRouter } from "next/navigation";
 
 
 const mainNavLinks = [
@@ -32,13 +33,22 @@ const secondaryNavLinks = [
 ]
 
 export function Header() {
+  const router = useRouter();
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const [isClient, setIsClient] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   React.useEffect(() => {
     setIsClient(true);
+    setIsLoggedIn(localStorage.getItem('isCustomerLoggedIn') === 'true');
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isCustomerLoggedIn');
+    setIsLoggedIn(false);
+    router.push('/login');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
@@ -72,29 +82,40 @@ export function Header() {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Link href="/account/profile" className="flex items-center w-full">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>My Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                       <Link href="/account/orders" className="flex items-center w-full">
-                        <Package className="mr-2 h-4 w-4" />
-                        <span>Order History</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                     <DropdownMenuItem>
-                       <Link href="/account/settings" className="flex items-center w-full">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Logout</span>
-                    </DropdownMenuItem>
+                    {isClient && isLoggedIn ? (
+                      <>
+                        <DropdownMenuItem>
+                          <Link href="/account/profile" className="flex items-center w-full">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>My Profile</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href="/account/orders" className="flex items-center w-full">
+                            <Package className="mr-2 h-4 w-4" />
+                            <span>Order History</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <Link href="/account/settings" className="flex items-center w-full">
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Settings</span>
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                          <LogOut className="mr-2 h-4 w-4" />
+                          <span>Logout</span>
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <DropdownMenuItem>
+                        <Link href="/login" className="flex items-center w-full">
+                          <LogIn className="mr-2 h-4 w-4" />
+                          <span>Login</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -134,7 +155,11 @@ export function Header() {
                             </Link>
                         ))}
                         <hr/>
-                        <Button>Login</Button>
+                        {isClient && isLoggedIn ? (
+                            <Button onClick={handleLogout}>Logout</Button>
+                        ) : (
+                            <Button asChild><Link href="/login">Login</Link></Button>
+                        )}
                         </nav>
                     </SheetContent>
                     </Sheet>

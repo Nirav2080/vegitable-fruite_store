@@ -2,7 +2,7 @@
 'use client'
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { User, Package, Settings, LogOut } from "lucide-react";
@@ -15,6 +15,12 @@ const navItems = [
 
 export function AccountSidebarNav() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = () => {
+        localStorage.removeItem('isCustomerLoggedIn');
+        router.push('/login');
+    };
 
     return (
         <nav className="flex flex-col gap-2">
@@ -35,6 +41,7 @@ export function AccountSidebarNav() {
              <Button 
                 variant="ghost" 
                 className="w-full justify-start text-destructive hover:text-destructive"
+                onClick={handleLogout}
             >
                <LogOut className="mr-2 h-4 w-4" />
                Logout
