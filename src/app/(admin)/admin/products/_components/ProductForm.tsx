@@ -30,7 +30,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
-import { RichTextEditor } from "@/components/shared/RichTextEditor"
+import { Textarea } from "@/components/ui/textarea"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -180,9 +180,10 @@ export function ProductForm({ product }: ProductFormProps) {
                 <FormItem>
                 <FormLabel>Full Description</FormLabel>
                 <FormControl>
-                    <RichTextEditor
-                      value={field.value ?? ''}
-                      onChange={field.onChange}
+                    <Textarea
+                      placeholder="Provide a detailed description for the product details page."
+                      rows={6}
+                      {...field}
                     />
                 </FormControl>
                 <FormDescription>
