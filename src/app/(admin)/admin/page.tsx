@@ -1,4 +1,5 @@
 
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { getDashboardData } from "@/lib/actions/products";
 import { DollarSign, Package, Users, CreditCard } from "lucide-react";
@@ -8,9 +9,10 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import { SalesChart } from "./_components/SalesChart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SalesChartClient } from "./_components/SalesChartClient";
+
 
 export default async function AdminDashboard() {
   const data = await getDashboardData();
@@ -28,9 +30,6 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${data.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
           </CardContent>
         </Card>
         <Card>
@@ -42,9 +41,6 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+{data.totalSales.toFixed(0)}</div>
-            <p className="text-xs text-muted-foreground">
-              +180.1% from last month
-            </p>
           </CardContent>
         </Card>
         <Card>
@@ -54,9 +50,6 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+2350</div>
-             <p className="text-xs text-muted-foreground">
-              +10% from last month
-            </p>
           </CardContent>
         </Card>
          <Card>
@@ -79,7 +72,7 @@ export default async function AdminDashboard() {
             <CardTitle>Sales Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <SalesChart data={data.salesData} />
+            <SalesChartClient data={data.salesData} />
           </CardContent>
         </Card>
         <Card>
