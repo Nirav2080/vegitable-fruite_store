@@ -97,10 +97,12 @@ export default function AccountPage() {
                             <span>My Profile</span>
                         </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <p>{user.name}</p>
+                    <CardContent className="space-y-1">
+                        <p className="font-semibold">{user.name}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
-                        <Button asChild variant="link" className="px-0">
+                        {user.mobile && <p className="text-sm text-muted-foreground">{user.mobile}</p>}
+                        {user.address && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{user.address}</p>}
+                        <Button asChild variant="link" className="px-0 pt-2">
                             <Link href="/account/profile">Edit Profile</Link>
                         </Button>
                     </CardContent>
