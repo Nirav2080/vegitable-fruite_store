@@ -28,7 +28,9 @@ export async function addReview(productId: string, data: unknown) {
   if (!result.success) {
     throw new Error(result.error.errors.map(e => e.message).join(', '));
   }
-
+  
+  // For demo purposes, we'll just grab the first user.
+  // In a real app, you'd get the logged-in user from the session.
   const db = await getDb();
   const usersCollection = db.collection<User>('users');
   const user = await usersCollection.findOne({}); 
@@ -46,7 +48,7 @@ export async function addReview(productId: string, data: unknown) {
     rating,
     title,
     comment,
-    date: new Date(),
+    date: new Date().toISOString(),
   };
 
   const productsCollection = db.collection<Product>('products');
