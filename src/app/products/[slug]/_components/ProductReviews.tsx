@@ -15,7 +15,7 @@ import { addReview } from '@/lib/actions/reviews';
 import type { Review } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { AuthError } from '@/lib/exceptions';
 
 const reviewSchema = z.object({
   rating: z.coerce.number().min(1, 'Rating is required').max(5),
@@ -75,11 +75,19 @@ export function ProductReviews({ productId, reviews }: ProductReviewsProps) {
       form.reset();
       setRating(0);
     } catch (error) {
-      toast({
-        title: 'Submission Failed',
-        description: 'There was an error submitting your review. Please try again.',
-        variant: 'destructive',
-      });
+      if (error instanceof AuthError) {
+        toast({
+            title: 'Authentication Error',
+            description: 'You must be logged in to post a review.',
+            variant: 'destructive',
+        });
+      } else {
+        toast({
+            title: 'Submission Failed',
+            description: 'There was an error submitting your review. Please try again.',
+            variant: 'destructive',
+        });
+      }
     }
   }
 

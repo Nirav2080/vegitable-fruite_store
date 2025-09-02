@@ -29,10 +29,9 @@ export async function addReview(productId: string, data: unknown) {
     throw new Error(result.error.errors.map(e => e.message).join(', '));
   }
 
-  // In a real app, you would get the current logged-in user's ID
   const db = await getDb();
   const usersCollection = db.collection<User>('users');
-  const user = await usersCollection.findOne({}); // For demo, just grab any user
+  const user = await usersCollection.findOne({}); 
 
   if (!user) {
     throw new AuthError('You must be logged in to post a review.');
@@ -52,20 +51,19 @@ export async function addReview(productId: string, data: unknown) {
 
   const productsCollection = db.collection<Product>('products');
   
-  // Add the new review and update the average rating
   const productBeforeUpdate = await productsCollection.findOne({ _id: new ObjectId(productId) });
   if (!productBeforeUpdate) {
     throw new Error('Product not found');
   }
 
-  const existingReviews = Array.isArray(productBeforeUpdate.reviews) ? productBeforeUpdate.reviews : [];
+  const existingReviews = productBeforeUpdate.reviews || [];
   const totalRating = existingReviews.reduce((acc, r) => acc + r.rating, 0) + newReview.rating;
   const newAverageRating = totalRating / (existingReviews.length + 1);
 
   const updateResult = await productsCollection.updateOne(
     { _id: new ObjectId(productId) },
     { 
-        $push: { reviews: newReview as any }, // Cast to any to avoid type issues with _id
+        $push: { reviews: newReview as any },
         $set: { rating: newAverageRating }
     }
   );
