@@ -1,3 +1,4 @@
+
 import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,9 +9,7 @@ const footerLinks = [
   {
     title: "Shop",
     links: [
-      { label: "Fruits", href: "/products?category=Fruits" },
-      { label: "Vegetables", href: "/products?category=Vegetables" },
-      { label: "Organic Boxes", href: "/products?category=Organic+Boxes" },
+      { label: "All Products", href: "/products" },
       { label: "Weekly Specials", href: "/products?seasonal=true" },
     ],
   },

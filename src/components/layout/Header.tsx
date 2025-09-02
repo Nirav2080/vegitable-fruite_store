@@ -19,9 +19,7 @@ const topNavLinks = [
 ];
 
 const mainNavLinks = [
-  { href: "/products", label: "Organic Products" },
-  { href: "/products?category=Vegetables", label: "Vegetables" },
-  { href: "/products?category=Fruits", label: "Fruits" },
+  { href: "/products", label: "All Products" },
 ];
 
 const secondaryNavLinks = [
@@ -107,7 +105,7 @@ export function Header() {
                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/cart">
                     <ShoppingCart className="h-6 w-6" />
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">3</Badge>
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">0</Badge>
                     <span className="sr-only">Shopping Cart</span>
                     </Link>
                 </Button>
