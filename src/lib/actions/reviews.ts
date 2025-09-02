@@ -59,14 +59,14 @@ export async function addReview(productId: string, data: unknown) {
     throw new Error('Product not found');
   }
 
-  const existingReviews = productBeforeUpdate.reviews || [];
+  const existingReviews = Array.isArray(productBeforeUpdate.reviews) ? productBeforeUpdate.reviews : [];
   const totalRating = existingReviews.reduce((acc, r) => acc + r.rating, 0) + newReview.rating;
   const newAverageRating = totalRating / (existingReviews.length + 1);
 
   const updateResult = await productsCollection.updateOne(
     { _id: new ObjectId(productId) },
     { 
-        $push: { reviews: newReview },
+        $push: { reviews: newReview as any }, // Cast to any to avoid type issues with _id
         $set: { rating: newAverageRating }
     }
   );
