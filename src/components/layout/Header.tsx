@@ -30,6 +30,12 @@ const secondaryNavLinks = [
 
 export function Header() {
   const { cartCount } = useCart();
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       {/* Top Bar */}
@@ -107,7 +113,7 @@ export function Header() {
                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/cart">
                     <ShoppingCart className="h-6 w-6" />
-                    {cartCount > 0 && (
+                    {isClient && cartCount > 0 && (
                       <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">{cartCount}</Badge>
                     )}
                     <span className="sr-only">Shopping Cart</span>
