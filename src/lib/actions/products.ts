@@ -34,10 +34,18 @@ const productSchema = z.object({
 function serializeProduct(product: any): Product {
     if (!product) return product;
     const { _id, ...rest } = product;
+
+    const serializedReviews = Array.isArray(product.reviews) 
+        ? product.reviews.map((review: any) => ({
+            ...review,
+            _id: review._id.toString(),
+          }))
+        : [];
+
     return {
         ...rest,
         id: _id.toString(),
-        reviews: Array.isArray(product.reviews) ? product.reviews : [],
+        reviews: serializedReviews,
         rating: typeof product.rating === 'number' ? product.rating : 0,
     } as Product;
 }
