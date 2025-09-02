@@ -12,6 +12,7 @@ import { useCart } from "@/hooks/use-cart";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useWishlist } from "@/hooks/use-wishlist";
 
 interface ProductCardProps {
   product: Product;
@@ -19,17 +20,25 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
 
   const images = Array.isArray(product.images) ? product.images : [product.images];
   const primaryImage = images[0] || 'https://placehold.co/400x400/EEE/31343C';
   const hoverImage = images[1] || primaryImage;
+  const onWishlist = isInWishlist(product.id);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product);
+  }
+  
+  const handleWishlistClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product);
   }
 
   const handleActionClick = (e: React.MouseEvent<HTMLButtonElement>, feature: string) => {
@@ -80,7 +89,7 @@ export function ProductCard({ product }: ProductCardProps) {
            <Button variant="outline" size="icon" className="bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white" onClick={(e) => handleActionClick(e, 'Quick View')}>
                 <Expand className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white" onClick={(e) => handleActionClick(e, 'Wishlist')}>
+            <Button variant="outline" size="icon" className={cn("bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white", { 'bg-primary text-white': onWishlist })} onClick={handleWishlistClick}>
                 <Heart className="h-4 w-4" />
             </Button>
              <Button variant="outline" size="icon" className="bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white" onClick={(e) => handleActionClick(e, 'Compare')}>

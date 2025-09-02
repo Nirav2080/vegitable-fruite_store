@@ -12,6 +12,7 @@ import { ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from
 import { Separator } from "@/components/ui/separator";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
+import { useWishlist } from "@/hooks/use-wishlist";
 
 const topNavLinks = [
   { href: "/store-locator", label: "Store Locator", icon: MapPin },
@@ -30,6 +31,7 @@ const secondaryNavLinks = [
 
 export function Header() {
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -106,7 +108,9 @@ export function Header() {
                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/wishlist">
                     <Heart className="h-6 w-6" />
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">0</Badge>
+                     {isClient && wishlistCount > 0 && (
+                        <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">{wishlistCount}</Badge>
+                     )}
                     <span className="sr-only">Wishlist</span>
                     </Link>
                 </Button>
