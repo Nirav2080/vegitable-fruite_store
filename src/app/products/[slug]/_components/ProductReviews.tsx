@@ -1,101 +1,167 @@
-'use client'
+
+'use client';
 
 import { useState } from 'react';
-import type { Product } from '@/lib/types';
-import Image from 'next/image';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
-import { ProductCard } from '@/components/products/ProductCard';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { addReview } from '@/lib/actions/reviews';
+import type { Review } from '@/lib/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Star } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { useCart } from '@/hooks/use-cart';
 
+const reviewSchema = z.object({
+  rating: z.coerce.number().min(1, 'Rating is required').max(5),
+  title: z.string().min(1, 'Title is required').max(100),
+  comment: z.string().min(1, 'Comment is required').max(1000),
+});
 
-interface ProductDetailsClientProps {
-  product: Product;
-  relatedProducts: Product[];
+type ReviewFormValues = z.infer<typeof reviewSchema>;
+
+interface ProductReviewsProps {
+  productId: string;
+  reviews: Review[];
 }
 
-export function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
-  const { addToCart } = useCart();
-  const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
-
-  const handleQuantityChange = (amount: number) => {
-    setQuantity((prev) => Math.max(1, prev + amount));
-  };
-
-  const handleAddToCart = () => {
-    addToCart(product, quantity);
-  };
-  
-  const images = Array.isArray(product.images) ? product.images : [product.images];
-  
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
-        <div className='md:col-span-2'>
-          <div className="aspect-square relative rounded-lg overflow-hidden border">
-            <Image
-              src={images[selectedImage]}
-              alt={product.name}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="flex gap-2 mt-2">
-            {images.map((img, index) => (
-              <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-primary' : 'border-transparent'}`}>
-                <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-cover" />
-              </button>
+function renderStars(rating: number, interactive = false, setRating?: (rating: number) => void) {
+    const totalStars = 5;
+    return (
+        <div className={`flex items-center gap-1 ${interactive ? 'cursor-pointer' : ''}`}>
+            {[...Array(totalStars)].map((_, i) => (
+                <Star
+                    key={i}
+                    className={`w-5 h-5 ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'} ${interactive ? 'hover:text-yellow-400 hover:fill-yellow-400' : ''}`}
+                    onClick={interactive && setRating ? () => setRating(i + 1) : undefined}
+                />
             ))}
-          </div>
         </div>
+    );
+}
 
-        <div className='md:col-span-3'>
-          <h1 className="text-3xl lg:text-4xl font-bold font-headline">{product.name}</h1>
-          <div className="flex items-center gap-4 mt-2">
-            {product.stock > 0 ? (
-                <Badge variant="secondary" className='bg-green-100 text-green-800'>In Stock</Badge>
+export function ProductReviews({ productId, reviews }: ProductReviewsProps) {
+  const { toast } = useToast();
+  const [rating, setRating] = useState(0);
+
+  const form = useForm<ReviewFormValues>({
+    resolver: zodResolver(reviewSchema),
+    defaultValues: {
+      rating: 0,
+      title: '',
+      comment: '',
+    },
+  });
+  
+  const { formState: { isSubmitting }, setValue } = form;
+
+  const handleSetRating = (newRating: number) => {
+      setRating(newRating);
+      setValue('rating', newRating, { shouldValidate: true });
+  }
+
+  async function onSubmit(data: ReviewFormValues) {
+    try {
+      await addReview(productId, data);
+      toast({
+        title: 'Review Submitted',
+        description: 'Thank you! Your review has been submitted successfully.',
+      });
+      form.reset();
+      setRating(0);
+    } catch (error) {
+      toast({
+        title: 'Submission Failed',
+        description: 'There was an error submitting your review. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  }
+
+  return (
+    <div className="grid md:grid-cols-2 gap-12">
+        <div>
+            <h3 className="text-2xl font-bold font-headline mb-6">Customer Reviews</h3>
+            {reviews.length > 0 ? (
+                <div className="space-y-6">
+                    {reviews.map((review) => (
+                        <div key={review._id.toString()} className="flex gap-4">
+                            <Avatar>
+                                <AvatarImage src={review.avatar} alt={review.author}/>
+                                <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="font-semibold">{review.author}</h4>
+                                    <span className="text-xs text-muted-foreground">{format(new Date(review.date), 'dd MMM yyyy')}</span>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    {renderStars(review.rating)}
+                                    <p className="font-bold text-sm">{review.title}</p>
+                                </div>
+                                <p className="text-muted-foreground mt-2 text-sm">{review.comment}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             ) : (
-                <Badge variant="destructive">Out of Stock</Badge>
+                <p className="text-muted-foreground">This product has no reviews yet. Be the first to leave one!</p>
             )}
-          </div>
-          <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
-
-
-          <div className="mt-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border rounded-md">
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)}>
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <span className="w-10 text-center font-bold">{quantity}</span>
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)}>
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
-                <ShoppingCart className="mr-2 h-5 w-5" /> {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </Button>
-            </div>
-          </div>
-          <div className="mt-6 flex gap-2">
-            {product.isOrganic && <Badge variant="outline">Certified Organic</Badge>}
-            {product.isSeasonal && <Badge variant="outline">Seasonal Special</Badge>}
-          </div>
         </div>
-      </div>
-      
-      <Separator className="my-12" />
-
-      <div>
-        <h2 className="text-2xl font-bold font-headline mb-6 text-center">You Might Also Like</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
+        <div>
+            <h3 className="text-2xl font-bold font-headline mb-4">Write a Review</h3>
+             <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                     <FormField
+                        control={form.control}
+                        name="rating"
+                        render={() => (
+                           <FormItem>
+                                <FormLabel>Your Rating</FormLabel>
+                                <FormControl>
+                                    <div>{renderStars(rating, true, handleSetRating)}</div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Review Title</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g. Best apples ever!" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="comment"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Your Review</FormLabel>
+                                <FormControl>
+                                    <Textarea placeholder="Share your thoughts on this product..." rows={4} {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                    </Button>
+                </form>
+            </Form>
         </div>
-      </div>
     </div>
   );
 }

@@ -37,6 +37,8 @@ function serializeProduct(product: any): Product {
     return {
         ...rest,
         id: _id.toString(),
+        reviews: Array.isArray(product.reviews) ? product.reviews : [],
+        rating: typeof product.rating === 'number' ? product.rating : 0,
     } as Product;
 }
 
@@ -79,6 +81,8 @@ export async function createProduct(data: unknown) {
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
       createdAt: new Date(),
+      reviews: [],
+      rating: 0,
     };
 
     await productsCollection.insertOne(newProduct as any);
@@ -105,6 +109,8 @@ export async function updateProduct(id: string, data: unknown) {
       ...parsedData,
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
+      reviews: existingProduct.reviews || [],
+      rating: existingProduct.rating || 0,
   };
 
   const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });

@@ -2,20 +2,37 @@
 'use client'
 
 import { useState } from 'react';
-import type { Product } from '@/lib/types';
+import type { Product, Review } from '@/lib/types';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, Star } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
+import { ProductReviews } from './ProductReviews';
 
 
 interface ProductDetailsClientProps {
   product: Product;
   relatedProducts: Product[];
 }
+
+function renderStars(rating: number) {
+    const totalStars = 5;
+    const filledStars = Math.round(rating);
+    return (
+        <div className="flex items-center">
+            {[...Array(totalStars)].map((_, i) => (
+                <Star
+                    key={i}
+                    className={`w-4 h-4 ${i < filledStars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                />
+            ))}
+        </div>
+    );
+}
+
 
 export function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
@@ -31,6 +48,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
   };
   
   const images = Array.isArray(product.images) ? product.images : [product.images];
+  const reviews = Array.isArray(product.reviews) ? product.reviews : [];
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -61,9 +79,13 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             ) : (
                 <Badge variant="destructive">Out of Stock</Badge>
             )}
+             <div className="flex items-center gap-2">
+                {renderStars(product.rating || 0)}
+                <span className="text-sm text-muted-foreground">({reviews.length} reviews)</span>
+            </div>
           </div>
           <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+          <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: product.description }} />
 
 
           <div className="mt-6">
@@ -89,6 +111,10 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         </div>
       </div>
       
+       <Separator className="my-12" />
+
+      <ProductReviews productId={product.id} reviews={reviews} />
+
       <Separator className="my-12" />
 
       <div>

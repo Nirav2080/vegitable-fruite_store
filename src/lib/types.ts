@@ -1,6 +1,16 @@
 
 import { ObjectId } from 'mongodb';
 
+export interface Review {
+    _id: ObjectId;
+    author: string;
+    avatar: string;
+    rating: number;
+    title: string;
+    comment: string;
+    date: Date;
+}
+
 export interface Product {
   _id?: ObjectId;
   id: string;
@@ -16,6 +26,8 @@ export interface Product {
   isSeasonal: boolean;
   stock: number;
   createdAt: Date;
+  reviews: Review[];
+  rating: number;
 }
 
 export interface OrderItem {

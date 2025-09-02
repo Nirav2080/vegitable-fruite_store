@@ -7,7 +7,6 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import type { Review, Product, User } from '@/lib/types';
 import { AuthError } from '../exceptions';
-import { getCurrentUser } from './users';
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
