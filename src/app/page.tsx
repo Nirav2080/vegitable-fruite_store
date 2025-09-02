@@ -37,7 +37,7 @@ export default async function Home() {
             >
                 <CarouselContent>
                 {featuredProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 lg:basis-1/4">
+                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/4">
                         <ProductCard product={product} />
                     </CarouselItem>
                 ))}
