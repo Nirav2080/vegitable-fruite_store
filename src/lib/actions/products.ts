@@ -94,15 +94,23 @@ export async function updateProduct(id: string, data: unknown) {
   if (!ObjectId.isValid(id)) {
       notFound();
   }
-  const parsedData = productSchema.parse(data);
   const productsCollection = await getProductsCollection();
   
+  const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
+  if (!existingProduct) {
+      notFound();
+  }
+
+  const parsedData = productSchema.parse(data);
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
   const updateData = {
       ...parsedData,
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
+      // Preserve existing reviews and rating
+      reviews: existingProduct.reviews || [],
+      rating: existingProduct.rating || 0,
   };
 
   const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
