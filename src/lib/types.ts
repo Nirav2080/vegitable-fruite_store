@@ -47,6 +47,8 @@ export interface User {
   registeredAt: Date;
   orderCount: number;
   totalSpent: number;
+  mobile?: string;
+  address?: string;
 }
 
 export interface Banner {

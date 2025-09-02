@@ -4,6 +4,9 @@
 import type { User } from '@/lib/types';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { AuthError } from '../exceptions';
 
 async function getDb() {
     const client = await clientPromise;
@@ -52,4 +55,43 @@ export async function getCurrentUser(userId?: string): Promise<User | null> {
         return null;
     }
     return serializeUser(user);
+}
+
+const profileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters."),
+  mobile: z.string().optional(),
+  address: z.string().optional(),
+})
+
+export async function updateUserProfile(userId: string, data: unknown) {
+  if (!userId || !ObjectId.isValid(userId)) {
+    throw new AuthError('Invalid user ID.');
+  }
+  const result = profileSchema.safeParse(data);
+
+  if (!result.success) {
+    throw new Error(result.error.errors.map(e => e.message).join(', '));
+  }
+
+  const { name, mobile, address } = result.data;
+  const usersCollection = await getUsersCollection();
+
+  const updateResult = await usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { name, mobile, address } }
+  );
+
+  if (updateResult.matchedCount === 0) {
+    throw new Error('User not found.');
+  }
+  
+  revalidatePath('/account/profile');
+
+  const updatedUser = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+  return { 
+      success: true, 
+      message: 'Profile updated successfully.',
+      user: serializeUser(updatedUser)
+    };
 }
