@@ -17,7 +17,6 @@ export interface Product {
   slug: string;
   name: string;
   description: string;
-  longDescription: string;
   price: number;
   originalPrice?: number;
   images: string[];

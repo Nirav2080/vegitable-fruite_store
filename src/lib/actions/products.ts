@@ -21,7 +21,6 @@ async function getProductsCollection() {
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
@@ -78,7 +77,6 @@ export async function createProduct(data: unknown) {
     const newProduct: Omit<Product, 'id'> = {
       ...parsedData,
       images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
-      longDescription: parsedData.longDescription || parsedData.description,
       slug,
       createdAt: new Date(),
       reviews: [],
@@ -107,7 +105,6 @@ export async function updateProduct(id: string, data: unknown) {
 
   const updateData = {
       ...parsedData,
-      longDescription: parsedData.longDescription || parsedData.description,
       slug,
       reviews: existingProduct.reviews || [],
       rating: existingProduct.rating || 0,

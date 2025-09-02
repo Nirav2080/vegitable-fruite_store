@@ -35,7 +35,6 @@ import { Textarea } from "@/components/ui/textarea"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
@@ -64,7 +63,6 @@ export function ProductForm({ product }: ProductFormProps) {
   } : {
       name: "",
       description: "",
-      longDescription: "",
       price: 0,
       originalPrice: 0,
       category: "Vegetables" as const,
@@ -165,20 +163,7 @@ export function ProductForm({ product }: ProductFormProps) {
             name="description"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Short Description</FormLabel>
-                <FormControl>
-                    <Input placeholder="A short, catchy description for product cards" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-          <FormField
-            control={form.control}
-            name="longDescription"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Full Description</FormLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl>
                     <Textarea
                       placeholder="Provide a detailed description for the product details page."

@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react';
-import type { Product, Review } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -85,8 +85,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             </div>
           </div>
           <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <p className="mt-4 text-muted-foreground">{product.description}</p>
-
+          
 
           <div className="mt-6">
             <div className="flex items-center gap-4">
@@ -109,7 +108,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             {product.isSeasonal && <Badge variant="outline">Seasonal Special</Badge>}
           </div>
 
-           <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
+           <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: product.description }} />
         </div>
       </div>
       
