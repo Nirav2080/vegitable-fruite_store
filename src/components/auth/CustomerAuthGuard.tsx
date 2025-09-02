@@ -11,17 +11,19 @@ export function CustomerAuthGuard({ children }: { children: React.ReactNode }) {
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
-    if (!isLoggedIn) {
-      router.push(`/login?redirectTo=${pathname}`);
-    } else {
-      setIsVerified(true);
+    if (typeof window !== 'undefined') {
+        const isLoggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
+        if (!isLoggedIn) {
+          router.push(`/login?redirectTo=${pathname}`);
+        } else {
+          setIsVerified(true);
+        }
     }
   }, [pathname, router]);
 
   if (!isVerified) {
     return (
-        <div className="p-6">
+        <div className="container mx-auto px-4 py-8">
             <div className="space-y-4">
                 <Skeleton className="h-8 w-1/3" />
                 <Skeleton className="h-4 w-2/3" />

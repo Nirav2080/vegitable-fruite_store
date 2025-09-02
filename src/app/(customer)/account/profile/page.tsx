@@ -1,4 +1,7 @@
 
+'use client'
+
+import { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -7,10 +10,63 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUser } from "@/lib/actions/users";
+import type { User } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function ProfileSkeleton() {
+    return (
+        <div className="space-y-6">
+            <div>
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-4 w-1/2 mt-2" />
+            </div>
+            <Separator />
+            <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <Skeleton className="h-10 w-24" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                         <Skeleton className="h-4 w-1/4" />
+                         <Skeleton className="h-10 w-full" />
+                    </div>
+                     <div className="space-y-2">
+                         <Skeleton className="h-4 w-1/4" />
+                         <Skeleton className="h-10 w-full" />
+                    </div>
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default function AccountProfilePage() {
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            setIsLoading(true);
+            const userDataString = localStorage.getItem('currentUser');
+            if (userDataString) {
+                const userData = JSON.parse(userDataString);
+                const fullUser = await getCurrentUser(userData.id);
+                setUser(fullUser);
+            }
+            setIsLoading(false);
+        };
+        fetchUser();
+    }, []);
 
 
-export default async function AccountProfilePage() {
-    const user = await getCurrentUser();
+    if (isLoading) {
+        return <ProfileSkeleton />;
+    }
 
     if (!user) {
         return <div>Please log in to view your profile.</div>
@@ -47,15 +103,15 @@ export default async function AccountProfilePage() {
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" defaultValue={user.email} />
+                    <Input id="email" type="email" defaultValue={user.email} disabled />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="mobile">Mobile Number</Label>
-                    <Input id="mobile" type="tel" defaultValue="+64 21 123 4567" />
+                    <Input id="mobile" type="tel" placeholder="Add a mobile number" />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="address">Default Address</Label>
-                    <Textarea id="address" defaultValue="123 Organic Lane, Auckland 1010, New Zealand" rows={3} />
+                    <Textarea id="address" placeholder="Add a default shipping address" rows={3} />
                 </div>
                 <div className="flex items-center space-x-2">
                     <Checkbox id="set-default" />

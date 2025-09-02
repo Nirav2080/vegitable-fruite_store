@@ -16,7 +16,7 @@ async function getUsersCollection() {
 }
 
 function serializeUser(user: any): User {
-    const { _id, ...rest } = user;
+    const { _id, password, ...rest } = user;
     return {
         ...rest,
         id: _id.toString(),
@@ -41,13 +41,14 @@ export async function getUserById(id: string): Promise<User | null> {
     return serializeUser(user);
 }
 
-// This is a placeholder for a real authentication system.
-// In a real app, you would get the logged-in user's ID from the session.
-export async function getCurrentUser(): Promise<User | null> {
+
+export async function getCurrentUser(userId?: string): Promise<User | null> {
+    if (!userId || !ObjectId.isValid(userId)) {
+        return null;
+    }
     const usersCollection = await getUsersCollection();
-    // For now, just grab the first user as the "logged in" user.
-    const user = await usersCollection.findOne({});
-     if (!user) {
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
         return null;
     }
     return serializeUser(user);

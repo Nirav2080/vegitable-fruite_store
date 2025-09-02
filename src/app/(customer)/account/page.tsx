@@ -1,15 +1,76 @@
 
+'use client'
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { User, Package } from 'lucide-react';
 import { getOrders } from '@/lib/actions/orders';
 import { getCurrentUser } from '@/lib/actions/users';
+import { useEffect, useState } from 'react';
+import type { User as UserType, Order as OrderType } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function AccountPage() {
-    const orders = await getOrders();
-    const user = await getCurrentUser();
-    const orderCount = orders.length;
+function AccountDashboardSkeleton() {
+    return (
+        <div className="space-y-6">
+            <div>
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-4 w-2/3 mt-2" />
+            </div>
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-6 w-1/4 mt-2" />
+                    </CardContent>
+                </Card>
+                 <Card>
+                     <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-6 w-1/4 mt-2" />
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    )
+}
+
+export default function AccountPage() {
+    const [user, setUser] = useState<UserType | null>(null);
+    const [orders, setOrders] = useState<OrderType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            const userDataString = localStorage.getItem('currentUser');
+            if (userDataString) {
+                const userData = JSON.parse(userDataString);
+                const [user, orders] = await Promise.all([
+                    getCurrentUser(userData.id),
+                    getOrders() 
+                ]);
+                setUser(user);
+                setOrders(orders);
+            }
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
+
+
+    if(isLoading) {
+        return <AccountDashboardSkeleton />
+    }
 
     if (!user) {
         return (
@@ -19,6 +80,8 @@ export default async function AccountPage() {
             </div>
         )
     }
+
+    const orderCount = orders.length;
     
     return (
         <div className="space-y-6">

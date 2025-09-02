@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { User, Package, Settings, LogOut } from "lucide-react";
 
 const navItems = [
+    { href: "/account", label: "Dashboard", icon: User },
     { href: "/account/profile", label: "My Profile", icon: User },
     { href: "/account/orders", label: "My Orders", icon: Package },
     { href: "/account/settings", label: "Settings", icon: Settings },
@@ -19,14 +20,16 @@ export function AccountSidebarNav() {
 
     const handleLogout = () => {
         localStorage.removeItem('isCustomerLoggedIn');
+        localStorage.removeItem('currentUser');
         router.push('/login');
     };
 
     return (
         <nav className="flex flex-col gap-2">
             {navItems.map((item) => (
-                <Link key={item.href} href={item.href}>
+                 <Link key={item.href} href={item.href} legacyBehavior passHref>
                     <Button 
+                        as="a"
                         variant="ghost" 
                         className={cn(
                             "w-full justify-start",

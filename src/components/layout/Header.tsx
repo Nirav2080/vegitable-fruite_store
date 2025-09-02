@@ -7,7 +7,7 @@ import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
@@ -41,13 +41,24 @@ export function Header() {
 
   React.useEffect(() => {
     setIsClient(true);
-    setIsLoggedIn(localStorage.getItem('isCustomerLoggedIn') === 'true');
+    const checkLoginStatus = () => {
+        setIsLoggedIn(localStorage.getItem('isCustomerLoggedIn') === 'true');
+    };
+    checkLoginStatus();
+    
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+        window.removeEventListener('storage', checkLoginStatus);
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('isCustomerLoggedIn');
+    localStorage.removeItem('currentUser');
     setIsLoggedIn(false);
     router.push('/login');
+    router.refresh();
   };
 
   return (
@@ -64,7 +75,7 @@ export function Header() {
       <div className="bg-primary text-primary-foreground">
           <div className="container mx-auto flex h-16 md:h-20 items-center justify-between gap-4 md:gap-8 px-4">
             <Link href="/" className="flex items-center">
-                <EcoOrganicLogo className="h-10 md:h-12 w-auto" />
+                <EcoOrganicLogo className="h-8 md:h-10 w-auto" />
             </Link>
 
             <div className="hidden md:flex flex-1 max-w-xl relative">
@@ -84,20 +95,20 @@ export function Header() {
                     <DropdownMenuSeparator />
                     {isClient && isLoggedIn ? (
                       <>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem asChild>
                           <Link href="/account/profile" className="flex items-center w-full">
                             <User className="mr-2 h-4 w-4" />
                             <span>My Profile</span>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem asChild>
                           <Link href="/account/orders" className="flex items-center w-full">
                             <Package className="mr-2 h-4 w-4" />
                             <span>Order History</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem asChild>
                           <Link href="/account/settings" className="flex items-center w-full">
                             <Settings className="mr-2 h-4 w-4" />
                             <span>Settings</span>
@@ -109,12 +120,20 @@ export function Header() {
                         </DropdownMenuItem>
                       </>
                     ) : (
-                      <DropdownMenuItem>
-                        <Link href="/login" className="flex items-center w-full">
-                          <LogIn className="mr-2 h-4 w-4" />
-                          <span>Login</span>
-                        </Link>
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem asChild>
+                            <Link href="/login" className="flex items-center w-full">
+                            <LogIn className="mr-2 h-4 w-4" />
+                            <span>Login</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/register" className="flex items-center w-full">
+                            <UserPlus className="mr-2 h-4 w-4" />
+                            <span>Sign Up</span>
+                            </Link>
+                        </DropdownMenuItem>
+                      </>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
