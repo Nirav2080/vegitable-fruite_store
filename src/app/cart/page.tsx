@@ -29,7 +29,7 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold font-headline">Your Shopping Cart</h1>
-        <p className="mt-2 text-muted-foreground">Review your items and proceed to checkout.</p>
+        <p className="mt-2 text-muted-foreground">Review your items.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -89,8 +89,8 @@ export default function CartPage() {
                     <span>Total</span>
                     <span>${cartTotal.toFixed(2)}</span>
                 </div>
-                <Button asChild size="lg" className="w-full mt-6">
-                    <Link href="/checkout">Proceed to Checkout</Link>
+                <Button asChild size="lg" className="w-full mt-6" variant="outline">
+                    <Link href="/products">Continue Shopping</Link>
                 </Button>
             </div>
         </aside>

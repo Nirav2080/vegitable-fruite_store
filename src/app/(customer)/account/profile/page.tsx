@@ -1,9 +1,11 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 
 export default function AccountProfilePage() {
@@ -37,6 +39,21 @@ export default function AccountProfilePage() {
                     <Label htmlFor="email">Email Address</Label>
                     <Input id="email" type="email" defaultValue="john.doe@example.com" />
                 </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="mobile">Mobile Number</Label>
+                    <Input id="mobile" type="tel" defaultValue="+64 21 123 4567" />
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="address">Default Address</Label>
+                    <Textarea id="address" defaultValue="123 Organic Lane, Auckland 1010, New Zealand" rows={3} />
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox id="set-default" />
+                    <Label htmlFor="set-default" className="text-sm font-normal">
+                        Set as default shipping address
+                    </Label>
+                </div>
+
                 <div className="pt-2">
                     <Button type="submit">Save Changes</Button>
                 </div>

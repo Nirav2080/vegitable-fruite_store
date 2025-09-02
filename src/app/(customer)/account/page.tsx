@@ -3,8 +3,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { User, Package } from 'lucide-react';
+import { getOrders } from '@/lib/actions/orders';
 
-export default function AccountPage() {
+export default async function AccountPage() {
+    const orders = await getOrders();
+    const orderCount = orders.length;
+    
     return (
         <div className="space-y-6">
             <div>
@@ -31,12 +35,12 @@ export default function AccountPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                            <Package className="w-5 h-5" />
-                           <span>Recent Order</span>
+                           <span>My Orders</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>Order #123456</p>
-                        <p className="text-sm text-muted-foreground">Placed on 12 Aug 2024</p>
+                        <p>You have made {orderCount} {orderCount === 1 ? 'order' : 'orders'}.</p>
+                        <p className="text-sm text-muted-foreground">View your order history</p>
                          <Button asChild variant="link" className="px-0">
                             <Link href="/account/orders">View All Orders</Link>
                         </Button>
