@@ -33,8 +33,8 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        <div>
+      <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
+        <div className='md:col-span-2'>
           <div className="aspect-square relative rounded-lg overflow-hidden border">
             <Image
               src={images[selectedImage]}
@@ -52,7 +52,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
           </div>
         </div>
 
-        <div>
+        <div className='md:col-span-3'>
           <h1 className="text-3xl lg:text-4xl font-bold font-headline">{product.name}</h1>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center">
