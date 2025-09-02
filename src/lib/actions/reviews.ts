@@ -41,14 +41,14 @@ export async function addReview(productId: string, data: unknown) {
 
   const { rating, title, comment } = result.data;
 
-  const newReview: Omit<Review, 'id'> = {
+  const newReview: Omit<Review, 'id' | 'date'> & { date: Date } = {
     _id: new ObjectId(),
     author: user.name,
     avatar: user.avatar,
     rating,
     title,
     comment,
-    date: new Date().toISOString(),
+    date: new Date(),
   };
 
   const productsCollection = db.collection<Product>('products');

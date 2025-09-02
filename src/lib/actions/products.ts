@@ -39,6 +39,7 @@ function serializeProduct(product: any): Product {
         ? product.reviews.map((review: any) => ({
             ...review,
             _id: review._id.toString(),
+            date: review.date.toISOString(),
           }))
         : [];
 
