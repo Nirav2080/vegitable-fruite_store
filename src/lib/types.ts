@@ -21,6 +21,7 @@ export interface Product {
   originalPrice?: number;
   images: string[];
   category: 'Fruits' | 'Vegetables' | 'Organic Boxes';
+  brand?: string;
   isOrganic: boolean;
   isSeasonal: boolean;
   stock: number;

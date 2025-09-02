@@ -24,6 +24,7 @@ const productSchema = z.object({
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
   originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
+  brand: z.string().optional(),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),

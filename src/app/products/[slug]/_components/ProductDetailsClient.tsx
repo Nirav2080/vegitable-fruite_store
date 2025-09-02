@@ -6,11 +6,15 @@ import type { Product } from '@/lib/types';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Minus, ShoppingCart, Star } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, Star, Heart, CheckCircle2 } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
 import { ProductReviews } from './ProductReviews';
+import { cn } from '@/lib/utils';
+import { Progress } from '@/components/ui/progress';
+import { Breadcrumbs } from '@/app/(customer)/_components/Breadcrumbs';
+import { useWishlist } from '@/hooks/use-wishlist';
 
 
 interface ProductDetailsClientProps {
@@ -36,6 +40,7 @@ function renderStars(rating: number) {
 
 export function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -49,12 +54,28 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
   
   const images = Array.isArray(product.images) ? product.images : [product.images];
   const reviews = Array.isArray(product.reviews) ? product.reviews : [];
+  const onWishlist = isInWishlist(product.id);
+  const discountPercentage = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+  
+  const breadcrumbLinks = [
+      { label: 'Home', href: '/' },
+      { label: product.category, href: `/products?category=${product.category}`},
+      { label: product.name }
+  ]
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
-        <div className='md:col-span-2'>
-          <div className="aspect-square relative rounded-lg overflow-hidden border">
+      <Breadcrumbs links={breadcrumbLinks} />
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mt-6">
+        <div className='flex gap-4'>
+          <div className="flex flex-col gap-2">
+            {images.map((img, index) => (
+              <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-primary' : 'border-gray-200'}`}>
+                <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-cover" />
+              </button>
+            ))}
+          </div>
+          <div className="aspect-square relative rounded-lg overflow-hidden border flex-1">
             <Image
               src={images[selectedImage]}
               alt={product.name}
@@ -62,30 +83,47 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
               className="object-cover"
             />
           </div>
-          <div className="flex gap-2 mt-2">
-            {images.map((img, index) => (
-              <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-primary' : 'border-transparent'}`}>
-                <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-cover" />
-              </button>
-            ))}
-          </div>
         </div>
 
-        <div className='md:col-span-3'>
-          <h1 className="text-3xl lg:text-4xl font-bold font-headline">{product.name}</h1>
-          <div className="flex items-center gap-4 mt-2">
-            {product.stock > 0 ? (
-                <Badge variant="secondary" className='bg-green-100 text-green-800'>In Stock</Badge>
+        <div className='-mt-2'>
+          <h1 className="text-3xl font-bold font-headline">{product.name}</h1>
+           <div className="flex items-center gap-4 mt-2">
+             <div className="flex items-center gap-2">
+                {renderStars(product.rating || 0)}
+                <span className="text-sm text-muted-foreground hover:underline cursor-pointer">({reviews.length} reviews)</span>
+            </div>
+          </div>
+          {product.brand && <p className="text-sm text-muted-foreground mt-2">Brand: <span className="text-foreground font-medium">{product.brand}</span></p>}
+          
+          <p className="mt-4 text-muted-foreground text-sm">{product.description}</p>
+          
+           {product.stock > 0 ? (
+                <div className='flex items-center gap-2 mt-4 text-green-600'>
+                    <CheckCircle2 className="h-5 w-5"/>
+                    <span className='font-semibold'>In Stock</span>
+                </div>
             ) : (
                 <Badge variant="destructive">Out of Stock</Badge>
             )}
-             <div className="flex items-center gap-2">
-                {renderStars(product.rating || 0)}
-                <span className="text-sm text-muted-foreground">({reviews.length} reviews)</span>
+
+            {product.stock > 0 && product.stock < 50 && (
+                <div className='mt-4'>
+                    <p className='text-sm text-yellow-600 font-semibold mb-2'>Hurry! only {product.stock} items left in stock.</p>
+                    <Progress value={product.stock} max={50} className="h-2" />
+                </div>
+            )}
+            
+            <Separator className="my-6" />
+
+            <div className='flex items-baseline gap-2'>
+                <span className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</span>
+                {product.originalPrice && (
+                    <>
+                        <span className="text-xl text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</span>
+                        <Badge variant="destructive">Save {discountPercentage}%</Badge>
+                    </>
+                )}
             </div>
-          </div>
-          <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          
 
           <div className="mt-6">
             <div className="flex items-center gap-4">
@@ -103,12 +141,14 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
               </Button>
             </div>
           </div>
-          <div className="mt-6 flex gap-2">
-            {product.isOrganic && <Badge variant="outline">Certified Organic</Badge>}
-            {product.isSeasonal && <Badge variant="outline">Seasonal Special</Badge>}
-          </div>
 
-           <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: product.description }} />
+          <div className="mt-4 flex gap-4 text-sm">
+            <Button variant="link" className="p-0 h-auto text-muted-foreground hover:text-primary" onClick={() => toggleWishlist(product)}>
+                <Heart className={cn("mr-2 h-4 w-4", {'text-red-500 fill-red-500': onWishlist})} />
+                Add To Wishlist
+            </Button>
+          </div>
+         
         </div>
       </div>
       
@@ -127,3 +167,4 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
     </div>
   );
 }
+
