@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, MapPin, Truck, Heart, GitCompareArrows } from "lucide-react";
+import { ShoppingCart, User, Menu, MapPin, Truck, Heart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
@@ -98,13 +98,6 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-1 md:gap-4">
-                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
-                    <Link href="/compare">
-                    <GitCompareArrows className="h-6 w-6" />
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">0</Badge>
-                    <span className="sr-only">Compare Products</span>
-                    </Link>
-                </Button>
                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/wishlist">
                     <Heart className="h-6 w-6" />

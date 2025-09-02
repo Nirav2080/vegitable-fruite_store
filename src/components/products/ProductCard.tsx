@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, ShoppingCart, Heart, GitCompareArrows, Expand } from "lucide-react";
+import { Star, ShoppingCart, Heart, Expand } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -91,9 +91,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </Button>
             <Button variant="outline" size="icon" className={cn("bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white", { 'bg-primary text-white': onWishlist })} onClick={handleWishlistClick}>
                 <Heart className="h-4 w-4" />
-            </Button>
-             <Button variant="outline" size="icon" className="bg-white rounded-full h-8 w-8 hover:bg-primary hover:text-white" onClick={(e) => handleActionClick(e, 'Compare')}>
-                <GitCompareArrows className="h-4 w-4" />
             </Button>
         </div>
         
