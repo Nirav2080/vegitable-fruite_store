@@ -23,6 +23,7 @@ const productSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
+  originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
@@ -73,7 +74,7 @@ export async function createProduct(data: unknown) {
 
     const newProduct: Omit<Product, 'id'> = {
       ...parsedData,
-      images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/800x800/A2E4B8/31343C?text=No+Image'],
+      images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
       rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3,

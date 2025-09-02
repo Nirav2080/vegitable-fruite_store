@@ -37,6 +37,7 @@ const formSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   longDescription: z.string().optional(),
   price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
+  originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
@@ -65,6 +66,7 @@ export function ProductForm({ product }: ProductFormProps) {
       description: "",
       longDescription: "",
       price: 0,
+      originalPrice: 0,
       category: "Vegetables" as const,
       stock: 0,
       isOrganic: false,
@@ -236,25 +238,44 @@ export function ProductForm({ product }: ProductFormProps) {
                             </div>
                         )}
                         <FormDescription>
-                            Upload one or more images for your product.
+                            Upload one or more images for your product. The first is the primary, the second is used for the hover effect.
                         </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
                 />
-            <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                    <Input type="number" step="0.01" min="0" placeholder="6.99" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                 <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Sale Price</FormLabel>
+                        <FormControl>
+                            <Input type="number" step="0.01" min="0" placeholder="6.99" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                 <FormField
+                    control={form.control}
+                    name="originalPrice"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Original Price (Optional)</FormLabel>
+                        <FormControl>
+                            <Input type="number" step="0.01" min="0" placeholder="8.99" {...field} />
+                        </FormControl>
+                         <FormDescription>
+                            If set, the sale price will be shown with a discount.
+                        </FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+            </div>
+           
             <FormField
             control={form.control}
             name="stock"

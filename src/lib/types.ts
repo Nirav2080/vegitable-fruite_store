@@ -9,6 +9,7 @@ export interface Product {
   description: string;
   longDescription: string;
   price: number;
+  originalPrice?: number;
   images: string[];
   category: 'Fruits' | 'Vegetables' | 'Organic Boxes';
   isOrganic: boolean;
