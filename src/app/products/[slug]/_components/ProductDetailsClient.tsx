@@ -85,7 +85,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             </div>
           </div>
           <p className="text-3xl font-bold text-primary mt-4">${product.price.toFixed(2)}</p>
-          <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: product.description }} />
+          <p className="mt-4 text-muted-foreground">{product.description}</p>
 
 
           <div className="mt-6">
@@ -99,7 +99,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" onClick={handleAddToCart} disabled={product.stock === 0}>
+              <Button size="lg" onClick={handleAddToCart} disabled={product.stock === 0} className="flex-1">
                 <ShoppingCart className="mr-2 h-5 w-5" /> {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
@@ -108,6 +108,8 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             {product.isOrganic && <Badge variant="outline">Certified Organic</Badge>}
             {product.isSeasonal && <Badge variant="outline">Seasonal Special</Badge>}
           </div>
+
+           <div className="prose mt-6" dangerouslySetInnerHTML={{ __html: product.longDescription }} />
         </div>
       </div>
       
