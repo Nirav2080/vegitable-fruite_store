@@ -99,7 +99,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
+              <Button size="lg" onClick={handleAddToCart} disabled={product.stock === 0}>
                 <ShoppingCart className="mr-2 h-5 w-5" /> {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
