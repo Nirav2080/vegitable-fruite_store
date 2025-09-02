@@ -27,23 +27,25 @@ export default async function Home() {
         </h2>
         <p className="mt-4 text-center text-muted-foreground max-w-xl mx-auto">Check out this week's seasonal picks, offering the best value and freshness.</p>
         
-        <Carousel 
-            opts={{
-                align: "start",
-                loop: true,
-            }}
-            className="w-full mt-8"
-        >
-            <CarouselContent>
-            {featuredProducts.map((product) => (
-                <CarouselItem key={product.id} className="basis-1/2 lg:basis-1/4">
-                     <ProductCard product={product} />
-                </CarouselItem>
-            ))}
-            </CarouselContent>
-             <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-            <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-        </Carousel>
+        <div className="relative -mx-2">
+            <Carousel 
+                opts={{
+                    align: "start",
+                    loop: true,
+                }}
+                className="w-full mt-8"
+            >
+                <CarouselContent>
+                {featuredProducts.map((product) => (
+                    <CarouselItem key={product.id} className="basis-1/2 lg:basis-1/4">
+                        <ProductCard product={product} />
+                    </CarouselItem>
+                ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+                <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+            </Carousel>
+        </div>
 
         <div className="text-center mt-8">
           <Button asChild variant="outline">
