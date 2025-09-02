@@ -73,6 +73,7 @@ export async function createProduct(data: unknown) {
 
     const newProduct: Omit<Product, 'id'> = {
       ...parsedData,
+      images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/800x800/A2E4B8/31343C?text=No+Image'],
       longDescription: parsedData.longDescription || parsedData.description,
       slug,
       rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3,
