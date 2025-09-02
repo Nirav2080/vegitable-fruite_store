@@ -4,10 +4,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { User, Package } from 'lucide-react';
 import { getOrders } from '@/lib/actions/orders';
+import { getCurrentUser } from '@/lib/actions/users';
 
 export default async function AccountPage() {
     const orders = await getOrders();
+    const user = await getCurrentUser();
     const orderCount = orders.length;
+
+    if (!user) {
+        return (
+            <div>
+                 <h2 className="text-2xl font-bold font-headline">Account Dashboard</h2>
+                 <p className="text-muted-foreground">Please log in to view your account details.</p>
+            </div>
+        )
+    }
     
     return (
         <div className="space-y-6">
@@ -24,8 +35,8 @@ export default async function AccountPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>John Doe</p>
-                        <p className="text-sm text-muted-foreground">john.doe@example.com</p>
+                        <p>{user.name}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                         <Button asChild variant="link" className="px-0">
                             <Link href="/account/profile">Edit Profile</Link>
                         </Button>

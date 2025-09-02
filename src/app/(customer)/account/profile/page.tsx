@@ -6,9 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { getCurrentUser } from "@/lib/actions/users";
 
 
-export default function AccountProfilePage() {
+export default async function AccountProfilePage() {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return <div>Please log in to view your profile.</div>
+    }
+
+    const userInitials = user.name.split(' ').map(n => n[0]).join('');
+    const [firstName, lastName] = user.name.split(' ');
+
     return (
         <div className="space-y-6">
             <div>
@@ -19,8 +29,8 @@ export default function AccountProfilePage() {
             <form className="space-y-4">
                 <div className="flex items-center gap-4">
                     <Avatar className="h-20 w-20">
-                        <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User avatar" />
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarImage src={user.avatar} alt="User avatar" />
+                        <AvatarFallback>{userInitials}</AvatarFallback>
                     </Avatar>
                      <Button type="button" variant="outline">Change Photo</Button>
                 </div>
@@ -28,16 +38,16 @@ export default function AccountProfilePage() {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" defaultValue="John" />
+                        <Input id="firstName" defaultValue={firstName} />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" defaultValue="Doe" />
+                        <Input id="lastName" defaultValue={lastName} />
                     </div>
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" defaultValue="john.doe@example.com" />
+                    <Input id="email" type="email" defaultValue={user.email} />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="mobile">Mobile Number</Label>
