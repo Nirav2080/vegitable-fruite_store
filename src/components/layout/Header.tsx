@@ -44,7 +44,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       {/* Top Bar */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container mx-auto flex h-10 items-center justify-center px-4 text-xs">
+        <div className="container mx-auto flex h-10 items-center justify-center px-4 text-sm">
           <p>Get Up To 50% OFF New Season Styles, Limited Time Only.</p>
         </div>
       </div>
@@ -73,9 +73,9 @@ export function Header() {
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <Link href="/account" className="flex items-center w-full">
+                      <Link href="/account/profile" className="flex items-center w-full">
                         <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
+                        <span>My Profile</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
