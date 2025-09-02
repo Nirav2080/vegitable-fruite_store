@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Separator } from '@/components/ui/separator';
+import { useCart } from '@/hooks/use-cart';
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -16,11 +17,16 @@ interface ProductDetailsClientProps {
 }
 
 export function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
   const handleQuantityChange = (amount: number) => {
     setQuantity((prev) => Math.max(1, prev + amount));
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
   };
   
   const images = Array.isArray(product.images) ? product.images : [product.images];
@@ -75,8 +81,8 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" className="flex-1">
-                <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+              <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
+                <ShoppingCart className="mr-2 h-5 w-5" /> {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
           </div>

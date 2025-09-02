@@ -1,4 +1,6 @@
 
+'use client'
+
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,15 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/use-cart";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+  
   const imageUrl = Array.isArray(product.images) && product.images.length > 0 
     ? product.images[0] 
     : 'https://placehold.co/400x400/EEE/31343C';
+  
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product);
+  }
 
   return (
     <Card className="flex flex-col h-full overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -35,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg font-headline leading-tight mb-2 h-14">
+        <CardTitle className="text-lg font.headline leading-tight mb-2 h-14">
           <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
             {product.name}
           </Link>
@@ -51,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <p className="text-xl font-bold text-primary">${product.price.toFixed(2)}</p>
-        <Button size="sm">
+        <Button size="sm" onClick={handleAddToCart}>
           <ShoppingCart className="mr-2 h-4 w-4" />
           Add to cart
         </Button>

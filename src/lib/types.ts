@@ -58,3 +58,7 @@ export interface Banner {
     isActive: boolean;
     createdAt: Date;
 }
+
+export interface CartItem extends Product {
+  quantity: number;
+}
