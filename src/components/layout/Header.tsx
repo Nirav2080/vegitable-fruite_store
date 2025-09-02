@@ -7,11 +7,20 @@ import { EcoOrganicLogo } from "@/components/icons/EcoOrganicLogo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 
 const mainNavLinks = [
   { href: "/products", label: "All Products" },
@@ -53,12 +62,42 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-1 md:gap-4">
-                <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
-                    <Link href="/account">
+                 <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                         <User className="h-6 w-6" />
                         <span className="sr-only">My Account</span>
-                    </Link>
-                </Button>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link href="/account" className="flex items-center w-full">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                       <Link href="/account/orders" className="flex items-center w-full">
+                        <Package className="mr-2 h-4 w-4" />
+                        <span>Order History</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                     <DropdownMenuItem>
+                       <Link href="/account/settings" className="flex items-center w-full">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 <Button asChild variant="ghost" size="icon" className="relative text-white hover:bg-white/20">
                     <Link href="/wishlist">
                     <Heart className="h-6 w-6" />
