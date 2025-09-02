@@ -14,7 +14,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const imageUrl = Array.isArray(product.images) && product.images.length > 0 
     ? product.images[0] 
-    : 'https://picsum.photos/400';
+    : 'https://placehold.co/400x400/EEE/31343C';
 
   return (
     <Card className="flex flex-col h-full overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1">

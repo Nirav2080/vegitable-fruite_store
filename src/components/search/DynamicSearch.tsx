@@ -91,7 +91,7 @@ export function DynamicSearch() {
                 onClick={handleLinkClick}
               >
                 <Image
-                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/40'}
+                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://placehold.co/40x40/EEE/31343C'}
                   alt={product.name}
                   width={40}
                   height={40}

@@ -17,7 +17,7 @@ const promoCards = [
     title: 'The Ultimate Coffee',
     supertitle: 'CUBAN COFFEE',
     href: '/products',
-    image: 'https://picsum.photos/seed/coffee-beans/400/250',
+    image: 'https://placehold.co/400x250/6F4E37/FFFFFF',
     hint: 'coffee beans',
     bgColor: 'bg-[#6F4E37]/90'
   },
@@ -25,7 +25,7 @@ const promoCards = [
     title: 'A Grade Black Grapes',
     supertitle: 'SWEET AND ROBUST',
     href: '/products',
-    image: 'https://picsum.photos/seed/black-grapes/400/250',
+    image: 'https://placehold.co/400x250/3d3d5c/FFFFFF',
     hint: 'black grapes',
     bgColor: 'bg-[#3d3d5c]/90'
   },
@@ -33,7 +33,7 @@ const promoCards = [
     title: 'Online Shopping For Meat',
     supertitle: 'THE RED MEAT',
     href: '/products',
-    image: 'https://picsum.photos/seed/salmon-package/400/250',
+    image: 'https://placehold.co/400x250/008080/FFFFFF',
     hint: 'packaged salmon',
     bgColor: 'bg-[#008080]/90'
   },
@@ -41,7 +41,7 @@ const promoCards = [
     title: '100% Organic Mangoes',
     supertitle: 'BUY MANGOES',
     href: '/products',
-    image: 'https://picsum.photos/seed/mangoes/400/250',
+    image: 'https://placehold.co/400x250/FFD700/000000',
     hint: 'ripe mangoes',
     bgColor: 'bg-[#FFD700]/90 text-yellow-900'
   }

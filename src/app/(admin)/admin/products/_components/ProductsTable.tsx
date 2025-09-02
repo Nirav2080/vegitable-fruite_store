@@ -88,7 +88,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
                   alt={product.name}
                   className="aspect-square rounded-md object-cover"
                   height="64"
-                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/64'}
+                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://placehold.co/64x64/EEE/31343C'}
                   width="64"
                 />
               </TableCell>
