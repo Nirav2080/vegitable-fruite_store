@@ -10,6 +10,9 @@ import { Star, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
+import { ProductReviews } from './ProductReviews';
+import { mockReviews } from './ProductReviews';
+
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -93,6 +96,10 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         </div>
       </div>
       
+      <Separator className="my-12" />
+
+      <ProductReviews product={product} reviews={mockReviews} />
+
       <Separator className="my-12" />
 
       <div>

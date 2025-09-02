@@ -66,3 +66,13 @@ export interface Banner {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+export interface Review {
+  id: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  title: string;
+  comment: string;
+  date: string;
+}
