@@ -27,7 +27,7 @@ const productSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
-  images: z.string().min(1, { message: "Please add at least one image URL."}),
+  images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
 });
 
 function serializeProduct(product: any): Product {
@@ -74,7 +74,6 @@ export async function createProduct(data: unknown) {
     const newProduct: Omit<Product, 'id'> = {
       ...parsedData,
       longDescription: parsedData.longDescription || parsedData.description,
-      images: parsedData.images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
       rating: Math.floor(Math.random() * (5 - 3 + 1)) + 3,
       reviews: Math.floor(Math.random() * 100),
@@ -96,12 +95,9 @@ export async function updateProduct(id: string, data: unknown) {
   
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-  const { images, ...restOfData } = parsedData;
-
   const updateData = {
-      ...restOfData,
+      ...parsedData,
       longDescription: parsedData.longDescription || parsedData.description,
-      images: images.split(',').map(s => s.trim()).filter(Boolean),
       slug,
   };
 

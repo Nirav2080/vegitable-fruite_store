@@ -40,7 +40,7 @@ const formSchema = z.object({
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
-  images: z.string().min(1, { message: "Please add at least one image URL."}),
+  images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
 })
 
 type ProductFormValues = z.infer<typeof formSchema>
@@ -58,7 +58,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const defaultValues = isEditing && product ? {
       ...product,
-      images: Array.isArray(product.images) ? product.images.join(', ') : '',
+      images: Array.isArray(product.images) ? product.images : [],
   } : {
       name: "",
       description: "",
@@ -67,7 +67,7 @@ export function ProductForm({ product }: ProductFormProps) {
       stock: 0,
       isOrganic: false,
       isSeasonal: false,
-      images: "",
+      images: [],
   }
 
   const form = useForm<ProductFormValues>({
@@ -99,28 +99,44 @@ export function ProductForm({ product }: ProductFormProps) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    
-    // In a real scenario, you'd upload the file and get a URL.
-    // For this demo, we'll use placeholder images.
-    const newImageUrls = files.map(() => `https://picsum.photos/seed/${Math.random()}/400`);
+    const currentImages = form.getValues('images') || [];
 
-    const existingUrls = form.getValues('images') ? form.getValues('images').split(', ').filter(Boolean) : [];
-    const updatedUrls = [...existingUrls, ...newImageUrls];
+    const filePromises = files.map(file => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            resolve(event.target.result as string);
+          } else {
+            reject(new Error("Failed to read file"));
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    });
 
-    form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
-    
-    const existingPreviews = imagePreviews;
-    setImagePreviews([...existingPreviews, ...newPreviews]);
+    Promise.all(filePromises).then(newImageUrls => {
+        const updatedUrls = [...currentImages, ...newImageUrls];
+        form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
+        setImagePreviews(updatedUrls);
+    }).catch(error => {
+        toast({
+            title: "Error uploading image",
+            description: "There was an issue reading one of the image files.",
+            variant: "destructive"
+        })
+    })
+
+    // Reset file input
+    e.target.value = '';
   };
   
   const removeImage = (indexToRemove: number) => {
-    const currentUrls = form.getValues('images').split(', ').filter(Boolean);
-    const updatedUrls = currentUrls.filter((_, index) => index !== indexToRemove);
-    form.setValue('images', updatedUrls.join(', '), { shouldValidate: true, shouldDirty: true });
-
-    const updatedPreviews = imagePreviews.filter((_, index) => index !== indexToRemove);
-    setImagePreviews(updatedPreviews);
+    const currentImages = form.getValues('images') || [];
+    const updatedImages = currentImages.filter((_, index) => index !== indexToRemove);
+    form.setValue('images', updatedImages, { shouldValidate: true, shouldDirty: true });
+    setImagePreviews(updatedImages);
   };
 
 

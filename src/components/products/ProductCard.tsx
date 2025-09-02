@@ -1,3 +1,4 @@
+
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,16 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const imageUrl = Array.isArray(product.images) && product.images.length > 0 
+    ? product.images[0] 
+    : 'https://picsum.photos/400';
+
   return (
     <Card className="flex flex-col h-full overflow-hidden group transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       <CardHeader className="p-0 relative">
         <Link href={`/products/${product.slug}`} className="block">
           <Image
-            src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://picsum.photos/400'}
+            src={imageUrl}
             alt={product.name}
             data-ai-hint="product image"
             width={400}

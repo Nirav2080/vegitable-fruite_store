@@ -22,8 +22,8 @@ const bannerSchema = z.object({
   supertitle: z.string().min(1, "Supertitle is required"),
   title: z.string().min(1, "Title is required"),
   subtitle: z.string().min(1, "Subtitle is required"),
-  image: z.string().url("A valid image URL is required"),
-  href: z.string().url("A valid link URL is required"),
+  image: z.string().min(1, "An image is required"),
+  href: z.string().min(1, "A link URL is required"),
   isActive: z.boolean().default(true),
 });
 

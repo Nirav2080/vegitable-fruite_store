@@ -29,7 +29,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subtitle: z.string().min(1, "Subtitle is required"),
   image: z.string().min(1, "An image is required"),
-  href: z.string().url("A valid link URL is required"),
+  href: z.string().min(1, "A link URL is required"),
   isActive: z.boolean().default(true),
 })
 
@@ -84,13 +84,14 @@ export function BannerForm({ banner }: BannerFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const newPreview = URL.createObjectURL(file);
-    setImagePreview(newPreview);
-    
-    // In a real scenario, you'd upload the file and get a URL.
-    // For this demo, we'll use a placeholder image.
-    const newImageUrl = `https://picsum.photos/seed/${Math.random()}/1200/600`;
-    form.setValue('image', newImageUrl, { shouldValidate: true, shouldDirty: true });
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const result = event.target?.result as string;
+        setImagePreview(result);
+        form.setValue('image', result, { shouldValidate: true, shouldDirty: true });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const removeImage = () => {
