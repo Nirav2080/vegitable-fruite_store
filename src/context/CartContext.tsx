@@ -101,7 +101,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce((acc, item) => {
+    // Ensure selectedVariant and its price exist to prevent crashes
+    if (item.selectedVariant && typeof item.selectedVariant.price === 'number') {
+      return acc + item.selectedVariant.price * item.quantity;
+    }
+    return acc;
+  }, 0);
+
 
   return (
     <CartContext.Provider

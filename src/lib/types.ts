@@ -87,7 +87,8 @@ export interface Banner {
     createdAt: Date;
 }
 
-export interface CartItem extends Product {
+export interface CartItem extends Omit<Product, 'variants'> {
   quantity: number;
   selectedVariant: ProductVariant;
+  // variants are not needed in cart item, selectedVariant holds the choice
 }

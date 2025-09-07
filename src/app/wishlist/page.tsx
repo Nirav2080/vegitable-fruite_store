@@ -14,8 +14,14 @@ export default function WishlistPage() {
   const { addToCart } = useCart();
 
   const handleMoveToCart = (product: Product) => {
-    addToCart(product);
-    removeFromWishlist(product.id);
+    const defaultVariant = product.variants?.[0];
+    if (defaultVariant) {
+        addToCart(product, 1, defaultVariant);
+        removeFromWishlist(product.id);
+    } else {
+        // Handle case where product has no variants, maybe show a toast
+        console.error("Product has no variants to add to cart.");
+    }
   }
 
   if (wishlistItems.length === 0) {
@@ -51,7 +57,7 @@ export default function WishlistPage() {
                 />
               </div>
               <h3 className="font-semibold">{item.name}</h3>
-              <p className="font-bold text-primary mt-1">${item.price.toFixed(2)}</p>
+              <p className="font-bold text-primary mt-1">${item.variants[0].price.toFixed(2)}</p>
             </div>
             <div className="mt-4 flex flex-col gap-2">
                 <Button onClick={() => handleMoveToCart(item)}>Move to Cart</Button>
