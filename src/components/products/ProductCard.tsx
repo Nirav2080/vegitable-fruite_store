@@ -51,7 +51,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   const images = Array.isArray(product.images) ? product.images : [product.images];
-  const primaryImage = images[0] || 'https://placehold.co/400x400/EEE/31343C';
+  const primaryImage = images[0] || 'https://placehold.co/400x400/EEE/31343C?text=No+Image';
   
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -106,9 +106,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
         </Button>
       </div>
-      <div className="p-4 flex-grow flex flex-col">
-        <p className="text-sm text-muted-foreground">{product.brand || 'Generic'}</p>
-        <h3 className="text-base font-semibold leading-tight mt-1 flex-grow">
+      <div className="p-3 flex-grow flex flex-col">
+        <p className="text-xs text-muted-foreground">{product.brand || 'Generic'}</p>
+        <h3 className="text-sm font-semibold leading-tight mt-1 flex-grow">
           <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
             {product.name}
           </Link>
@@ -117,10 +117,10 @@ export function ProductCard({ product }: ProductCardProps) {
             {renderStars(product.rating || 0)}
         </div>
         <div className="flex items-center gap-2 mt-2">
-            <p className="text-lg font-bold text-primary">${defaultVariant.price.toFixed(2)}</p>
-            {defaultVariant.originalPrice && <p className="text-sm text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
+            <p className="text-base font-bold text-primary">${defaultVariant.price.toFixed(2)}</p>
+            {defaultVariant.originalPrice && <p className="text-xs text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
         </div>
-         <Button size="sm" className="w-full mt-4" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
+         <Button size="sm" className="w-full mt-3" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
             <ShoppingCart className="mr-2 h-4 w-4" />
             {defaultVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
         </Button>
