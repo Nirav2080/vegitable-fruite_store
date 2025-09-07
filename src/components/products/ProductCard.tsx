@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Heart, Expand } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -23,11 +23,22 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
+  const [onWishlist, setOnWishlist] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      setOnWishlist(isInWishlist(product.id));
+    }
+  }, [isInWishlist, product.id, isClient]);
 
   const images = Array.isArray(product.images) ? product.images : [product.images];
   const primaryImage = images[0] || 'https://placehold.co/400x400/EEE/31343C';
   const hoverImage = images[1] || primaryImage;
-  const onWishlist = isInWishlist(product.id);
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
