@@ -13,9 +13,9 @@ import type { Product } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
-const categories = ["Fruits", "Vegetables", "Organic Boxes", "Juice & Drinks"];
+const categories = ["Fruits", "Vegetables", "Organic Boxes"];
 const sizes = ["S", "M", "L", "XL"];
 const colors = ["Red", "Green", "Yellow", "Blue"];
 
@@ -43,19 +43,19 @@ function FilterSidebarContent() {
                 <CardHeader>
                     <CardTitle>Shop By Category</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <Accordion type="multiple" defaultValue={['categories']} className="w-full">
-                        <AccordionItem value="categories">
-                            <AccordionTrigger>Organic Fruits</AccordionTrigger>
-                            <AccordionContent>Subcategories here</AccordionContent>
+                <CardContent className="p-0">
+                    <Accordion type="multiple" defaultValue={['organic-fruits', 'juice-drinks', 'vegetables']} className="w-full">
+                        <AccordionItem value="organic-fruits">
+                            <AccordionTrigger className="px-6">Organic Fruits</AccordionTrigger>
+                            <AccordionContent className="px-6">Subcategories here</AccordionContent>
                         </AccordionItem>
                          <AccordionItem value="juice-drinks">
-                            <AccordionTrigger>Juice & Drinks</AccordionTrigger>
-                            <AccordionContent>Subcategories here</AccordionContent>
+                            <AccordionTrigger className="px-6">Juice & Drinks</AccordionTrigger>
+                            <AccordionContent className="px-6">Subcategories here</AccordionContent>
                         </AccordionItem>
                          <AccordionItem value="vegetables">
-                            <AccordionTrigger>Vegetable</AccordionTrigger>
-                            <AccordionContent>Subcategories here</AccordionContent>
+                            <AccordionTrigger className="px-6">Vegetable</AccordionTrigger>
+                            <AccordionContent className="px-6">Subcategories here</AccordionContent>
                         </AccordionItem>
                     </Accordion>
                 </CardContent>
@@ -65,11 +65,11 @@ function FilterSidebarContent() {
                 <CardHeader>
                 <CardTitle>Filter By</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                 <Accordion type="multiple" defaultValue={['category', 'size', 'color']} className="w-full">
                     <AccordionItem value="category">
-                    <AccordionTrigger className="font-semibold">Category</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger className="font-semibold px-6">Category</AccordionTrigger>
+                    <AccordionContent className="px-6">
                         <div className="grid gap-2">
                         {categories.map((category) => (
                             <div key={category} className="flex items-center justify-between">
@@ -84,8 +84,8 @@ function FilterSidebarContent() {
                     </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="size">
-                    <AccordionTrigger className="font-semibold">Size</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger className="font-semibold px-6">Size</AccordionTrigger>
+                    <AccordionContent className="px-6">
                         <div className="grid gap-2">
                         {sizes.map((size) => (
                             <div key={size} className="flex items-center justify-between">
@@ -100,8 +100,8 @@ function FilterSidebarContent() {
                     </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="color">
-                    <AccordionTrigger className="font-semibold">Color</AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionTrigger className="font-semibold px-6">Color</AccordionTrigger>
+                    <AccordionContent className="px-6">
                         <div className="grid gap-2">
                         {colors.map((color) => (
                             <div key={color} className="flex items-center justify-between">
@@ -183,8 +183,11 @@ export default function ProductsPage() {
                         <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-3/4 sm:w-1/2">
-                    <div className="p-4 overflow-y-auto">
+                <SheetContent side="left" className="w-full max-w-sm flex flex-col p-0">
+                   <SheetHeader className="p-6 pb-4">
+                        <SheetTitle>Filter Products</SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto px-6 pb-6">
                         <FilterSidebarContent />
                     </div>
                 </SheetContent>
@@ -217,4 +220,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
