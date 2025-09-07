@@ -36,8 +36,8 @@ export default function CartPage() {
         <div className="lg:col-span-2">
             <div className="space-y-4">
                 {cartItems.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                        <div className="relative h-24 w-24 rounded-md overflow-hidden">
+                    <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border rounded-lg">
+                        <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden">
                             <Image
                                 src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/100x100/EEE/31343C'}
                                 alt={item.name}
@@ -46,25 +46,25 @@ export default function CartPage() {
                             />
                         </div>
                         <div className="flex-1">
-                            <h3 className="font-semibold">{item.name}</h3>
-                            <p className="text-sm text-muted-foreground">{item.selectedVariant.weight}</p>
-                            <p className="font-bold text-primary mt-1">${item.selectedVariant.price.toFixed(2)}</p>
+                            <h3 className="font-semibold text-sm md:text-base">{item.name}</h3>
+                            <p className="text-xs md:text-sm text-muted-foreground">{item.selectedVariant.weight}</p>
+                            <p className="font-bold text-primary mt-1 text-sm md:text-base">${item.selectedVariant.price.toFixed(2)}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <div className="flex items-center border rounded-md">
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                        <div className="flex flex-col md:flex-row items-center gap-2">
+                             <div className="flex items-center border rounded-md">
+                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
                                     <Minus className="h-4 w-4" />
                                 </Button>
                                 <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => removeFromCart(item.id)}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => removeFromCart(item.id)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </div>
-                         <div className="w-20 text-right font-semibold">
+                         <div className="w-20 text-right font-semibold hidden md:block">
                             ${(item.selectedVariant.price * item.quantity).toFixed(2)}
                         </div>
                     </div>
@@ -89,7 +89,10 @@ export default function CartPage() {
                     <span>Total</span>
                     <span>${cartTotal.toFixed(2)}</span>
                 </div>
-                <Button asChild size="lg" className="w-full mt-6" variant="outline">
+                 <Button asChild size="lg" className="w-full mt-6">
+                    <Link href="/checkout">Proceed to Checkout</Link>
+                </Button>
+                <Button asChild size="lg" className="w-full mt-2" variant="outline">
                     <Link href="/products">Continue Shopping</Link>
                 </Button>
             </div>
