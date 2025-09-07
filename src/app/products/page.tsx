@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getProducts } from "@/lib/actions/products";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -35,7 +35,13 @@ function ProductsSkeleton() {
     )
 }
 
-function FilterSidebarContent({ attributes }: { attributes: Attribute[] }) {
+interface FilterSidebarContentProps {
+    attributes: Attribute[];
+    selectedFilters: Record<string, string[]>;
+    handleFilterChange: (filterName: string, value: string) => void;
+}
+
+function FilterSidebarContent({ attributes, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
     return (
         <div className="space-y-6">
             <Card>
@@ -51,10 +57,14 @@ function FilterSidebarContent({ attributes }: { attributes: Attribute[] }) {
                                     {staticCategories.map((category) => (
                                         <div key={category} className="flex items-center justify-between">
                                             <Label htmlFor={`cat-${category}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                                <Checkbox id={`cat-${category}`} />
+                                                <Checkbox 
+                                                    id={`cat-${category}`}
+                                                    checked={selectedFilters['category']?.includes(category)}
+                                                    onCheckedChange={() => handleFilterChange('category', category)}
+                                                />
                                                 {category}
                                             </Label>
-                                            <span className="text-sm text-muted-foreground">(10)</span>
+                                            {/* <span className="text-sm text-muted-foreground">(10)</span> */}
                                         </div>
                                     ))}
                                 </div>
@@ -68,10 +78,14 @@ function FilterSidebarContent({ attributes }: { attributes: Attribute[] }) {
                                     {attribute.values.map((value) => (
                                         <div key={value} className="flex items-center justify-between">
                                             <Label htmlFor={`attr-${attribute.name}-${value}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                                <Checkbox id={`attr-${attribute.name}-${value}`} />
+                                                <Checkbox 
+                                                    id={`attr-${attribute.name}-${value}`}
+                                                    checked={selectedFilters[attribute.name]?.includes(value)}
+                                                    onCheckedChange={() => handleFilterChange(attribute.name, value)}
+                                                />
                                                 {value}
                                             </Label>
-                                            <span className="text-sm text-muted-foreground">(5)</span>
+                                            {/* <span className="text-sm text-muted-foreground">(5)</span> */}
                                         </div>
                                     ))}
                                     </div>
@@ -90,6 +104,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     async function loadData() {
@@ -105,11 +120,55 @@ export default function ProductsPage() {
     loadData();
   }, [])
 
+  const handleFilterChange = (filterName: string, value: string) => {
+    setSelectedFilters(prev => {
+        const currentValues = prev[filterName] || [];
+        const newValues = currentValues.includes(value)
+            ? currentValues.filter(v => v !== value)
+            : [...currentValues, value];
+        
+        const newFilters = { ...prev, [filterName]: newValues };
+        
+        // If all values for a filter are unchecked, remove the filter name from the state
+        if (newValues.length === 0) {
+            delete newFilters[filterName];
+        }
+        
+        return newFilters;
+    });
+  }
+
+  const filteredProducts = useMemo(() => {
+    if (Object.keys(selectedFilters).length === 0) {
+        return products;
+    }
+
+    return products.filter(product => {
+        return Object.entries(selectedFilters).every(([filterName, selectedValues]) => {
+            if (!selectedValues || selectedValues.length === 0) {
+                return true;
+            }
+            if (filterName === 'category') {
+                return selectedValues.includes(product.category);
+            }
+            // This is a placeholder for filtering by dynamic attributes.
+            // You would need to add attributes to your product type to make this work.
+            // For now, it will not filter by dynamic attributes as product data doesn't contain them.
+            return true; 
+        });
+    });
+  }, [products, selectedFilters]);
+
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         <aside className="hidden lg:block lg:col-span-1 sticky top-24">
-            <FilterSidebarContent attributes={attributes} />
+            <FilterSidebarContent 
+                attributes={attributes} 
+                selectedFilters={selectedFilters}
+                handleFilterChange={handleFilterChange}
+            />
         </aside>
 
         <main className="lg:col-span-3">
@@ -125,7 +184,7 @@ export default function ProductsPage() {
                     <Button variant="outline" size="icon" className="bg-background"><LayoutGrid className="h-5 w-5" /></Button>
                     <Button variant="ghost" size="icon"><List className="h-5 w-5" /></Button>
                 </div>
-                <p className="text-muted-foreground text-sm">{isLoading ? 'Loading...' : `There are ${products.length} products.`}</p>
+                <p className="text-muted-foreground text-sm">{isLoading ? 'Loading...' : `Showing ${filteredProducts.length} products.`}</p>
             </div>
             <div className="flex items-center gap-2">
               <Label>Sort by:</Label>
@@ -156,7 +215,11 @@ export default function ProductsPage() {
                         <SheetTitle>Filter Products</SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 overflow-y-auto px-6 pb-6">
-                        <FilterSidebarContent attributes={attributes} />
+                        <FilterSidebarContent 
+                           attributes={attributes}
+                           selectedFilters={selectedFilters}
+                           handleFilterChange={handleFilterChange}
+                        />
                     </div>
                 </SheetContent>
             </Sheet>
@@ -178,7 +241,7 @@ export default function ProductsPage() {
 
           {isLoading ? <ProductsSkeleton /> : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
                 ))}
             </div>
