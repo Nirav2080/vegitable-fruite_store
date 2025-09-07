@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
@@ -20,7 +21,7 @@ const staticCategories = ["Fruits", "Vegetables", "Organic Boxes"];
 
 function ProductsSkeleton() {
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-4">
                     <Skeleton className="h-48 w-full" />
@@ -240,7 +241,7 @@ export default function ProductsPage() {
 
 
           {isLoading ? <ProductsSkeleton /> : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
                 ))}
