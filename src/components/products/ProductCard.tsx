@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Star } from "lucide-react";
+import { ShoppingCart, Star, Heart } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useWishlist } from "@/hooks/use-wishlist";
 
 interface ProductCardProps {
   product: Product;
@@ -36,8 +37,9 @@ function renderStars(rating: number) {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [isClient, setIsClient] = useState(false);
-
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -51,6 +53,13 @@ export function ProductCard({ product }: ProductCardProps) {
     addToCart(product);
   }
 
+  const handleWishlistClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product);
+  }
+
+  const onWishlist = isClient && isInWishlist(product.id);
   const discountPercentage = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
   
   const isNew = () => {
@@ -80,6 +89,16 @@ export function ProductCard({ product }: ProductCardProps) {
           {discountPercentage > 0 && <Badge variant="destructive" className="rounded-md">-{discountPercentage}%</Badge>}
           {isNew() && <Badge className="bg-white text-black hover:bg-white/90 border border-gray-200 rounded-md">New</Badge>}
         </div>
+
+        <Button
+            variant="outline"
+            size="icon"
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={handleWishlistClick}
+            aria-label="Add to wishlist"
+        >
+            <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
+        </Button>
       </div>
       <div className="p-4 flex-grow flex flex-col">
         <p className="text-sm text-muted-foreground">{product.brand || 'Generic'}</p>
@@ -103,3 +122,4 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
+

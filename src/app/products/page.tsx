@@ -11,8 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const categories = ["Fruits", "Vegetables", "Organic Boxes", "Juice & Drinks"];
 const sizes = ["S", "M", "L", "XL"];
@@ -35,6 +36,93 @@ function ProductsSkeleton() {
     )
 }
 
+function FilterSidebarContent() {
+    return (
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Shop By Category</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Accordion type="multiple" defaultValue={['categories']} className="w-full">
+                        <AccordionItem value="categories">
+                            <AccordionTrigger>Organic Fruits</AccordionTrigger>
+                            <AccordionContent>Subcategories here</AccordionContent>
+                        </AccordionItem>
+                         <AccordionItem value="juice-drinks">
+                            <AccordionTrigger>Juice & Drinks</AccordionTrigger>
+                            <AccordionContent>Subcategories here</AccordionContent>
+                        </AccordionItem>
+                         <AccordionItem value="vegetables">
+                            <AccordionTrigger>Vegetable</AccordionTrigger>
+                            <AccordionContent>Subcategories here</AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                <CardTitle>Filter By</CardTitle>
+                </CardHeader>
+                <CardContent>
+                <Accordion type="multiple" defaultValue={['category', 'size', 'color']} className="w-full">
+                    <AccordionItem value="category">
+                    <AccordionTrigger className="font-semibold">Category</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="grid gap-2">
+                        {categories.map((category) => (
+                            <div key={category} className="flex items-center justify-between">
+                            <Label htmlFor={`cat-${category}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                <Checkbox id={`cat-${category}`} />
+                                {category}
+                            </Label>
+                            <span className="text-sm text-muted-foreground">(10)</span>
+                            </div>
+                        ))}
+                        </div>
+                    </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="size">
+                    <AccordionTrigger className="font-semibold">Size</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="grid gap-2">
+                        {sizes.map((size) => (
+                            <div key={size} className="flex items-center justify-between">
+                                <Label htmlFor={`size-${size}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                <Checkbox id={`size-${size}`} />
+                                {size}
+                            </Label>
+                                <span className="text-sm text-muted-foreground">(10)</span>
+                            </div>
+                        ))}
+                        </div>
+                    </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="color">
+                    <AccordionTrigger className="font-semibold">Color</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="grid gap-2">
+                        {colors.map((color) => (
+                            <div key={color} className="flex items-center justify-between">
+                                <Label htmlFor={`color-${color}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                <Checkbox id={`color-${color}`} />
+                                {color}
+                            </Label>
+                                <span className="text-sm text-muted-foreground">(10)</span>
+                            </div>
+                        ))}
+                        </div>
+                    </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,88 +140,8 @@ export default function ProductsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        <aside className="lg:col-span-1">
-          <div className="sticky top-24 space-y-6">
-              <Card>
-                  <CardHeader>
-                      <CardTitle>Shop By Category</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                      <Accordion type="multiple" defaultValue={['categories']} className="w-full">
-                          <AccordionItem value="categories">
-                              <AccordionTrigger>Organic Fruits</AccordionTrigger>
-                              <AccordionContent>Subcategories here</AccordionContent>
-                          </AccordionItem>
-                           <AccordionItem value="juice-drinks">
-                              <AccordionTrigger>Juice & Drinks</AccordionTrigger>
-                              <AccordionContent>Subcategories here</AccordionContent>
-                          </AccordionItem>
-                           <AccordionItem value="vegetables">
-                              <AccordionTrigger>Vegetable</AccordionTrigger>
-                              <AccordionContent>Subcategories here</AccordionContent>
-                          </AccordionItem>
-                      </Accordion>
-                  </CardContent>
-              </Card>
-
-             <Card>
-                <CardHeader>
-                  <CardTitle>Filter By</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="multiple" defaultValue={['category', 'size', 'color']} className="w-full">
-                    <AccordionItem value="category">
-                      <AccordionTrigger className="font-semibold">Category</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="grid gap-2">
-                          {categories.map((category) => (
-                            <div key={category} className="flex items-center justify-between">
-                              <Label htmlFor={`cat-${category}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                  <Checkbox id={`cat-${category}`} />
-                                  {category}
-                              </Label>
-                              <span className="text-sm text-muted-foreground">(10)</span>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="size">
-                      <AccordionTrigger className="font-semibold">Size</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="grid gap-2">
-                          {sizes.map((size) => (
-                            <div key={size} className="flex items-center justify-between">
-                               <Label htmlFor={`size-${size}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                  <Checkbox id={`size-${size}`} />
-                                  {size}
-                              </Label>
-                               <span className="text-sm text-muted-foreground">(10)</span>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                     <AccordionItem value="color">
-                      <AccordionTrigger className="font-semibold">Color</AccordionTrigger>
-                      <AccordionContent>
-                        <div className="grid gap-2">
-                          {colors.map((color) => (
-                            <div key={color} className="flex items-center justify-between">
-                               <Label htmlFor={`color-${color}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                  <Checkbox id={`color-${color}`} />
-                                  {color}
-                              </Label>
-                               <span className="text-sm text-muted-foreground">(10)</span>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </CardContent>
-              </Card>
-          </div>
+        <aside className="hidden lg:block lg:col-span-1 sticky top-24">
+            <FilterSidebarContent />
         </aside>
 
         <main className="lg:col-span-3">
@@ -142,7 +150,8 @@ export default function ProductsPage() {
               <p className="mt-2 text-muted-foreground max-w-2xl">Discover our favorites fashionable discoveries, a selection of cool items to integrate in your wardrobe. Compose a unique style with personality which matches your own.</p>
           </header>
           
-          <div className="flex justify-between items-center mb-6 p-4 border rounded-lg bg-muted/50">
+          {/* Desktop Filter Bar */}
+          <div className="hidden lg:flex justify-between items-center mb-6 p-4 border rounded-lg bg-muted/50">
             <div className='flex items-center gap-4'>
                 <div className="flex items-center gap-2">
                     <Button variant="outline" size="icon" className="bg-background"><LayoutGrid className="h-5 w-5" /></Button>
@@ -165,6 +174,37 @@ export default function ProductsPage() {
               </Select>
             </div>
           </div>
+          
+          {/* Mobile Filter Bar */}
+           <div className="lg:hidden flex justify-between items-center mb-6 p-2 border rounded-lg bg-muted/50">
+             <Sheet>
+                <SheetTrigger asChild>
+                    <Button>
+                        <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-3/4 sm:w-1/2">
+                    <div className="p-4 overflow-y-auto">
+                        <FilterSidebarContent />
+                    </div>
+                </SheetContent>
+            </Sheet>
+            <div className="flex items-center gap-2">
+              <Select defaultValue="popularity">
+                <SelectTrigger className="w-[150px] bg-background">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="popularity">Popularity</SelectItem>
+                  <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                  <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+
           {isLoading ? <ProductsSkeleton /> : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product) => (
@@ -177,3 +217,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+
