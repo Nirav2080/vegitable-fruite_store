@@ -11,6 +11,14 @@ export interface Review {
     date: string;
 }
 
+export interface Attribute {
+    _id?: ObjectId;
+    id: string;
+    name: string;
+    values: string[];
+    createdAt: Date;
+}
+
 export interface Product {
   _id?: ObjectId;
   id: string;
