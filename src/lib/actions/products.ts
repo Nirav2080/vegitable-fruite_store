@@ -59,7 +59,28 @@ function serializeProduct(product: any): Product {
 
 export async function getProducts(): Promise<Product[]> {
     const productsCollection = await getProductsCollection();
-    const products = await productsCollection.find({}).sort({ createdAt: -1 }).toArray();
+    // Find products where at least one variant has stock > 0
+    const products = await productsCollection.find({ 
+        'variants.stock': { $gt: 0 } 
+    }).sort({ createdAt: -1 }).toArray();
+    
+    // An alternative if we wanted to check TOTAL stock across variants:
+    // const products = await productsCollection.aggregate([
+    //     {
+    //         $addFields: {
+    //             totalStock: { $sum: "$variants.stock" }
+    //         }
+    //     },
+    //     {
+    //         $match: {
+    //             totalStock: { $gt: 0 }
+    //         }
+    //     },
+    //     {
+    //         $sort: { createdAt: -1 }
+    //     }
+    // ]).toArray();
+
     return products.map(serializeProduct);
 }
 
