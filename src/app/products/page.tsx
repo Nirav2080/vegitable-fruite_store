@@ -67,9 +67,9 @@ export default function ProductsPage() {
         <p className="mt-2 text-muted-foreground">Fresh from the farm, ready for your kitchen.</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
         <aside className="md:col-span-1">
-          <div className="sticky top-20">
+          <div className="sticky top-24">
             <h2 className="text-xl font-semibold mb-4 font-headline">Filters</h2>
             <Accordion type="multiple" defaultValue={['category', 'attributes']} className="w-full">
               <AccordionItem value="category">
