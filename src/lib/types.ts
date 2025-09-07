@@ -19,29 +19,35 @@ export interface Attribute {
     createdAt: Date;
 }
 
+export interface ProductVariant {
+  weight: string;
+  price: number;
+  originalPrice?: number;
+  stock: number;
+}
+
 export interface Product {
   _id?: ObjectId;
   id: string;
   slug: string;
   name: string;
   description: string;
-  price: number;
-  originalPrice?: number;
   images: string[];
   category: 'Fruits' | 'Vegetables' | 'Organic Boxes';
   brand?: string;
   isOrganic: boolean;
   isSeasonal: boolean;
-  stock: number;
   createdAt: Date;
   reviews: Review[];
   rating: number;
+  variants: ProductVariant[];
 }
 
 export interface OrderItem {
   productId: string;
   quantity: number;
   price: number; // Price at the time of order
+  weight?: string; // To store which variant was purchased
 }
 
 export interface Order {
@@ -83,4 +89,5 @@ export interface Banner {
 
 export interface CartItem extends Product {
   quantity: number;
+  selectedVariant: ProductVariant;
 }

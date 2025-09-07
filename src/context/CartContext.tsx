@@ -2,20 +2,25 @@
 'use client'
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import type { CartItem, Product } from '@/lib/types';
+import type { CartItem, Product, ProductVariant } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, variant?: ProductVariant) => void;
+  removeFromCart: (cartItemId: string) => void;
+  updateQuantity: (cartItemId: string, quantity: number) => void;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
+
+// Helper function to generate a unique ID for each cart item
+const generateCartItemId = (productId: string, variantWeight?: string) => {
+  return variantWeight ? `${productId}_${variantWeight}` : productId;
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
@@ -31,40 +36,61 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant) => {
+    const selectedVariant = variant || product.variants?.[0];
+    if (!selectedVariant) {
+        toast({
+            title: "Cannot add to cart",
+            description: "This product has no selectable options.",
+            variant: "destructive",
+        });
+        return;
+    }
+
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+      const cartItemId = generateCartItemId(product.id, selectedVariant.weight);
+      const existingItem = prevItems.find(item => item.id === cartItemId);
+      
       if (existingItem) {
         return prevItems.map(item =>
-          item.id === product.id
+          item.id === cartItemId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prevItems, { ...product, quantity }];
+      
+      const newCartItem: CartItem = {
+        ...product,
+        id: cartItemId, // This is now the unique cart item ID
+        selectedVariant: selectedVariant,
+        quantity: quantity,
+      };
+      
+      return [...prevItems, newCartItem];
     });
+
     toast({
       title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${product.name} (${selectedVariant.weight}) has been added to your cart.`,
     })
   };
 
-  const removeFromCart = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== cartItemId));
     toast({
       title: "Item removed",
       description: `The item has been removed from your cart.`,
     })
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (cartItemId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
       return;
     }
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+        item.id === cartItemId ? { ...item, quantity } : item
       )
     );
   };
@@ -75,7 +101,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
 
   return (
     <CartContext.Provider

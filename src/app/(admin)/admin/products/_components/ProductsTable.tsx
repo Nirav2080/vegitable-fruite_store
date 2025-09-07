@@ -81,7 +81,12 @@ export function ProductsTable({ data }: { data: Product[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((product) => (
+          {data.map((product) => {
+            const defaultVariant = product.variants?.[0];
+            const totalStock = product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
+            const inStock = totalStock > 0;
+
+            return (
             <TableRow key={product.id}>
               <TableCell className="hidden sm:table-cell">
                  <Image
@@ -94,12 +99,14 @@ export function ProductsTable({ data }: { data: Product[] }) {
               </TableCell>
               <TableCell className="font-medium">{product.name}</TableCell>
               <TableCell>
-                <Badge variant={product.stock > 0 ? "secondary" : "destructive"} className={product.stock > 0 ? 'bg-green-100 text-green-800' : ''}>
-                  {product.stock > 0 ? "In Stock" : "Out of Stock"}
+                <Badge variant={inStock ? "secondary" : "destructive"} className={inStock ? 'bg-green-100 text-green-800' : ''}>
+                  {inStock ? "In Stock" : "Out of Stock"}
                 </Badge>
               </TableCell>
-              <TableCell>${product.price.toFixed(2)}</TableCell>
-              <TableCell>{product.stock}</TableCell>
+              <TableCell>
+                {defaultVariant ? `$${defaultVariant.price.toFixed(2)}` : 'N/A'}
+              </TableCell>
+              <TableCell>{totalStock}</TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -120,7 +127,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
                 </DropdownMenu>
               </TableCell>
             </TableRow>
-          ))}
+          )})}
         </TableBody>
       </Table>
 

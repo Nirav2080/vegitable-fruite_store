@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react';
-import type { Product } from '@/lib/types';
+import type { Product, ProductVariant } from '@/lib/types';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +15,8 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Breadcrumbs } from '@/app/(customer)/_components/Breadcrumbs';
 import { useWishlist } from '@/hooks/use-wishlist';
-
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 interface ProductDetailsClientProps {
   product: Product;
@@ -37,25 +38,31 @@ function renderStars(rating: number) {
     );
 }
 
-
 export function ProductDetailsClient({ product, relatedProducts }: ProductDetailsClientProps) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(product.variants?.[0]);
 
   const handleQuantityChange = (amount: number) => {
     setQuantity((prev) => Math.max(1, prev + amount));
   };
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    if (selectedVariant) {
+      addToCart(product, quantity, selectedVariant);
+    }
   };
+
+  if (!selectedVariant) {
+    return <div>This product is currently unavailable.</div>;
+  }
   
   const images = Array.isArray(product.images) ? product.images : [product.images];
   const reviews = Array.isArray(product.reviews) ? product.reviews : [];
   const onWishlist = isInWishlist(product.id);
-  const discountPercentage = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0;
+  const discountPercentage = selectedVariant.originalPrice ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.originalPrice) * 100) : 0;
   
   const breadcrumbLinks = [
       { label: 'Home', href: '/' },
@@ -97,7 +104,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
           
           <p className="mt-4 text-muted-foreground text-sm">{product.description}</p>
           
-           {product.stock > 0 ? (
+           {selectedVariant.stock > 0 ? (
                 <div className='flex items-center gap-2 mt-4 text-green-600'>
                     <CheckCircle2 className="h-5 w-5"/>
                     <span className='font-semibold'>In Stock</span>
@@ -106,20 +113,50 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                 <Badge variant="destructive">Out of Stock</Badge>
             )}
 
-            {product.stock > 0 && product.stock < 50 && (
+            {selectedVariant.stock > 0 && selectedVariant.stock < 50 && (
                 <div className='mt-4'>
-                    <p className='text-sm text-yellow-600 font-semibold mb-2'>Hurry! only {product.stock} items left in stock.</p>
-                    <Progress value={product.stock} max={50} className="h-2" />
+                    <p className='text-sm text-yellow-600 font-semibold mb-2'>Hurry! only {selectedVariant.stock} items left in stock.</p>
+                    <Progress value={selectedVariant.stock} max={50} className="h-2" />
                 </div>
             )}
             
             <Separator className="my-6" />
 
+            {product.variants && product.variants.length > 1 && (
+              <div className="mb-6">
+                <h3 className="text-sm font-medium mb-2">Select Weight:</h3>
+                <RadioGroup 
+                  defaultValue={selectedVariant.weight}
+                  onValueChange={(weight) => {
+                    const newVariant = product.variants.find(v => v.weight === weight);
+                    setSelectedVariant(newVariant);
+                  }}
+                  className="flex flex-wrap gap-2"
+                >
+                  {product.variants.map((variant) => (
+                    <div key={variant.weight}>
+                      <RadioGroupItem value={variant.weight} id={variant.weight} className="sr-only" />
+                      <Label 
+                        htmlFor={variant.weight}
+                        className={cn(
+                          "block p-2 border rounded-md cursor-pointer",
+                          selectedVariant.weight === variant.weight ? "border-primary bg-primary/10" : "border-input"
+                        )}
+                      >
+                        {variant.weight}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            )}
+
+
             <div className='flex items-baseline gap-2'>
-                <span className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</span>
-                {product.originalPrice && (
+                <span className="text-3xl font-bold text-primary">${selectedVariant.price.toFixed(2)}</span>
+                {selectedVariant.originalPrice && (
                     <>
-                        <span className="text-xl text-muted-foreground line-through">${product.originalPrice.toFixed(2)}</span>
+                        <span className="text-xl text-muted-foreground line-through">${selectedVariant.originalPrice.toFixed(2)}</span>
                         <Badge variant="destructive">Save {discountPercentage}%</Badge>
                     </>
                 )}
@@ -136,8 +173,8 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" onClick={handleAddToCart} disabled={product.stock === 0} className="flex-1">
-                <ShoppingCart className="mr-2 h-5 w-5" /> {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              <Button size="lg" onClick={handleAddToCart} disabled={selectedVariant.stock === 0} className="flex-1">
+                <ShoppingCart className="mr-2 h-5 w-5" /> {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
           </div>
@@ -167,4 +204,3 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
     </div>
   );
 }
-

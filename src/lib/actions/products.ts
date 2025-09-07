@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import type { Product } from '@/lib/types';
+import type { Product, ProductVariant } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
@@ -18,17 +18,22 @@ async function getProductsCollection() {
     return db.collection<Product>('products');
 }
 
+const variantSchema = z.object({
+  weight: z.string().min(1, 'Weight is required'),
+  price: z.coerce.number().min(0, 'Price must be a positive number.'),
+  originalPrice: z.coerce.number().optional(),
+  stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
+});
+
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
-  originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   brand: z.string().optional(),
-  stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
+  variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });
 
 function serializeProduct(product: any): Product {

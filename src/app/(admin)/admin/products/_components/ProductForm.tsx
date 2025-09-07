@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useForm } from "react-hook-form"
+import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -23,26 +23,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Product } from "@/lib/types"
+import type { Product, ProductVariant } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Image from "next/image"
-import { Upload, X } from "lucide-react"
+import { Upload, X, PlusCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+const variantSchema = z.object({
+  weight: z.string().min(1, 'Weight is required'),
+  price: z.coerce.number().min(0, 'Price must be a positive number.'),
+  originalPrice: z.coerce.number().optional(),
+  stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
+});
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  price: z.coerce.number().min(0, { message: "Price must be a positive number." }),
-  originalPrice: z.coerce.number().optional(),
   category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
   brand: z.string().optional(),
-  stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
+  variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 })
 
 type ProductFormValues = z.infer<typeof formSchema>
@@ -64,20 +70,23 @@ export function ProductForm({ product }: ProductFormProps) {
   } : {
       name: "",
       description: "",
-      price: 0,
-      originalPrice: 0,
       category: "Vegetables" as const,
       brand: "",
-      stock: 0,
       isOrganic: false,
       isSeasonal: false,
       images: [],
+      variants: [{ weight: '', price: 0, originalPrice: 0, stock: 0 }],
   }
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
+
+  const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
+    control: form.control,
+    name: "variants",
+  });
 
   async function onSubmit(values: ProductFormValues) {
     try {
@@ -132,7 +141,6 @@ export function ProductForm({ product }: ProductFormProps) {
         })
     })
 
-    // Reset file input
     e.target.value = '';
   };
   
@@ -226,57 +234,103 @@ export function ProductForm({ product }: ProductFormProps) {
                             </div>
                         )}
                         <FormDescription>
-                            Upload one or more images for your product. The first is the primary, the second is used for the hover effect.
+                            Upload one or more images for your product. The first is the primary.
                         </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}
-                />
-            <div className="grid grid-cols-2 gap-4">
-                 <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Sale Price</FormLabel>
-                        <FormControl>
-                            <Input type="number" step="0.01" min="0" placeholder="6.99" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                 <FormField
-                    control={form.control}
-                    name="originalPrice"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Original Price (Optional)</FormLabel>
-                        <FormControl>
-                            <Input type="number" step="0.01" min="0" placeholder="8.99" {...field} />
-                        </FormControl>
-                         <FormDescription>
-                            If set, the sale price will be shown with a discount.
-                        </FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-            </div>
-           
-            <FormField
-            control={form.control}
-            name="stock"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Stock Quantity</FormLabel>
-                <FormControl>
-                    <Input type="number" min="0" placeholder="150" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
             />
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Variants</CardTitle>
+                <FormDescription>
+                  Add different weight options for this product. The first variant will be the default.
+                </FormDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {variantFields.map((field, index) => (
+                    <div key={field.id} className="p-4 border rounded-md relative space-y-4">
+                      <Button 
+                        type="button" 
+                        variant="destructive" 
+                        size="icon" 
+                        className="absolute top-2 right-2 h-6 w-6"
+                        onClick={() => removeVariant(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                      <FormField
+                        control={form.control}
+                        name={`variants.${index}.weight`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Weight</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. 250g, 1kg" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name={`variants.${index}.price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Sale Price</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="6.99" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                         <FormField
+                          control={form.control}
+                          name={`variants.${index}.originalPrice`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Original Price</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="8.99" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`variants.${index}.stock`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Stock</FormLabel>
+                              <FormControl>
+                                <Input type="number" placeholder="100" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-4"
+                  onClick={() => appendVariant({ weight: '', price: 0, originalPrice: 0, stock: 0 })}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Variant
+                </Button>
+                 <FormMessage>{form.formState.errors.variants?.message}</FormMessage>
+              </CardContent>
+            </Card>
+           
              <FormField
                 control={form.control}
                 name="brand"

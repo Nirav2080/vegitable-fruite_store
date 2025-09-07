@@ -47,8 +47,8 @@ export default function CartPage() {
                         </div>
                         <div className="flex-1">
                             <h3 className="font-semibold">{item.name}</h3>
-                            <p className="text-sm text-muted-foreground">{item.category}</p>
-                            <p className="font-bold text-primary mt-1">${item.price.toFixed(2)}</p>
+                            <p className="text-sm text-muted-foreground">{item.selectedVariant.weight}</p>
+                            <p className="font-bold text-primary mt-1">${item.selectedVariant.price.toFixed(2)}</p>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="flex items-center border rounded-md">
@@ -65,7 +65,7 @@ export default function CartPage() {
                             </Button>
                         </div>
                          <div className="w-20 text-right font-semibold">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ${(item.selectedVariant.price * item.quantity).toFixed(2)}
                         </div>
                     </div>
                 ))}
