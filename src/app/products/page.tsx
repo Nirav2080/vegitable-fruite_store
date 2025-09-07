@@ -1,10 +1,10 @@
 
-
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
 import { getProducts } from "@/lib/actions/products";
 import { ProductCard } from "@/components/products/ProductCard";
+import { ProductListCard } from "@/components/products/ProductListCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ const staticCategories = ["Fruits", "Vegetables", "Organic Boxes"];
 
 function ProductsSkeleton() {
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-4">
                     <Skeleton className="h-48 w-full" />
@@ -106,6 +106,7 @@ export default function ProductsPage() {
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
     async function loadData() {
@@ -130,7 +131,6 @@ export default function ProductsPage() {
         
         const newFilters = { ...prev, [filterName]: newValues };
         
-        // If all values for a filter are unchecked, remove the filter name from the state
         if (newValues.length === 0) {
             delete newFilters[filterName];
         }
@@ -152,10 +152,11 @@ export default function ProductsPage() {
             if (filterName === 'category') {
                 return selectedValues.includes(product.category);
             }
-            // This is a placeholder for filtering by dynamic attributes.
-            // You would need to add attributes to your product type to make this work.
-            // For now, it will not filter by dynamic attributes as product data doesn't contain them.
-            return true; 
+            if (product.attributes && product.attributes[filterName]) {
+                const productValue = product.attributes[filterName];
+                return selectedValues.includes(productValue);
+            }
+            return false;
         });
     });
   }, [products, selectedFilters]);
@@ -178,12 +179,11 @@ export default function ProductsPage() {
               <p className="mt-2 text-muted-foreground max-w-2xl">Discover our favorites fashionable discoveries, a selection of cool items to integrate in your wardrobe. Compose a unique style with personality which matches your own.</p>
           </header>
           
-          {/* Desktop Filter Bar */}
           <div className="hidden lg:flex justify-between items-center mb-6 p-4 border rounded-lg bg-muted/50">
             <div className='flex items-center gap-4'>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" className="bg-background"><LayoutGrid className="h-5 w-5" /></Button>
-                    <Button variant="ghost" size="icon"><List className="h-5 w-5" /></Button>
+                    <Button variant={viewMode === 'grid' ? 'outline' : 'ghost'} size="icon" className="bg-background" onClick={() => setViewMode('grid')}><LayoutGrid className="h-5 w-5" /></Button>
+                    <Button variant={viewMode === 'list' ? 'outline' : 'ghost'} size="icon" onClick={() => setViewMode('list')}><List className="h-5 w-5" /></Button>
                 </div>
                 <p className="text-muted-foreground text-sm">{isLoading ? 'Loading...' : `Showing ${filteredProducts.length} products.`}</p>
             </div>
@@ -203,7 +203,6 @@ export default function ProductsPage() {
             </div>
           </div>
           
-          {/* Mobile Filter Bar */}
            <div className="lg:hidden flex justify-between items-center mb-6 p-2 border rounded-lg bg-muted/50">
              <Sheet>
                 <SheetTrigger asChild>
@@ -236,16 +235,26 @@ export default function ProductsPage() {
                   <SelectItem value="newest">Newest</SelectItem>
                 </SelectContent>
               </Select>
+              <Button variant={viewMode === 'grid' ? 'outline' : 'ghost'} size="icon" className="bg-background" onClick={() => setViewMode('grid')}><LayoutGrid className="h-5 w-5" /></Button>
+              <Button variant={viewMode === 'list' ? 'outline' : 'ghost'} size="icon" onClick={() => setViewMode('list')}><List className="h-5 w-5" /></Button>
             </div>
           </div>
 
 
           {isLoading ? <ProductsSkeleton /> : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
+            viewMode === 'grid' ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {filteredProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {filteredProducts.map((product) => (
+                        <ProductListCard key={product.id} product={product} />
+                    ))}
+                </div>
+            )
           )}
         </main>
       </div>

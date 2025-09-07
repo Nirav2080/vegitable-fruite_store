@@ -34,6 +34,7 @@ const productSchema = z.object({
   isSeasonal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
+  attributes: z.record(z.string()).optional(),
 });
 
 function serializeProduct(product: any): Product {
@@ -68,7 +69,16 @@ export async function searchProducts(query: string): Promise<Product[]> {
     }
     const productsCollection = await getProductsCollection();
     const products = await productsCollection.find({ name: { $regex: query, $options: 'i' } }).toArray();
-    return products.map(serializeProduct);
+    
+    // In this simplified search, we're only returning a subset of fields.
+    return products.map(p => ({
+        id: p._id.toString(),
+        name: p.name,
+        slug: p.slug,
+        images: p.images,
+        price: p.variants?.[0]?.price ?? 0, // Simplified for search result
+        // We are not returning all fields to keep the payload small.
+    })) as unknown as Product[];
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -96,6 +106,7 @@ export async function createProduct(data: unknown) {
       createdAt: new Date(),
       reviews: [],
       rating: 0,
+      attributes: parsedData.attributes || {},
     };
 
     await productsCollection.insertOne(newProduct as any);
@@ -123,6 +134,7 @@ export async function updateProduct(id: string, data: unknown) {
       slug,
       reviews: existingProduct.reviews || [],
       rating: existingProduct.rating || 0,
+      attributes: parsedData.attributes || {},
   };
 
   const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });

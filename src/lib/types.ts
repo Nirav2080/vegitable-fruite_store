@@ -41,6 +41,7 @@ export interface Product {
   reviews: Review[];
   rating: number;
   variants: ProductVariant[];
+  attributes?: Record<string, string>;
 }
 
 export interface OrderItem {

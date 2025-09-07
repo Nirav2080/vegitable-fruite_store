@@ -23,15 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Product, ProductVariant } from "@/lib/types"
+import type { Product, ProductVariant, Attribute } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
+import { getAttributes } from "@/lib/actions/attributes"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Upload, X, PlusCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const variantSchema = z.object({
   weight: z.string().min(1, 'Weight is required'),
@@ -49,6 +51,7 @@ const formSchema = z.object({
   isSeasonal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
+  attributes: z.record(z.string()).optional(),
 })
 
 type ProductFormValues = z.infer<typeof formSchema>
@@ -63,10 +66,27 @@ export function ProductForm({ product }: ProductFormProps) {
   const isEditing = !!product;
   
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [isLoadingAttributes, setIsLoadingAttributes] = useState(true);
+
+  useEffect(() => {
+    async function fetchAttributes() {
+      try {
+        const fetchedAttributes = await getAttributes();
+        setAttributes(fetchedAttributes);
+      } catch (error) {
+        toast({ title: "Error", description: "Could not load attributes.", variant: "destructive"})
+      } finally {
+        setIsLoadingAttributes(false);
+      }
+    }
+    fetchAttributes();
+  }, [toast]);
 
   const defaultValues = isEditing && product ? {
       ...product,
       images: Array.isArray(product.images) ? product.images : [],
+      attributes: product.attributes || {},
   } : {
       name: "",
       description: "",
@@ -76,6 +96,7 @@ export function ProductForm({ product }: ProductFormProps) {
       isSeasonal: false,
       images: [],
       variants: [{ weight: '', price: 0, originalPrice: 0, stock: 0 }],
+      attributes: {},
   }
 
   const form = useForm<ProductFormValues>({
@@ -328,6 +349,49 @@ export function ProductForm({ product }: ProductFormProps) {
                   Add Variant
                 </Button>
                  <FormMessage>{form.formState.errors.variants?.message}</FormMessage>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Product Attributes</CardTitle>
+                <FormDescription>
+                  Select attribute values for filtering.
+                </FormDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {isLoadingAttributes ? (
+                  <Skeleton className="h-10 w-full" />
+                ) : (
+                  attributes.map(attribute => (
+                    <FormField
+                      key={attribute.id}
+                      control={form.control}
+                      name={`attributes.${attribute.name}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{attribute.name}</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder={`Select a ${attribute.name}`} />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {attribute.values.map(value => (
+                                <SelectItem key={value} value={value}>{value}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ))
+                )}
+                {attributes.length === 0 && !isLoadingAttributes && (
+                  <p className="text-sm text-muted-foreground">No attributes found. <Link href="/admin/attributes/new" className="text-primary underline">Create one</Link>.</p>
+                )}
               </CardContent>
             </Card>
            
