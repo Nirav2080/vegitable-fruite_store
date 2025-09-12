@@ -11,14 +11,6 @@ export interface Review {
     date: string;
 }
 
-export interface Attribute {
-    _id?: ObjectId;
-    id: string;
-    name: string;
-    values: string[];
-    createdAt: Date;
-}
-
 export interface ProductVariant {
   weight: string;
   price: number;
@@ -41,7 +33,6 @@ export interface Product {
   reviews: Review[];
   rating: number;
   variants: ProductVariant[];
-  attributes?: Record<string, string>;
 }
 
 export interface OrderItem {

@@ -34,7 +34,6 @@ const productSchema = z.object({
   isSeasonal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
-  attributes: z.record(z.string()).optional(),
 });
 
 function serializeProduct(product: any): Product {
@@ -59,27 +58,21 @@ function serializeProduct(product: any): Product {
 
 export async function getProducts(): Promise<Product[]> {
     const productsCollection = await getProductsCollection();
-    // Find products where at least one variant has stock > 0
-    const products = await productsCollection.find({ 
-        'variants.stock': { $gt: 0 } 
-    }).sort({ createdAt: -1 }).toArray();
-    
-    // An alternative if we wanted to check TOTAL stock across variants:
-    // const products = await productsCollection.aggregate([
-    //     {
-    //         $addFields: {
-    //             totalStock: { $sum: "$variants.stock" }
-    //         }
-    //     },
-    //     {
-    //         $match: {
-    //             totalStock: { $gt: 0 }
-    //         }
-    //     },
-    //     {
-    //         $sort: { createdAt: -1 }
-    //     }
-    // ]).toArray();
+    const products = await productsCollection.aggregate([
+        {
+            $addFields: {
+                totalStock: { $sum: "$variants.stock" }
+            }
+        },
+        {
+            $match: {
+                totalStock: { $gt: 0 }
+            }
+        },
+        {
+            $sort: { createdAt: -1 }
+        }
+    ]).toArray();
 
     return products.map(serializeProduct);
 }
@@ -127,7 +120,6 @@ export async function createProduct(data: unknown) {
       createdAt: new Date(),
       reviews: [],
       rating: 0,
-      attributes: parsedData.attributes || {},
     };
 
     await productsCollection.insertOne(newProduct as any);
@@ -155,7 +147,6 @@ export async function updateProduct(id: string, data: unknown) {
       slug,
       reviews: existingProduct.reviews || [],
       rating: existingProduct.rating || 0,
-      attributes: parsedData.attributes || {},
   };
 
   const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
