@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useForm, useFieldArray } from "react-hook-form"
@@ -267,7 +268,7 @@ export function ProductForm({ product }: ProductFormProps) {
                           <FormItem>
                             <FormLabel>Weight</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g. 250g, 1kg" {...field} />
+                              <Input placeholder="e.g. 500g, 1kg, 2kg" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -410,3 +411,5 @@ export function ProductForm({ product }: ProductFormProps) {
     </Form>
   )
 }
+
+    
