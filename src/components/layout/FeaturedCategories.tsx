@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useState, useEffect } from 'react';
@@ -36,8 +37,7 @@ export function FeaturedCategories() {
     }, []);
 
     return (
-        <div className="py-12 bg-primary/10">
-          <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
                 Shop by Featured Categories
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-primary"></div>
@@ -66,7 +66,6 @@ export function FeaturedCategories() {
                     ))
                 )}
             </div>
-           </div>
         </div>
     );
 }

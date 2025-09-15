@@ -14,6 +14,7 @@ import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
 export default async function Home() {
   const allProducts = await getProducts();
   const featuredProducts = allProducts.filter(p => p.isSeasonal).slice(0, 8);
+  const newProducts = allProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8);
   
   return (
     <div className="flex flex-col gap-8 md:gap-12">
@@ -41,8 +42,29 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="w-full">
+      <section className="w-full bg-primary/5 py-12">
         <FeaturedCategories />
+      </section>
+
+      <section className="container mx-auto px-4 mb-12">
+        <h2 className="text-2xl font-bold font-headline relative mb-6 pb-2">
+          New Products
+          <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
+        </h2>
+        <Carousel 
+          opts={{ align: "start", loop: true }}
+          className="w-full"
+        >
+          <CarouselContent className="-ml-4">
+            {newProducts.map((product, index) => (
+              <CarouselItem key={index} className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5">
+                <ProductCard product={product} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+          <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+        </Carousel>
       </section>
 
     </div>
