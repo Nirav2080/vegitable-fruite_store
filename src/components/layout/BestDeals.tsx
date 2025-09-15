@@ -6,8 +6,9 @@ import React, { useState, useEffect } from 'react';
 import { getProducts } from '@/lib/actions/products';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';
 import { DealProductCard } from './DealProductCard';
+import { cn } from '@/lib/utils';
 
 function BestDealsSkeleton() {
     return (
@@ -41,6 +42,8 @@ function BestDealsSkeleton() {
 export function BestDeals() {
     const [dealProducts, setDealProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [api, setApi] = useState<CarouselApi>()
+    const [current, setCurrent] = useState(0)
 
     useEffect(() => {
         const fetchDealProducts = async () => {
@@ -59,6 +62,18 @@ export function BestDeals() {
         fetchDealProducts();
     }, []);
 
+    useEffect(() => {
+        if (!api) {
+          return
+        }
+     
+        setCurrent(api.selectedScrollSnap())
+     
+        api.on("select", () => {
+          setCurrent(api.selectedScrollSnap())
+        })
+      }, [api])
+
     if (isLoading) {
         return <BestDealsSkeleton />
     }
@@ -74,6 +89,7 @@ export function BestDeals() {
                 <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
             </h2>
             <Carousel 
+                setApi={setApi}
                 opts={{ align: "start", loop: true }}
                 className="w-full relative"
             >
@@ -84,9 +100,20 @@ export function BestDeals() {
                     </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 hidden lg:flex bg-white shadow-md w-10 h-10" />
-                <CarouselNext className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 hidden lg:flex bg-white shadow-md w-10 h-10" />
             </Carousel>
+             <div className="flex justify-center gap-2 mt-6">
+                {dealProducts.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => api?.scrollTo(index)}
+                        className={cn(
+                            "h-2 w-2 rounded-full transition-all duration-300",
+                            current === index ? "w-4 bg-primary" : "bg-muted"
+                        )}
+                        aria-label={`Go to slide ${index + 1}`}
+                    />
+                ))}
+            </div>
         </div>
     )
 }
