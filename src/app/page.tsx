@@ -21,10 +21,6 @@ export default async function Home() {
          <HeroCarousel />
       </section>
 
-      <section className="w-full">
-        <FeaturedCategories />
-      </section>
-
       <section className="container mx-auto px-4 mt-8 md:mt-12">
         <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
             Featured Products
@@ -43,6 +39,10 @@ export default async function Home() {
             <Link href="/products">View All Products <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
+      </section>
+
+      <section className="w-full">
+        <FeaturedCategories />
       </section>
 
     </div>
