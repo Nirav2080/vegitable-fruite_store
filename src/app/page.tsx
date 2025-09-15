@@ -23,10 +23,6 @@ export default async function Home() {
          <HeroCarousel />
       </section>
       
-      <section className="w-full bg-primary/10 py-12">
-        <FeaturedCategories />
-      </section>
-
       <section className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold font-headline relative pb-2">
@@ -53,6 +49,10 @@ export default async function Home() {
           <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
           <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
         </Carousel>
+      </section>
+
+      <section className="w-full bg-primary/10 py-12">
+        <FeaturedCategories />
       </section>
 
       <section className="container mx-auto px-4">
