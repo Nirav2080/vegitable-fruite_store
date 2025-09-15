@@ -1,10 +1,12 @@
 
+
 'use client'
 
 import React, { useState, useEffect } from 'react';
 
 interface CountdownTimerProps {
   targetDate: string;
+  size?: 'normal' | 'small';
 }
 
 interface TimeLeft {
@@ -27,7 +29,7 @@ const calculateTimeLeft = (targetDate: string): TimeLeft | null => {
   return null;
 };
 
-export const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
+export const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate, size = 'normal' }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(calculateTimeLeft(targetDate));
 
   useEffect(() => {
@@ -41,13 +43,26 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) =>
   if (!timeLeft) {
     return <div className="text-red-500 font-bold">Offer Expired!</div>;
   }
-
+  
   const timeParts = [
     { label: 'Days', value: timeLeft.days },
-    { label: 'Hours', value: timeLeft.hours },
+    { label: 'Hrs', value: timeLeft.hours },
     { label: 'Mins', value: timeLeft.minutes },
     { label: 'Secs', value: timeLeft.seconds },
   ];
+  
+  if (size === 'small') {
+      return (
+         <div className="flex items-center gap-1.5 text-center">
+          {timeParts.map((part) => (
+            <div key={part.label} className="flex flex-col items-center justify-center bg-muted rounded-md w-12 h-12 p-1">
+                <span className="text-base font-bold text-foreground">{String(part.value).padStart(2, '0')}</span>
+                <span className="text-xs text-muted-foreground">{part.label}</span>
+            </div>
+          ))}
+        </div>
+      )
+  }
 
   return (
     <div className="flex items-start gap-2 text-center">
