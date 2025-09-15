@@ -49,13 +49,7 @@ export function BestDeals() {
         const fetchDealProducts = async () => {
             setIsLoading(true);
             const allProducts = await getProducts();
-            const deals = allProducts
-                .filter(p => p.variants.some(v => v.originalPrice && v.originalPrice > v.price))
-                .sort((a, b) => {
-                    const discountA = a.variants[0].originalPrice! - a.variants[0].price;
-                    const discountB = b.variants[0].originalPrice! - b.variants[0].price;
-                    return discountB - discountA;
-                });
+            const deals = allProducts.filter(p => p.isDeal);
             setDealProducts(deals);
             setIsLoading(false);
         };

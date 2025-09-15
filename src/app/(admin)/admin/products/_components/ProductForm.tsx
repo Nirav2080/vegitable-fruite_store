@@ -48,7 +48,8 @@ const formSchema = z.object({
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
   isOrganic: z.boolean().default(false),
-  isSeasonal: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
+  isDeal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 })
@@ -84,7 +85,8 @@ export function ProductForm({ product }: ProductFormProps) {
       categoryId: "",
       brand: "",
       isOrganic: false,
-      isSeasonal: false,
+      isFeatured: false,
+      isDeal: false,
       images: [],
       variants: [{ weight: '1kg', price: 0, originalPrice: 0, stock: 0 }],
   }
@@ -401,16 +403,33 @@ export function ProductForm({ product }: ProductFormProps) {
                 />
           <FormField
                     control={form.control}
-                    name="isSeasonal"
+                    name="isFeatured"
                     render={({ field }) => (
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl>
                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                            <FormLabel>Seasonal</FormLabel>
+                            <FormLabel>Featured Product</FormLabel>
                             <FormDescription>
-                            Is this product a seasonal item?
+                            Show this product in the featured section on the homepage.
+                            </FormDescription>
+                        </div>
+                    </FormItem>
+                    )}
+                />
+         <FormField
+                    control={form.control}
+                    name="isDeal"
+                    render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                            <FormLabel>Deal of the Day</FormLabel>
+                            <FormDescription>
+                            Show this product in the deals section on the homepage.
                             </FormDescription>
                         </div>
                     </FormItem>

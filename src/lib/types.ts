@@ -37,7 +37,8 @@ export interface Product {
   category: string;
   brand?: string;
   isOrganic: boolean;
-  isSeasonal: boolean;
+  isFeatured: boolean;
+  isDeal: boolean;
   createdAt: Date;
   reviews: Review[];
   rating: number;

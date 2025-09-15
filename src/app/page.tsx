@@ -15,7 +15,7 @@ import { BestDeals } from "@/components/layout/BestDeals";
 export default async function Home() {
   const allProducts = await getProducts();
   const newProducts = allProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8);
-  const featuredProducts = allProducts.filter(p => p.isSeasonal).slice(0, 4);
+  const featuredProducts = allProducts.filter(p => p.isFeatured).slice(0, 4);
   
   return (
     <div className="flex flex-col gap-8 md:gap-12">
@@ -26,8 +26,8 @@ export default async function Home() {
       <section className="w-full bg-primary/10 py-12">
         <FeaturedCategories />
       </section>
-
-      <section className="container mx-auto px-4 mb-12">
+      
+      <section className="container mx-auto px-4">
         <h2 className="text-2xl font-bold font-headline relative mb-6 pb-2">
           New Products
           <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
@@ -48,10 +48,6 @@ export default async function Home() {
         </Carousel>
       </section>
 
-      <section className="container mx-auto px-4">
-        <BestDeals />
-      </section>
-
       <section className="container mx-auto px-4 mt-12">
         <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold font-headline relative pb-2">
@@ -64,11 +60,15 @@ export default async function Home() {
                 </Link>
             </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+      </section>
+
+      <section className="container mx-auto px-4">
+        <BestDeals />
       </section>
 
       <section className="w-full bg-muted/50 py-16">

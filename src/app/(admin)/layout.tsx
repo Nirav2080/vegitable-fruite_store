@@ -17,6 +17,8 @@ import {
   Gift,
   LineChart,
   Tag,
+  Star,
+  Sparkles
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -79,6 +81,7 @@ export default function AdminLayout({
     { href: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: pendingOrdersCount > 0 ? pendingOrdersCount : undefined },
     { href: '/admin/products', icon: Package, label: 'Products' },
     { href: '/admin/categories', icon: Tag, label: 'Categories' },
+    { href: '/admin/attributes', icon: Sparkles, label: 'Attributes' },
     { href: '/admin/users', icon: Users, label: 'Customers' },
     { href: '/admin/analytics', icon: LineChart, label: 'Analytics' },
     { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },

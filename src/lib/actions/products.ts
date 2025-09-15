@@ -31,7 +31,8 @@ const productSchema = z.object({
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
   isOrganic: z.boolean().default(false),
-  isSeasonal: z.boolean().default(false),
+  isFeatured: z.boolean().default(false),
+  isDeal: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });
@@ -156,6 +157,7 @@ export async function updateProduct(id: string, data: unknown) {
   revalidatePath(`/admin/products/${id}/edit`);
   revalidatePath('/products');
   revalidatePath(`/products/${slug}`);
+  revalidatePath('/');
 }
 
 export async function deleteProduct(id: string) {
@@ -171,6 +173,7 @@ export async function deleteProduct(id: string) {
 
     revalidatePath('/admin/products');
     revalidatePath('/products');
+    revalidatePath('/');
 }
 
 export async function getDashboardData() {
