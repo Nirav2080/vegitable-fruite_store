@@ -22,6 +22,25 @@ export default async function Home() {
       <section className="w-full">
          <HeroCarousel />
       </section>
+
+      <section className="container mx-auto px-4 mt-12">
+        <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold font-headline relative pb-2">
+            Featured Products
+            <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
+            </h2>
+            <Button variant="outline" asChild>
+                <Link href="/products">
+                    View All <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
       
       <section className="w-full bg-primary/10 py-12">
         <FeaturedCategories />
@@ -46,25 +65,6 @@ export default async function Home() {
           <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
           <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
         </Carousel>
-      </section>
-
-      <section className="container mx-auto px-4 mt-12">
-        <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold font-headline relative pb-2">
-            Featured Products
-            <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
-            </h2>
-            <Button variant="outline" asChild>
-                <Link href="/products">
-                    View All <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-            </Button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
       </section>
 
       <section className="container mx-auto px-4">
