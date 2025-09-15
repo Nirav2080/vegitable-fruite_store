@@ -21,6 +21,10 @@ export default async function Home() {
          <HeroCarousel />
       </section>
 
+      <section className="w-full">
+        <FeaturedCategories />
+      </section>
+
       <section className="container mx-auto px-4 mt-8 md:mt-12">
         <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
             Featured Products
@@ -28,24 +32,10 @@ export default async function Home() {
         </h2>
         <p className="mt-4 text-center text-muted-foreground max-w-xl mx-auto">Check out this week's seasonal picks, offering the best value and freshness.</p>
         
-        <div className="relative -mx-2">
-            <Carousel 
-                opts={{
-                    align: "start",
-                    loop: true,
-                }}
-                className="w-full mt-8"
-            >
-                <CarouselContent>
-                {featuredProducts.map((product) => (
-                    <CarouselItem key={product.id} className="basis-1/2 md:basis-1/4">
-                        <ProductCard product={product} />
-                    </CarouselItem>
-                ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-                <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-            </Carousel>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+            {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+            ))}
         </div>
 
         <div className="text-center mt-8 mb-8">
@@ -53,10 +43,6 @@ export default async function Home() {
             <Link href="/products">View All Products <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
-      </section>
-
-      <section className="w-full">
-        <FeaturedCategories />
       </section>
 
     </div>
