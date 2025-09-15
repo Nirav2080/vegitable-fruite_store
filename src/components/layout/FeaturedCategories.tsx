@@ -37,7 +37,7 @@ export function FeaturedCategories() {
     }, []);
 
     return (
-        <div className="py-12 bg-muted/20">
+        <div className="py-12 bg-primary/5">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
                 Shop by Featured Categories
