@@ -47,7 +47,7 @@ export default function CartPage() {
                                 src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/100x100/EEE/31343C'}
                                 alt={item.name}
                                 fill
-                                className="object-cover"
+                                className="object-contain"
                             />
                         </div>
                         <div className="flex-1">

@@ -80,14 +80,14 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card 
         className="flex flex-col h-full overflow-hidden group transition-all duration-300 border hover:shadow-md"
     >
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden p-2">
         <Link href={`/products/${product.slug}`} className="block aspect-square relative">
           <Image
             src={primaryImage}
             alt={product.name}
             data-ai-hint="product image"
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
         
@@ -106,7 +106,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
         </Button>
       </div>
-      <div className="p-3 flex-grow flex flex-col">
+      <div className="p-3 pt-0 flex-grow flex flex-col">
         <p className="text-xs text-muted-foreground">{product.brand || 'Generic'}</p>
         <h3 className="text-sm font-semibold leading-tight mt-1 flex-grow">
           <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">

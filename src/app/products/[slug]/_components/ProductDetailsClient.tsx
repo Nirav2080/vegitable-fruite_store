@@ -78,7 +78,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
           <div className="flex flex-col gap-2">
             {images.map((img, index) => (
               <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-primary' : 'border-gray-200'}`}>
-                <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-cover" />
+                <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-contain" />
               </button>
             ))}
           </div>
@@ -87,7 +87,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
               src={images[selectedImage]}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         </div>
