@@ -8,20 +8,26 @@ import { Button } from '@/components/ui/button'
 import { Heart, Trash2 } from 'lucide-react'
 import { useCart } from '@/hooks/use-cart'
 import type { Product } from '@/lib/types'
+import { useToast } from '@/hooks/use-toast'
 
 export default function WishlistPage() {
   const { wishlistItems, removeFromWishlist } = useWishlist()
   const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const handleMoveToCart = (product: Product) => {
-    const defaultVariant = product.variants?.[0];
-    if (defaultVariant) {
-        addToCart(product, 1, defaultVariant);
-        removeFromWishlist(product.id);
-    } else {
-        // Handle case where product has no variants, maybe show a toast
-        console.error("Product has no variants to add to cart.");
+    // Ensure product and its variants are valid before proceeding
+    if (!product || !Array.isArray(product.variants) || product.variants.length === 0) {
+        toast({
+            title: "Cannot move to cart",
+            description: "This product is currently unavailable or has no options.",
+            variant: "destructive",
+        });
+        return;
     }
+    const defaultVariant = product.variants[0];
+    addToCart(product, 1, defaultVariant);
+    removeFromWishlist(product.id);
   }
 
   if (wishlistItems.length === 0) {
@@ -46,9 +52,10 @@ export default function WishlistPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {wishlistItems.map((item) => {
-          const defaultVariant = item.variants?.[0];
-          if (!defaultVariant) return null;
-
+          // Safeguard against items without variants
+          if (!item.variants || item.variants.length === 0) return null;
+          const defaultVariant = item.variants[0];
+          
           return (
             <div key={item.id} className="border rounded-lg p-4 flex flex-col justify-between">
               <div>

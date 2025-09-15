@@ -11,6 +11,15 @@ import type { Banner } from "@/lib/types";
 import { getActiveBanners } from "@/lib/actions/banners";
 import { Loader2 } from "lucide-react";
 
+function HeroCarouselSkeleton() {
+    return (
+      <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] w-full flex items-center justify-center bg-muted">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
+}
+
+
 export function HeroCarousel() {
   const [heroSlides, setHeroSlides] = React.useState<Banner[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -23,6 +32,7 @@ export function HeroCarousel() {
 
   React.useEffect(() => {
     async function fetchBanners() {
+      setIsLoading(true);
       try {
         const banners = await getActiveBanners();
         setHeroSlides(banners);
@@ -48,11 +58,7 @@ export function HeroCarousel() {
   }, [api])
 
   if (isLoading) {
-    return (
-      <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh] w-full flex items-center justify-center bg-muted">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    )
+    return <HeroCarouselSkeleton />
   }
 
   if (heroSlides.length === 0) {
