@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { cn } from '@/lib/utils';
@@ -54,6 +54,21 @@ function renderStars(rating: number) {
 }
 
 export function CustomerReviews() {
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(0)
+ 
+  React.useEffect(() => {
+    if (!api) {
+      return
+    }
+ 
+    setCurrent(api.selectedScrollSnap())
+ 
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap())
+    })
+  }, [api])
+
   return (
     <div className="container mx-auto px-4">
       <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
@@ -63,6 +78,7 @@ export function CustomerReviews() {
       
       <div className="relative w-full max-w-6xl mx-auto mt-12">
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
             loop: true,
@@ -94,9 +110,20 @@ export function CustomerReviews() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-[-3.5rem] top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-          <CarouselNext className="absolute right-[-3.5rem] top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
         </Carousel>
+        <div className="flex justify-center gap-2 mt-6">
+            {reviews.map((_, index) => (
+                <button
+                    key={index}
+                    onClick={() => api?.scrollTo(index)}
+                    className={cn(
+                        "h-2 w-2 rounded-full transition-all duration-300",
+                        current === index ? "w-4 bg-primary" : "bg-muted"
+                    )}
+                    aria-label={`Go to slide ${index + 1}`}
+                />
+            ))}
+        </div>
       </div>
     </div>
   );
