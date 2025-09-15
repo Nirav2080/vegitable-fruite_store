@@ -36,7 +36,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const variantSchema = z.object({
-  weight: z.string().min(1, 'Weight is required'),
+  weight: z.string().min(1, 'Weight/Unit is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number.'),
   originalPrice: z.coerce.number().optional(),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
@@ -47,6 +47,7 @@ const formSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
+  unitType: z.enum(['weight', 'piece']).default('weight'),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
@@ -79,11 +80,13 @@ export function ProductForm({ product }: ProductFormProps) {
   const defaultValues = isEditing && product ? {
       ...product,
       images: Array.isArray(product.images) ? product.images : [],
+      unitType: product.unitType || 'weight',
   } : {
       name: "",
       description: "",
       categoryId: "",
       brand: "",
+      unitType: 'weight' as const,
       isOrganic: false,
       isFeatured: false,
       isDeal: false,
@@ -100,6 +103,8 @@ export function ProductForm({ product }: ProductFormProps) {
     control: form.control,
     name: "variants",
   });
+  
+  const unitType = form.watch('unitType');
 
   async function onSubmit(values: ProductFormValues) {
     try {
@@ -253,11 +258,37 @@ export function ProductForm({ product }: ProductFormProps) {
                     </FormItem>
                 )}
             />
+
+            <FormField
+              control={form.control}
+              name="unitType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Unit Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select how this product is sold" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="weight">Weight (e.g., kg, g)</SelectItem>
+                      <SelectItem value="piece">Piece (e.g., each, pack)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choose if the product is sold by weight or by individual pieces/packs.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <Card>
               <CardHeader>
                 <CardTitle>Product Variants</CardTitle>
                 <FormDescription>
-                  Add different weight options for this product. The first variant will be the default.
+                  Add different options for this product. The first variant will be the default.
                 </FormDescription>
               </CardHeader>
               <CardContent>
@@ -278,9 +309,9 @@ export function ProductForm({ product }: ProductFormProps) {
                         name={`variants.${index}.weight`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Weight</FormLabel>
+                            <FormLabel>{unitType === 'weight' ? 'Weight' : 'Unit'}</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g. 500g, 1kg, 2kg" {...field} />
+                              <Input placeholder={unitType === 'weight' ? "e.g. 500g, 1kg" : "e.g., 1 piece, 6-pack"} {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>

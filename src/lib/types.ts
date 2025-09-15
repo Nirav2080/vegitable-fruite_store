@@ -36,6 +36,7 @@ export interface Product {
   categoryId: string;
   category: string;
   brand?: string;
+  unitType?: 'weight' | 'piece';
   isOrganic: boolean;
   isFeatured: boolean;
   isDeal: boolean;

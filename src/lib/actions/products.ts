@@ -19,7 +19,7 @@ async function getProductsCollection() {
 }
 
 const variantSchema = z.object({
-  weight: z.string().min(1, 'Weight is required'),
+  weight: z.string().min(1, 'Weight/Unit is required'),
   price: z.coerce.number().min(0, 'Price must be a positive number.'),
   originalPrice: z.coerce.number().optional(),
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
@@ -30,6 +30,7 @@ const productSchema = z.object({
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
+  unitType: z.enum(['weight', 'piece']).default('weight'),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
