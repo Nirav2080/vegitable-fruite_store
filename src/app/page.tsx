@@ -1,5 +1,4 @@
 
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -16,6 +15,7 @@ import { BestDeals } from "@/components/layout/BestDeals";
 export default async function Home() {
   const allProducts = await getProducts();
   const newProducts = allProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 8);
+  const featuredProducts = allProducts.filter(p => p.isSeasonal).slice(0, 4);
   
   return (
     <div className="flex flex-col gap-8 md:gap-12">
@@ -50,6 +50,25 @@ export default async function Home() {
 
       <section className="container mx-auto px-4">
         <BestDeals />
+      </section>
+
+      <section className="container mx-auto px-4 mt-12">
+        <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold font-headline relative pb-2">
+            Featured Products
+            <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
+            </h2>
+            <Button variant="outline" asChild>
+                <Link href="/products">
+                    View All <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </section>
 
       <section className="w-full bg-muted/50 py-16">
