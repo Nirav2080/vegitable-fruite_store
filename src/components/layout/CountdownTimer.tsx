@@ -50,10 +50,10 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) =>
   ];
 
   return (
-    <div className="flex gap-2 text-center">
+    <div className="flex items-start gap-2 text-center">
       {timeParts.map((part, index) => (
         <div key={part.label} className="flex items-center gap-2">
-            <div className="flex flex-col items-center justify-center bg-muted rounded-md w-14 h-14">
+            <div className="flex flex-col items-center justify-center bg-muted rounded-md w-14 h-14 p-1">
                 <span className="text-xl font-bold text-primary">{String(part.value).padStart(2, '0')}</span>
                 <span className="text-xs text-muted-foreground">{part.label}</span>
             </div>

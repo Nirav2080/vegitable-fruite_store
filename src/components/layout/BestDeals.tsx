@@ -79,19 +79,19 @@ export function BestDeals() {
                 Best Deals of the Week
                 <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                  <div className="border rounded-lg p-4 sm:p-6 flex flex-col md:flex-row items-center gap-6 h-full hover:shadow-lg transition-shadow duration-300">
                     <Link href={`/products/${mainDeal.slug}`} className="w-full md:w-1/2 flex-shrink-0">
-                         <div className="relative aspect-square">
+                         <div className="relative aspect-square rounded-md overflow-hidden">
                             <Image 
                                 src={mainDeal.images[0]}
                                 alt={mainDeal.name}
                                 fill
-                                className="object-cover rounded-md"
+                                className="object-cover"
                             />
                         </div>
                     </Link>
-                    <div className="flex flex-col items-start h-full">
+                    <div className="flex flex-col items-start h-full flex-1">
                         <h3 className="text-xl font-semibold leading-tight">
                             <Link href={`/products/${mainDeal.slug}`} className="hover:text-primary transition-colors">
                                 {mainDeal.name}
@@ -101,14 +101,14 @@ export function BestDeals() {
                             <p className="text-2xl font-bold text-primary">${mainDeal.variants[0].price.toFixed(2)}</p>
                             {mainDeal.variants[0].originalPrice && <p className="text-lg text-muted-foreground line-through">${mainDeal.variants[0].originalPrice.toFixed(2)}</p>}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-2 flex-grow">{mainDeal.description.substring(0, 100)}...</p>
+                        <p className="text-sm text-muted-foreground mt-2">{mainDeal.description.substring(0, 100)}...</p>
                         
-                        <div className='my-4'>
+                        <div className='my-4 flex-grow'>
                             <p className='text-sm font-medium mb-2'>Hurry up! Offer ends in:</p>
                             <CountdownTimer targetDate={targetDate.toISOString()} />
                         </div>
 
-                        <Button asChild className="w-full">
+                        <Button asChild className="w-full mt-auto">
                            <Link href={`/products/${mainDeal.slug}`}>View Deal</Link>
                         </Button>
                     </div>
