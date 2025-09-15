@@ -26,7 +26,7 @@ export default async function Home() {
       <section className="w-full bg-primary/10 py-12">
         <FeaturedCategories />
       </section>
-      
+
       <section className="container mx-auto px-4">
         <h2 className="text-2xl font-bold font-headline relative mb-6 pb-2">
           New Products
@@ -38,7 +38,7 @@ export default async function Home() {
         >
           <CarouselContent className="-ml-4">
             {newProducts.map((product, index) => (
-              <CarouselItem key={index} className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/5">
+              <CarouselItem key={index} className="pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
                 <ProductCard product={product} />
               </CarouselItem>
             ))}
@@ -48,14 +48,14 @@ export default async function Home() {
         </Carousel>
       </section>
 
-      <section className="container mx-auto px-4">
+       <section className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold font-headline relative pb-2">
             Featured Products
             <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
             </h2>
             <Button variant="outline" asChild>
-                <Link href="/products">
+                <Link href="/products?featured=true">
                     View All <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
