@@ -66,21 +66,7 @@ async function serializeProduct(product: any): Promise<Product | null> {
 
 export async function getProducts(): Promise<Product[]> {
     const productsCollection = await getProductsCollection();
-    const productsData = await productsCollection.aggregate([
-        {
-            $addFields: {
-                totalStock: { $sum: "$variants.stock" }
-            }
-        },
-        {
-            $match: {
-                totalStock: { $gt: 0 }
-            }
-        },
-        {
-            $sort: { createdAt: -1 }
-        }
-    ]).toArray();
+    const productsData = await productsCollection.find({}).sort({ createdAt: -1 }).toArray();
 
     const serializedProducts = await Promise.all(productsData.map(serializeProduct));
     return serializedProducts.filter((p): p is Product => p !== null);
