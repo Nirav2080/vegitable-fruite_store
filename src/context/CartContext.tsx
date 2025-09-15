@@ -27,7 +27,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     if (typeof window !== 'undefined') {
       const savedCart = localStorage.getItem('cart');
-      return savedCart ? JSON.parse(savedCart) : [];
+      try {
+        const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+        // Basic validation to prevent malformed cart state
+        if (Array.isArray(parsedCart)) {
+          return parsedCart;
+        }
+      } catch (error) {
+        console.error("Failed to parse cart from localStorage", error);
+        return [];
+      }
     }
     return [];
   });
@@ -37,11 +46,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems]);
 
   const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant) => {
+    // Ensure we have a variant, defaulting to the first one if not provided.
     const selectedVariant = variant || product.variants?.[0];
+    
     if (!selectedVariant) {
         toast({
             title: "Cannot add to cart",
-            description: "This product has no selectable options.",
+            description: "This product is currently unavailable or has no options.",
             variant: "destructive",
         });
         return;
@@ -52,21 +63,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prevItems.find(item => item.id === cartItemId);
       
       if (existingItem) {
+        // If item exists, update its quantity
         return prevItems.map(item =>
           item.id === cartItemId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
+      } else {
+        // If item does not exist, add it to the cart
+        const newCartItem: CartItem = {
+          ...product,
+          id: cartItemId, // This is now the unique cart item ID
+          quantity: quantity,
+          selectedVariant: selectedVariant,
+        };
+        return [...prevItems, newCartItem];
       }
-      
-      const newCartItem: CartItem = {
-        ...product,
-        id: cartItemId, // This is now the unique cart item ID
-        selectedVariant: selectedVariant,
-        quantity: quantity,
-      };
-      
-      return [...prevItems, newCartItem];
     });
 
     toast({
@@ -80,6 +92,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     toast({
       title: "Item removed",
       description: `The item has been removed from your cart.`,
+      variant: "destructive"
     })
   };
 

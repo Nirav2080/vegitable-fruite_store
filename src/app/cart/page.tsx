@@ -35,7 +35,12 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
             <div className="space-y-4">
-                {cartItems.map((item) => (
+                {cartItems.map((item) => {
+                  // Safeguard against items without a selectedVariant
+                  if (!item.selectedVariant) {
+                    return null; 
+                  }
+                  return (
                     <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border rounded-lg">
                         <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden">
                             <Image
@@ -68,7 +73,8 @@ export default function CartPage() {
                             ${(item.selectedVariant.price * item.quantity).toFixed(2)}
                         </div>
                     </div>
-                ))}
+                  )
+                })}
             </div>
         </div>
         <aside className="lg:col-span-1">
