@@ -22,7 +22,7 @@ export interface Category {
   _id?: ObjectId;
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
   createdAt: Date;
 }
 

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getCategories } from '@/lib/actions/categories';
 import type { Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
 
 function CategorySkeleton() {
     return (
@@ -46,11 +47,18 @@ export function FeaturedCategories() {
                 ) : (
                     categories.slice(0, 8).map((category) => (
                         <Link key={category.id} href={`/products?categoryId=${category.id}`} className="group flex flex-col items-center gap-3 text-center">
-                            <div className="h-24 w-24 rounded-full bg-white flex items-center justify-center border-2 border-transparent group-hover:border-primary group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
-                                <div 
-                                    className="h-12 w-12 text-primary"
-                                    dangerouslySetInnerHTML={{ __html: category.icon }} 
-                                />
+                            <div className="h-24 w-24 rounded-full bg-white flex items-center justify-center border-2 border-transparent group-hover:border-primary group-hover:shadow-lg transition-all duration-300 transform group-hover:scale-105 p-2">
+                                {category.icon ? (
+                                    <Image 
+                                        src={category.icon}
+                                        alt={category.name}
+                                        width={80}
+                                        height={80}
+                                        className="object-contain"
+                                    />
+                                ) : (
+                                    <span className="text-primary text-xs font-semibold">{category.name}</span>
+                                )}
                             </div>
                             <h3 className="font-semibold text-sm group-hover:text-primary transition-colors">{category.name}</h3>
                         </Link>

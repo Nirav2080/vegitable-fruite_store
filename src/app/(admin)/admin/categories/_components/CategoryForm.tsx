@@ -21,11 +21,11 @@ import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Upload, X } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
+import Image from "next/image"
 
 const formSchema = z.object({
   name: z.string().min(1, "Category name is required"),
-  icon: z.string().min(1, "An SVG icon is required"),
+  icon: z.string().optional(),
 })
 
 type CategoryFormValues = z.infer<typeof formSchema>
@@ -70,12 +70,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
 
   const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || file.type !== 'image/svg+xml') {
-        toast({
-            title: "Invalid file type",
-            description: "Please upload an SVG file for the icon.",
-            variant: "destructive",
-        })
+    if (!file) {
         return;
     }
 
@@ -85,18 +80,10 @@ export function CategoryForm({ category }: CategoryFormProps) {
         setIconPreview(result);
         form.setValue('icon', result, { shouldValidate: true, shouldDirty: true });
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
     e.target.value = '';
   };
   
-  const handleIconPaste = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const pastedText = e.target.value;
-      if(pastedText.trim().startsWith('<svg')) {
-          setIconPreview(pastedText);
-          form.setValue('icon', pastedText, { shouldValidate: true, shouldDirty: true });
-      }
-  }
-
   const removeIcon = () => {
     form.setValue('icon', '', { shouldValidate: true, shouldDirty: true });
     setIconPreview(null);
@@ -124,11 +111,11 @@ export function CategoryForm({ category }: CategoryFormProps) {
             name="icon"
             render={() => (
                 <FormItem>
-                    <FormLabel>Category Icon (SVG)</FormLabel>
+                    <FormLabel>Category Image</FormLabel>
                      <div className="flex gap-4 items-start">
                         {iconPreview && (
-                            <div className="relative w-24 h-24 p-4 border rounded-md flex items-center justify-center">
-                                <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: iconPreview }} />
+                            <div className="relative w-24 h-24 p-2 border rounded-md flex items-center justify-center">
+                                <Image src={iconPreview} alt="Category image preview" layout="fill" objectFit="contain" />
                                 <Button
                                     type="button"
                                     variant="destructive"
@@ -145,30 +132,21 @@ export function CategoryForm({ category }: CategoryFormProps) {
                                 <div className="w-full p-4 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
                                     <label htmlFor="icon-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Click or drag to upload an SVG</span>
+                                        <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
                                     </label>
                                     <Input 
                                         id="icon-upload" 
                                         type="file" 
-                                        accept="image/svg+xml"
+                                        accept="image/*"
                                         className="hidden"
                                         onChange={handleIconChange}
                                     />
                                 </div>
                             </FormControl>
-                            <p className="text-center text-sm text-muted-foreground my-2">OR</p>
-                             <FormControl>
-                                 <Textarea 
-                                     placeholder="Paste SVG code here" 
-                                     rows={5} 
-                                     onChange={handleIconPaste}
-                                     value={form.getValues('icon')}
-                                />
-                             </FormControl>
                         </div>
                     </div>
                     <FormDescription>
-                        Upload an SVG file or paste the raw SVG code for the category icon.
+                        Upload an image for the category. This is optional.
                     </FormDescription>
                     <FormMessage />
                 </FormItem>

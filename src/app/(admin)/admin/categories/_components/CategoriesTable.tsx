@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import type { Category } from '@/lib/types';
 import {
@@ -28,6 +28,7 @@ import {
 import { deleteCategory } from '@/lib/actions/categories';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export function CategoriesTable({ data }: { data: Category[] }) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -77,8 +78,18 @@ export function CategoriesTable({ data }: { data: Category[] }) {
           {data.map((category) => (
             <TableRow key={category.id}>
               <TableCell>
-                  <div className="w-10 h-10 p-2 border rounded-md flex items-center justify-center bg-muted">
-                    <div className='w-full h-full' dangerouslySetInnerHTML={{ __html: category.icon }} />
+                  <div className="w-10 h-10 border rounded-md flex items-center justify-center bg-muted">
+                    {category.icon ? (
+                      <Image 
+                        src={category.icon}
+                        alt={category.name}
+                        width={40}
+                        height={40}
+                        className="object-contain p-1"
+                      />
+                    ) : (
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                    )}
                   </div>
               </TableCell>
               <TableCell className="font-medium">{category.name}</TableCell>
