@@ -96,9 +96,9 @@ export function Header() {
                     {isClient && isLoggedIn ? (
                       <>
                         <DropdownMenuItem asChild>
-                          <Link href="/account/profile" className="flex items-center w-full">
+                          <Link href="/account" className="flex items-center w-full">
                             <User className="mr-2 h-4 w-4" />
-                            <span>My Profile</span>
+                            <span>My Account</span>
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
