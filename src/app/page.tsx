@@ -22,6 +22,10 @@ export default async function Home() {
       <section className="w-full">
          <HeroCarousel />
       </section>
+      
+      <section className="w-full bg-primary/10 py-12">
+        <FeaturedCategories />
+      </section>
 
       <section className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
@@ -36,7 +40,7 @@ export default async function Home() {
             </Button>
         </div>
         <Carousel 
-          opts={{ align: "start", loop: true }}
+          opts={{ align: "start", loop: featuredProducts.length > 4 }}
           className="w-full"
         >
           <CarouselContent className="-ml-4">
@@ -51,17 +55,13 @@ export default async function Home() {
         </Carousel>
       </section>
 
-      <section className="w-full bg-primary/10 py-12">
-        <FeaturedCategories />
-      </section>
-
       <section className="container mx-auto px-4">
         <h2 className="text-2xl font-bold font-headline relative mb-6 pb-2">
           New Products
           <div className="absolute bottom-0 left-0 w-20 h-1 bg-primary"></div>
         </h2>
         <Carousel 
-          opts={{ align: "start", loop: true }}
+          opts={{ align: "start", loop: newProducts.length > 4 }}
           className="w-full"
         >
           <CarouselContent className="-ml-4">
