@@ -11,8 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react";
+import { Pencil, Trash2, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import type { Category } from '@/lib/types';
 import {
@@ -69,9 +68,7 @@ export function CategoriesTable({ data }: { data: Category[] }) {
           <TableRow>
             <TableHead className="w-[80px]">Icon</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>
-              <span className="sr-only">Actions</span>
-            </TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -93,24 +90,15 @@ export function CategoriesTable({ data }: { data: Category[] }) {
                   </div>
               </TableCell>
               <TableCell className="font-medium">{category.name}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button aria-haspopup="true" size="icon" variant="ghost">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Toggle menu</span>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-2">
+                    <Button asChild variant="outline" size="icon">
+                       <Link href={`/admin/categories/${category.id}/edit`}><Pencil className="h-4 w-4" /></Link>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem asChild>
-                       <Link href={`/admin/categories/${category.id}/edit`}><Pencil className="mr-2 h-4 w-4" /> Edit</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => openDeleteDialog(category.id)} className='text-destructive focus:text-destructive'>
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    <Button variant="destructive" size="icon" onClick={() => openDeleteDialog(category.id)}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

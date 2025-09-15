@@ -45,28 +45,33 @@ export default function WishlistPage() {
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {wishlistItems.map((item) => (
-          <div key={item.id} className="border rounded-lg p-4 flex flex-col justify-between">
-            <div>
-              <div className="relative h-40 w-full rounded-md overflow-hidden mb-4">
-                <Image
-                  src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/150x150/EEE/31343C'}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                />
+        {wishlistItems.map((item) => {
+          const defaultVariant = item.variants?.[0];
+          if (!defaultVariant) return null;
+
+          return (
+            <div key={item.id} className="border rounded-lg p-4 flex flex-col justify-between">
+              <div>
+                <div className="relative h-40 w-full rounded-md overflow-hidden mb-4">
+                  <Image
+                    src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/150x150/EEE/31343C'}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="font-semibold">{item.name}</h3>
+                <p className="font-bold text-primary mt-1">${defaultVariant.price.toFixed(2)}</p>
               </div>
-              <h3 className="font-semibold">{item.name}</h3>
-              <p className="font-bold text-primary mt-1">${item.variants[0].price.toFixed(2)}</p>
+              <div className="mt-4 flex flex-col gap-2">
+                  <Button onClick={() => handleMoveToCart(item)}>Move to Cart</Button>
+                  <Button variant="outline" size="icon" className="self-end" onClick={() => removeFromWishlist(item.id)}>
+                      <Trash2 className="h-4 w-4" />
+                  </Button>
+              </div>
             </div>
-            <div className="mt-4 flex flex-col gap-2">
-                <Button onClick={() => handleMoveToCart(item)}>Move to Cart</Button>
-                <Button variant="outline" size="icon" className="self-end" onClick={() => removeFromWishlist(item.id)}>
-                    <Trash2 className="h-4 w-4" />
-                </Button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
