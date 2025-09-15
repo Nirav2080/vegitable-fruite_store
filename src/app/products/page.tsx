@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { getProducts } from "@/lib/actions/products";
+import { getCategories } from "@/lib/actions/categories";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductListCard } from "@/components/products/ProductListCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,13 +11,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/lib/types";
+import type { Product, Category } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-
-const staticCategories = ["Fruits", "Vegetables", "Organic Boxes"];
 
 function ProductsSkeleton() {
     return (
@@ -36,11 +35,12 @@ function ProductsSkeleton() {
 }
 
 interface FilterSidebarContentProps {
+    categories: Category[];
     selectedFilters: Record<string, string[]>;
     handleFilterChange: (filterName: string, value: string) => void;
 }
 
-function FilterSidebarContent({ selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
+function FilterSidebarContent({ categories, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
     return (
         <div className="space-y-6">
             <Card>
@@ -53,15 +53,15 @@ function FilterSidebarContent({ selectedFilters, handleFilterChange }: FilterSid
                             <AccordionTrigger className="font-semibold px-6">Category</AccordionTrigger>
                             <AccordionContent className="px-6">
                                 <div className="grid gap-2">
-                                    {staticCategories.map((category) => (
-                                        <div key={category} className="flex items-center justify-between">
-                                            <Label htmlFor={`cat-${category}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                    {categories.map((category) => (
+                                        <div key={category.id} className="flex items-center justify-between">
+                                            <Label htmlFor={`cat-${category.id}`} className="flex items-center gap-2 font-normal cursor-pointer">
                                                 <Checkbox 
-                                                    id={`cat-${category}`}
-                                                    checked={selectedFilters['category']?.includes(category)}
-                                                    onCheckedChange={() => handleFilterChange('category', category)}
+                                                    id={`cat-${category.id}`}
+                                                    checked={selectedFilters['categoryId']?.includes(category.id)}
+                                                    onCheckedChange={() => handleFilterChange('categoryId', category.id)}
                                                 />
-                                                {category}
+                                                {category.name}
                                             </Label>
                                             {/* <span className="text-sm text-muted-foreground">(10)</span> */}
                                         </div>
@@ -79,6 +79,7 @@ function FilterSidebarContent({ selectedFilters, handleFilterChange }: FilterSid
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -86,8 +87,12 @@ export default function ProductsPage() {
   useEffect(() => {
     async function loadData() {
         setIsLoading(true);
-        const fetchedProducts = await getProducts();
+        const [fetchedProducts, fetchedCategories] = await Promise.all([
+            getProducts(),
+            getCategories()
+        ]);
         setProducts(fetchedProducts);
+        setCategories(fetchedCategories);
         setIsLoading(false);
     }
     loadData();
@@ -120,8 +125,8 @@ export default function ProductsPage() {
             if (!selectedValues || selectedValues.length === 0) {
                 return true;
             }
-            if (filterName === 'category') {
-                return selectedValues.includes(product.category);
+            if (filterName === 'categoryId') {
+                return selectedValues.includes(product.categoryId);
             }
             return false;
         });
@@ -134,6 +139,7 @@ export default function ProductsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         <aside className="hidden lg:block lg:col-span-1 sticky top-24">
             <FilterSidebarContent 
+                categories={categories}
                 selectedFilters={selectedFilters}
                 handleFilterChange={handleFilterChange}
             />
@@ -182,6 +188,7 @@ export default function ProductsPage() {
                     </SheetHeader>
                     <div className="flex-1 overflow-y-auto px-6 pb-6">
                         <FilterSidebarContent 
+                           categories={categories}
                            selectedFilters={selectedFilters}
                            handleFilterChange={handleFilterChange}
                         />

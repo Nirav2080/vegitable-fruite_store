@@ -18,6 +18,14 @@ export interface ProductVariant {
   stock: number;
 }
 
+export interface Category {
+  _id?: ObjectId;
+  id: string;
+  name: string;
+  icon: string;
+  createdAt: Date;
+}
+
 export interface Product {
   _id?: ObjectId;
   id: string;
@@ -25,7 +33,8 @@ export interface Product {
   name: string;
   description: string;
   images: string[];
-  category: 'Fruits' | 'Vegetables' | 'Organic Boxes';
+  categoryId: string;
+  category: string;
   brand?: string;
   isOrganic: boolean;
   isSeasonal: boolean;

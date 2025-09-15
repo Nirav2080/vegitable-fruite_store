@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import type { Product, ProductVariant } from '@/lib/types';
+import type { Product, ProductVariant, Category } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
@@ -28,7 +28,7 @@ const variantSchema = z.object({
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
+  categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
@@ -36,9 +36,15 @@ const productSchema = z.object({
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });
 
-function serializeProduct(product: any): Product {
-    if (!product) return product;
-    const { _id, ...rest } = product;
+async function serializeProduct(product: any): Promise<Product | null> {
+    if (!product || !product.categoryId) return null;
+
+    const db = await getDb();
+    const categoriesCollection = db.collection<Category>('categories');
+    
+    const category = await categoriesCollection.findOne({ _id: new ObjectId(product.categoryId) });
+
+    const { _id, categoryId, ...rest } = product;
 
     const serializedReviews = Array.isArray(product.reviews) 
         ? product.reviews.map((review: any) => ({
@@ -51,6 +57,8 @@ function serializeProduct(product: any): Product {
     return {
         ...rest,
         id: _id.toString(),
+        categoryId: categoryId.toString(),
+        category: category ? category.name : 'Uncategorized',
         reviews: serializedReviews,
         rating: typeof product.rating === 'number' ? product.rating : 0,
     } as Product;
@@ -58,7 +66,7 @@ function serializeProduct(product: any): Product {
 
 export async function getProducts(): Promise<Product[]> {
     const productsCollection = await getProductsCollection();
-    const products = await productsCollection.aggregate([
+    const productsData = await productsCollection.aggregate([
         {
             $addFields: {
                 totalStock: { $sum: "$variants.stock" }
@@ -74,7 +82,8 @@ export async function getProducts(): Promise<Product[]> {
         }
     ]).toArray();
 
-    return products.map(serializeProduct);
+    const serializedProducts = await Promise.all(productsData.map(serializeProduct));
+    return serializedProducts.filter((p): p is Product => p !== null);
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
@@ -100,11 +109,11 @@ export async function getProductById(id: string): Promise<Product | null> {
         return null;
     }
     const productsCollection = await getProductsCollection();
-    const product = await productsCollection.findOne({ _id: new ObjectId(id) });
-    if (!product) {
+    const productData = await productsCollection.findOne({ _id: new ObjectId(id) });
+    if (!productData) {
         return null;
     }
-    return serializeProduct(product);
+    return serializeProduct(productData);
 }
 
 export async function createProduct(data: unknown) {
@@ -113,8 +122,9 @@ export async function createProduct(data: unknown) {
     
     const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-    const newProduct: Omit<Product, 'id'> = {
+    const newProduct: Omit<Product, 'id' | 'category'> = {
       ...parsedData,
+      categoryId: new ObjectId(parsedData.categoryId),
       images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
       slug,
       createdAt: new Date(),
@@ -144,6 +154,7 @@ export async function updateProduct(id: string, data: unknown) {
 
   const updateData = {
       ...parsedData,
+      categoryId: new ObjectId(parsedData.categoryId),
       slug,
       reviews: existingProduct.reviews || [],
       rating: existingProduct.rating || 0,

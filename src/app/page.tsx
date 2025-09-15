@@ -8,6 +8,7 @@ import Link from "next/link";
 import { getProducts } from "@/lib/actions/products";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
 
 
 export default async function Home() {
@@ -18,6 +19,10 @@ export default async function Home() {
     <div className="flex flex-col gap-8 md:gap-12">
       <section className="w-full">
          <HeroCarousel />
+      </section>
+
+      <section className="container mx-auto px-4">
+        <FeaturedCategories />
       </section>
       
       <section className="container mx-auto px-4 mt-8 md:mt-12">

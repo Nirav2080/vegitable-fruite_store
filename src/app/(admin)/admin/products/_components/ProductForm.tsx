@@ -24,8 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Product, ProductVariant } from "@/lib/types"
+import type { Product, Category } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
+import { getCategories } from "@/lib/actions/categories"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
@@ -44,7 +45,7 @@ const variantSchema = z.object({
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
-  category: z.enum(['Fruits', 'Vegetables', 'Organic Boxes']),
+  categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isSeasonal: z.boolean().default(false),
@@ -63,7 +64,16 @@ export function ProductForm({ product }: ProductFormProps) {
   const { toast } = useToast();
   const isEditing = !!product;
   
+  const [categories, setCategories] = useState<Category[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
+
+  useEffect(() => {
+    async function fetchCategories() {
+        const fetchedCategories = await getCategories();
+        setCategories(fetchedCategories);
+    }
+    fetchCategories();
+  }, [])
 
   const defaultValues = isEditing && product ? {
       ...product,
@@ -71,12 +81,12 @@ export function ProductForm({ product }: ProductFormProps) {
   } : {
       name: "",
       description: "",
-      category: "Vegetables" as const,
+      categoryId: "",
       brand: "",
       isOrganic: false,
       isSeasonal: false,
       images: [],
-      variants: [{ weight: '', price: 0, originalPrice: 0, stock: 0 }],
+      variants: [{ weight: '1kg', price: 0, originalPrice: 0, stock: 0 }],
   }
 
   const form = useForm<ProductFormValues>({
@@ -350,7 +360,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 />
           <FormField
                 control={form.control}
-                name="category"
+                name="categoryId"
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Category</FormLabel>
@@ -361,9 +371,11 @@ export function ProductForm({ product }: ProductFormProps) {
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="Fruits">Fruits</SelectItem>
-                            <SelectItem value="Vegetables">Vegetables</SelectItem>
-                            <SelectItem value="Organic Boxes">Organic Boxes</SelectItem>
+                            {categories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                    {category.name}
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
                     <FormMessage />
@@ -411,5 +423,3 @@ export function ProductForm({ product }: ProductFormProps) {
     </Form>
   )
 }
-
-    

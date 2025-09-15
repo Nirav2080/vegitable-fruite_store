@@ -30,16 +30,16 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 async function getProductAndRelated(slug: string) {
     const allProducts = await getProducts();
-    const product = allProducts.find((p) => p.slug === slug);
+    const productData = allProducts.find((p) => p.slug === slug);
     
-    if (!product) {
+    if (!productData) {
       return { product: null, relatedProducts: [] };
     }
     
-    const fullProduct = await getProductById(product.id);
+    const fullProduct = await getProductById(productData.id);
 
     const relatedProducts = allProducts
-        .filter(p => p.category === product.category && p.id !== product.id)
+        .filter(p => p.category === productData.category && p.id !== productData.id)
         .slice(0, 4);
     
     return { product: fullProduct, relatedProducts };
