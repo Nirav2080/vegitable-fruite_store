@@ -9,6 +9,7 @@ import { getProducts } from "@/lib/actions/products";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
+import { CustomerReviews } from "@/components/layout/CustomerReviews";
 
 
 export default async function Home() {
@@ -42,7 +43,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="w-full bg-primary/5 py-12">
+      <section className="w-full bg-primary/10 py-12">
         <FeaturedCategories />
       </section>
 
@@ -65,6 +66,10 @@ export default async function Home() {
           <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
           <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
         </Carousel>
+      </section>
+
+      <section className="w-full bg-muted/50 py-16">
+        <CustomerReviews />
       </section>
 
     </div>
