@@ -1,4 +1,3 @@
-
 'use client'
 
 import React from 'react';
@@ -10,47 +9,44 @@ import { cn } from '@/lib/utils';
 
 const reviews = [
   {
-    name: "Sarah L.",
-    role: "Customer",
+    name: "Byron Watts",
     avatar: "https://i.pravatar.cc/150?img=1",
     rating: 5,
-    comment: "The produce is always so fresh and vibrant! I love knowing I'm feeding my family the best local and organic food. The customer service is also top-notch.",
+    comment: "Contrary to popular belief, Lorem Ipsu not simply random text. It has roots in piece of classical Latin literature from",
   },
   {
-    name: "David M.",
-    role: "Customer",
+    name: "Jhon Marker",
     avatar: "https://i.pravatar.cc/150?img=2",
     rating: 5,
-    comment: "Aotearoa Organics has completely changed the way we eat. The weekly boxes are a fantastic surprise and have introduced us to so many new vegetables.",
+    comment: "Contrary to popular belief, Lorem Ipsu not simply random text. It has roots in piece of classical Latin literature from",
   },
   {
-    name: "Jessica P.",
-    role: "Customer",
+    name: "Celeste Estrada",
     avatar: "https://i.pravatar.cc/150?img=3",
     rating: 4,
-    comment: "I'm so impressed with the quality and flavor. You can really taste the difference compared to supermarket produce. Highly recommend their services!",
+    comment: "Contrary to popular belief, Lorem Ipsu not simply random text. It has roots in piece of classical Latin literature from",
   },
    {
-    name: "Tom H.",
-    role: "Customer",
+    name: "Cameaila Cablle",
     avatar: "https://i.pravatar.cc/150?img=4",
     rating: 5,
-    comment: "Fantastic service and even better produce. The delivery is always on time, and the fruits and veggies are packed with care. A pleasure to deal with.",
+    comment: "Contrary to popular belief, Lorem Ipsu not simply random text. It has roots in piece of classical Latin literature from",
   },
 ];
 
 function renderStars(rating: number) {
     const totalStars = 5;
     return (
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
             {[...Array(totalStars)].map((_, i) => (
-                <Star
-                    key={i}
-                    className={cn(
-                        'w-4 h-4',
-                        i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                    )}
-                />
+                <div key={i} className='relative'>
+                    <Star
+                        className={cn(
+                            'w-5 h-5',
+                            i < rating ? 'text-blue-500 fill-blue-500' : 'text-gray-300'
+                        )}
+                    />
+                </div>
             ))}
         </div>
     );
@@ -60,43 +56,44 @@ export function CustomerReviews() {
   return (
     <div className="container mx-auto px-4">
       <h2 className="text-3xl font-bold text-center font-headline relative pb-4">
-        What Our Customers Say
+        See What Our Customers Says
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-primary"></div>
       </h2>
-      <p className="mt-4 text-center text-muted-foreground max-w-xl mx-auto">
-        Hear from our happy customers and find out why they love our fresh, organic produce.
-      </p>
+      
       <Carousel
         opts={{
           align: "start",
           loop: true,
         }}
-        className="w-full max-w-4xl mx-auto mt-12"
+        className="w-full max-w-6xl mx-auto mt-12"
       >
-        <CarouselContent>
+        <CarouselContent className="-ml-4">
           {reviews.map((review, index) => (
-            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-              <div className="p-4">
-                <Card>
-                  <CardContent className="flex flex-col items-center justify-center p-6 text-center">
-                    <Avatar className="w-20 h-20 mb-4 border-2 border-primary/50">
-                      <AvatarImage src={review.avatar} alt={review.name} />
-                      <AvatarFallback>{review.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <p className="text-muted-foreground italic">&quot;{review.comment}&quot;</p>
-                    <div className="mt-4 flex items-center gap-2">
+            <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+              <div className="p-1">
+                <Card className="h-full">
+                  <CardContent className="flex flex-col justify-between h-full p-6 text-left">
+                    <div className="flex-grow">
                         {renderStars(review.rating)}
+                        <p className="text-muted-foreground text-sm mt-4">&quot;{review.comment}&quot;</p>
                     </div>
-                    <p className="font-bold mt-4">{review.name}</p>
-                    <p className="text-xs text-muted-foreground">{review.role}</p>
+                    <div className="flex items-center gap-3 mt-6 pt-6 border-t">
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={review.avatar} alt={review.name} />
+                          <AvatarFallback>{review.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold">{review.name}</p>
+                        </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-        <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+        <CarouselPrevious className="absolute left-[-2rem] top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+        <CarouselNext className="absolute right-[-2rem] top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
       </Carousel>
     </div>
   );
