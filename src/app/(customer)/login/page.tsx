@@ -15,9 +15,9 @@ import { useToast } from '@/hooks/use-toast';
 import { login } from '@/lib/actions/auth';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
-export default function CustomerLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -101,5 +101,13 @@ export default function CustomerLoginPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function CustomerLoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
