@@ -1,9 +1,9 @@
 
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProductForm } from "../_components/ProductForm";
 import { getProductById } from "@/lib/actions/products";
 import { notFound } from "next/navigation";
+import { ProductForm } from "../../_components/ProductForm";
 
 export default async function EditProductPage({ params }: { params: { id: string }}) {
   const product = await getProductById(params.id);

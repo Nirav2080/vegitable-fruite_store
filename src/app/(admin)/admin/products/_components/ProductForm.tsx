@@ -1,11 +1,8 @@
-
-
 'use client'
 
-import { useForm, useFieldArray } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -16,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -24,16 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Product, Category } from "@/lib/types"
-import { createProduct, updateProduct } from "@/lib/actions/products"
-import { getCategories } from "@/lib/actions/categories"
-import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Upload, X, PlusCircle } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+import { getCategories } from "@/lib/actions/categories"
+import { createProduct, updateProduct } from "@/lib/actions/products"
+import type { Category, Product } from "@/lib/types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { PlusCircle, Upload, X } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import * as z from "zod"
 
 const variantSchema = z.object({
   weight: z.string().min(1, 'Weight/Unit is required'),
