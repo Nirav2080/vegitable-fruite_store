@@ -1,5 +1,4 @@
 
-
 'use client'
 
 import React from 'react';
@@ -11,6 +10,20 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CountdownTimer } from './CountdownTimer';
+
+interface ClientOnlyCountdownProps {
+  targetDate: string;
+  size?: 'normal' | 'small';
+}
+
+function ClientOnlyCountdown({ targetDate, size }: ClientOnlyCountdownProps) {
+  const [isClient, setIsClient] = React.useState(false);
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient ? <CountdownTimer targetDate={targetDate} size={size} /> : null;
+}
 
 interface DealProductCardProps {
     product: Product;
@@ -87,7 +100,7 @@ export function DealProductCard({ product }: DealProductCardProps) {
                 </div>
                 <div className="text-xs text-muted-foreground">Available: {defaultVariant.stock}</div>
                 <Progress value={(defaultVariant.stock / 100) * 100} className="h-1 bg-yellow-400/20 [&>div]:bg-yellow-400" />
-                <CountdownTimer targetDate={targetDate.toISOString()} size="small" />
+                <ClientOnlyCountdown targetDate={targetDate.toISOString()} size="small" />
             </div>
         </div>
     );
