@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay"
 import type { Banner } from "@/lib/types";
-import { getActiveBanners } from "@/lib/actions/banners";
+import { getActiveBanners } from "@/lib/cached-data";
 import { Loader2 } from "lucide-react";
 
 function HeroCarouselSkeleton() {

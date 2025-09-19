@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getUsers } from "@/lib/actions/users";
+import { getUsers } from "@/lib/cached-data";
 import { UsersTable } from "./_components/UsersTable";
 import { File, UserPlus } from "lucide-react";
 import Link from "next/link";

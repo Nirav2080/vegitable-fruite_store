@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { getCategories } from '@/lib/actions/categories';
+import { getCategories } from '@/lib/cached-data';
 import type { Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';

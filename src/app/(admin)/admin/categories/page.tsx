@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { getCategories } from "@/lib/actions/categories";
+import { getCategories } from "@/lib/cached-data";
 import { CategoriesTable } from "./_components/CategoriesTable";
 
 export default async function AdminCategoriesPage() {

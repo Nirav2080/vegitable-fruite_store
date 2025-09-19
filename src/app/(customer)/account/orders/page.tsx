@@ -1,5 +1,5 @@
 
-import { getOrders } from "@/lib/actions/orders";
+import { getOrders } from "@/lib/cached-data";
 import {
   Table,
   TableBody,

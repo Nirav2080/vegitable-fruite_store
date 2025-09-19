@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { getBanners } from "@/lib/actions/banners";
+import { getBanners } from "@/lib/cached-data";
 import { BannersTable } from "./_components/BannersTable";
 
 export default async function AdminBannersPage() {

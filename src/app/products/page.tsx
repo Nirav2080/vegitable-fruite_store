@@ -2,8 +2,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
-import { getProducts } from "@/lib/actions/products";
-import { getCategories } from "@/lib/actions/categories";
+import { getProducts, getCategories } from "@/lib/cached-data";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductListCard } from "@/components/products/ProductListCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -199,7 +198,7 @@ export default function ProductsPage() {
               <Select defaultValue="popularity">
                 <SelectTrigger className="w-[150px] bg-background">
                   <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
+                </Trigger>
                 <SelectContent>
                   <SelectItem value="popularity">Popularity</SelectItem>
                   <SelectItem value="price-asc">Price: Low to High</SelectItem>

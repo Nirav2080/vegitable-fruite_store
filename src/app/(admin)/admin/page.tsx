@@ -1,7 +1,7 @@
 
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { getDashboardData } from "@/lib/actions/products";
+import { getDashboardData } from "@/lib/cached-data";
 import { DollarSign, Package, Users, CreditCard } from "lucide-react";
 import {
   Table,

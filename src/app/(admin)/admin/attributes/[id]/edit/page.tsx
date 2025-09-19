@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AttributeForm } from "../../_components/AttributeForm";
-import { getAttributeById } from "@/lib/actions/attributes";
+import { getAttributeById } from "@/lib/cached-data";
 import { notFound } from "next/navigation";
 
 export default async function EditAttributePage({ params }: { params: { id: string }}) {

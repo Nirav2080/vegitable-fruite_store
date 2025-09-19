@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { getAttributes } from "@/lib/actions/attributes";
+import { getAttributes } from "@/lib/cached-data";
 import { AttributesTable } from "./_components/AttributesTable";
 
 export default async function AdminAttributesPage() {

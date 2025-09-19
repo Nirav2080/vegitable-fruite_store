@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getOrders } from "@/lib/actions/orders";
+import { getOrders } from "@/lib/cached-data";
 import { OrdersTable } from "./_components/OrdersTable";
 import { File } from "lucide-react";
 

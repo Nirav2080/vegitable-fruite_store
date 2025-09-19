@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { getProducts } from "@/lib/actions/products";
+import { getProducts } from "@/lib/cached-data";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";

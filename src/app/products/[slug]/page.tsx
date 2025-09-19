@@ -1,7 +1,7 @@
 
 
 import { notFound } from 'next/navigation';
-import { getProducts, getProductById } from '@/lib/actions/products';
+import { getProducts, getProductById } from '@/lib/cached-data';
 import { ProductDetailsClient } from './_components/ProductDetailsClient';
 import type { Metadata } from 'next'
 import type { Product } from '@/lib/types';

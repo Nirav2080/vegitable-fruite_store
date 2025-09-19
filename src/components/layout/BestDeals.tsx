@@ -3,7 +3,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { getProducts } from '@/lib/actions/products';
+import { getProducts } from '@/lib/cached-data';
 import type { Product } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '../ui/carousel';

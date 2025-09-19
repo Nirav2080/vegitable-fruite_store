@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CategoryForm } from "../../_components/CategoryForm";
-import { getCategoryById } from "@/lib/actions/categories";
+import { getCategoryById } from "@/lib/cached-data";
 import { notFound } from "next/navigation";
 
 export default async function EditCategoryPage({ params }: { params: { id: string }}) {

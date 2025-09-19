@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BannerForm } from "../../_components/BannerForm";
-import { getBannerById } from "@/lib/actions/banners";
+import { getBannerById } from "@/lib/cached-data";
 import { notFound } from "next/navigation";
 
 export default async function EditBannerPage({ params }: { params: { id: string }}) {
