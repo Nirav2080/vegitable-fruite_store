@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
-import { getProducts, getCategories } from "@/lib/cached-data";
+import { getProducts, getCategories, getAttributes } from "@/lib/cached-data";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductListCard } from "@/components/products/ProductListCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import type { Product, Category } from "@/lib/types";
+import type { Product, Category, Attribute } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,11 +35,14 @@ function ProductsSkeleton() {
 
 interface FilterSidebarContentProps {
     categories: Category[];
+    attributes: Attribute[];
     selectedFilters: Record<string, string[]>;
     handleFilterChange: (filterName: string, value: string) => void;
 }
 
-function FilterSidebarContent({ categories, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
+function FilterSidebarContent({ categories, attributes, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
+    const isOrganicChecked = selectedFilters['isOrganic']?.includes('true') || false;
+
     return (
         <div className="space-y-6">
             <Card>
@@ -47,7 +50,7 @@ function FilterSidebarContent({ categories, selectedFilters, handleFilterChange 
                     <CardTitle>Filter By</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <Accordion type="multiple" defaultValue={['category']} className="w-full">
+                    <Accordion type="multiple" defaultValue={['category', 'attributes']} className="w-full">
                         <AccordionItem value="category">
                             <AccordionTrigger className="font-semibold px-6">Category</AccordionTrigger>
                             <AccordionContent className="px-6">
@@ -62,7 +65,40 @@ function FilterSidebarContent({ categories, selectedFilters, handleFilterChange 
                                                 />
                                                 {category.name}
                                             </Label>
-                                            {/* <span className="text-sm text-muted-foreground">(10)</span> */}
+                                        </div>
+                                    ))}
+                                </div>
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="attributes">
+                             <AccordionTrigger className="font-semibold px-6">Attributes</AccordionTrigger>
+                             <AccordionContent className="px-6">
+                                <div className="grid gap-2">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="isOrganic" className="flex items-center gap-2 font-normal cursor-pointer">
+                                            <Checkbox
+                                                id="isOrganic"
+                                                checked={isOrganicChecked}
+                                                onCheckedChange={() => handleFilterChange('isOrganic', 'true')}
+                                            />
+                                            Organic
+                                        </Label>
+                                    </div>
+                                    {attributes.map((attribute) => (
+                                        <div key={attribute.id}>
+                                            <p className="font-medium my-2">{attribute.name}</p>
+                                            {attribute.values.map(value => (
+                                                 <div key={value} className="flex items-center justify-between">
+                                                    <Label htmlFor={`${attribute.name}-${value}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                                        <Checkbox
+                                                            id={`${attribute.name}-${value}`}
+                                                            checked={selectedFilters[attribute.name]?.includes(value)}
+                                                            onCheckedChange={() => handleFilterChange(attribute.name, value)}
+                                                        />
+                                                        {value}
+                                                    </Label>
+                                                </div>
+                                            ))}
                                         </div>
                                     ))}
                                 </div>
@@ -79,6 +115,7 @@ function FilterSidebarContent({ categories, selectedFilters, handleFilterChange 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -86,12 +123,14 @@ export default function ProductsPage() {
   useEffect(() => {
     async function loadData() {
         setIsLoading(true);
-        const [fetchedProducts, fetchedCategories] = await Promise.all([
+        const [fetchedProducts, fetchedCategories, fetchedAttributes] = await Promise.all([
             getProducts(),
-            getCategories()
+            getCategories(),
+            getAttributes(),
         ]);
         setProducts(fetchedProducts);
         setCategories(fetchedCategories);
+        setAttributes(fetchedAttributes);
         setIsLoading(false);
     }
     loadData();
@@ -127,10 +166,19 @@ export default function ProductsPage() {
             if (filterName === 'categoryId') {
                 return selectedValues.includes(product.categoryId);
             }
-            return false;
+            if (filterName === 'isOrganic') {
+                return product.isOrganic;
+            }
+            // For other attributes, just return true for now to avoid crashing.
+            // A more complex logic would be needed if products had these attributes.
+            const attribute = attributes.find(attr => attr.name === filterName);
+            if (attribute) {
+                return true;
+            }
+            return true;
         });
     });
-  }, [products, selectedFilters]);
+  }, [products, selectedFilters, attributes]);
 
 
   return (
@@ -139,6 +187,7 @@ export default function ProductsPage() {
         <aside className="hidden lg:block lg:col-span-1 sticky top-24">
             <FilterSidebarContent 
                 categories={categories}
+                attributes={attributes}
                 selectedFilters={selectedFilters}
                 handleFilterChange={handleFilterChange}
             />
@@ -188,6 +237,7 @@ export default function ProductsPage() {
                     <div className="flex-1 overflow-y-auto px-6 pb-6">
                         <FilterSidebarContent 
                            categories={categories}
+                           attributes={attributes}
                            selectedFilters={selectedFilters}
                            handleFilterChange={handleFilterChange}
                         />

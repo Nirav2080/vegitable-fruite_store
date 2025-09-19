@@ -2,12 +2,10 @@
 'use client'
 
 import type { Product } from "@/lib/types";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Star, Heart } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -46,7 +44,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const defaultVariant = product.variants?.[0];
   if (!defaultVariant) {
-    // Or render a placeholder, or return null if products without variants shouldn't be displayed
     return null; 
   }
 
@@ -66,21 +63,12 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   const onWishlist = isClient && isInWishlist(product.id);
-  const discountPercentage = defaultVariant.originalPrice ? Math.round(((defaultVariant.originalPrice - defaultVariant.price) / defaultVariant.originalPrice) * 100) : 0;
-  
-  const isNew = () => {
-    const today = new Date();
-    const productDate = new Date(product.createdAt);
-    const diffTime = Math.abs(today.getTime() - productDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 7;
-  }
   
   return (
-    <Card 
-        className="flex flex-col h-full overflow-hidden group transition-all duration-300 border hover:shadow-md"
+    <div 
+        className="flex flex-col h-full overflow-hidden group transition-all duration-300 border rounded-lg bg-card"
     >
-      <div className="relative overflow-hidden p-2">
+      <div className="relative overflow-hidden p-4 bg-secondary rounded-t-lg">
         <Link href={`/products/${product.slug}`} className="block aspect-square relative">
           <Image
             src={primaryImage}
@@ -90,14 +78,8 @@ export function ProductCard({ product }: ProductCardProps) {
             className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
-        
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
-          {discountPercentage > 0 && <Badge variant="destructive" className="rounded-md">-{discountPercentage}%</Badge>}
-          {isNew() && <Badge className="bg-white text-black hover:bg-white/90 border border-gray-200 rounded-md">New</Badge>}
-        </div>
-
         <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
             onClick={handleWishlistClick}
@@ -106,25 +88,25 @@ export function ProductCard({ product }: ProductCardProps) {
             <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
         </Button>
       </div>
-      <div className="p-3 pt-0 flex-grow flex flex-col">
-        <p className="text-xs text-muted-foreground">{product.brand || 'Generic'}</p>
-        <h3 className="text-sm font-semibold leading-tight mt-1 flex-grow">
+      <div className="p-4 flex-grow flex flex-col text-center">
+        <h3 className="text-base font-medium leading-tight mt-1 flex-grow">
           <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
             {product.name}
           </Link>
         </h3>
-        <div className="flex items-center gap-2 mt-2">
+        <p className="text-sm text-muted-foreground mt-1">Available in: {product.variants.length} variant(s)</p>
+        <div className="flex items-center justify-center gap-2 mt-2">
             {renderStars(product.rating || 0)}
+            <span className='text-xs text-muted-foreground'>({product.reviews?.length || 0})</span>
         </div>
-        <div className="flex items-center gap-2 mt-2">
-            <p className="text-base font-bold text-primary">${defaultVariant.price.toFixed(2)}</p>
-            {defaultVariant.originalPrice && <p className="text-xs text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
+        <div className="flex items-center justify-center gap-2 mt-2">
+            <p className="text-lg font-semibold text-primary">${defaultVariant.price.toFixed(2)}</p>
+            {defaultVariant.originalPrice && <p className="text-sm text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
         </div>
-         <Button size="sm" className="w-full mt-3" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
-            <ShoppingCart className="mr-2 h-4 w-4" />
+         <Button variant="outline" size="sm" className="w-full mt-3 rounded-full" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
             {defaultVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }

@@ -53,8 +53,8 @@ export function DynamicSearch() {
           <Input
             ref={inputRef}
             type="search"
-            placeholder="Search Product Here..."
-            className="w-full pr-10 bg-white text-black rounded-full h-12"
+            placeholder="Search products..."
+            className="w-full pr-10 bg-secondary text-foreground rounded-full h-10 border-none focus-visible:ring-2 focus-visible:ring-primary"
             value={query}
             onChange={(e) => {
               const newQuery = e.target.value;
@@ -99,7 +99,7 @@ export function DynamicSearch() {
                 />
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{product.name}</p>
-                  <p className="text-sm text-primary font-bold">${product.price.toFixed(2)}</p>
+                  <p className="text-sm text-primary font-bold">${(product as any).price.toFixed(2)}</p>
                 </div>
               </Link>
             ))}

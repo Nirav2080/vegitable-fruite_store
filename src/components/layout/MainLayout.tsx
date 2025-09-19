@@ -11,15 +11,23 @@ import { WishlistProvider } from '@/context/WishlistContext'
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isAdminPage = pathname.startsWith('/admin')
-  const isLoginPage = pathname === '/admin/login' || pathname === '/login' || pathname === '/register'
+  
+  if (isAdminPage) {
+    return (
+        <div className="relative flex min-h-screen flex-col">
+            <main className="flex-1">{children}</main>
+            <Toaster />
+        </div>
+    )
+  }
 
   return (
     <CartProvider>
       <WishlistProvider>
         <div className="relative flex min-h-screen flex-col">
-          {!isAdminPage && <Header />}
+          <Header />
           <main className="flex-1">{children}</main>
-          {!isAdminPage && !isLoginPage && <Footer />}
+          <Footer />
           <Toaster />
         </div>
       </WishlistProvider>

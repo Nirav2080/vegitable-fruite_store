@@ -1,15 +1,19 @@
 
 import type { Metadata } from 'next';
-import { PT_Sans } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 
-const ptSans = PT_Sans({
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+
+const playfairDisplay = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '700'],
-  variable: '--font-pt-sans',
-  display: 'swap',
+  variable: '--font-playfair-display',
 });
 
 
@@ -25,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.className)}>
+      <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable, playfairDisplay.variable)}>
         <MainLayout>{children}</MainLayout>
       </body>
     </html>
