@@ -18,7 +18,8 @@ import {
   LineChart,
   Tag,
   Star,
-  Sparkles
+  Sparkles,
+  Percent,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -85,7 +86,7 @@ export default function AdminLayout({
     { href: '/admin/users', icon: Users, label: 'Customers' },
     { href: '/admin/analytics', icon: LineChart, label: 'Analytics' },
     { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
-    { href: '/admin/menu', icon: MenuIcon, label: 'Header Menu' },
+    { href: '/admin/offers', icon: Percent, label: 'Offers' },
     { href: '/admin/coupons', icon: Gift, label: 'Coupons' },
   ];
 

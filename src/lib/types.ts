@@ -90,8 +90,29 @@ export interface Banner {
     createdAt: Date;
 }
 
+export interface Offer {
+    _id?: ObjectId;
+    id: string;
+    title: string;
+    description: string;
+    code?: string;
+    discount?: number;
+    link: string;
+    bgColor: string;
+    isActive: boolean;
+    createdAt: Date;
+}
+
 export interface CartItem extends Omit<Product, 'variants'> {
   quantity: number;
   selectedVariant: ProductVariant;
   // variants are not needed in cart item, selectedVariant holds the choice
+}
+
+export interface Attribute {
+  _id?: ObjectId;
+  id: string;
+  name: string;
+  values: string[];
+  createdAt: Date;
 }

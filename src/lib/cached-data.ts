@@ -8,6 +8,7 @@ import { getActiveBanners as dbGetActiveBanners, getBanners as dbGetBanners, get
 import { getOrders as dbGetOrders } from '@/lib/actions/orders';
 import { getUsers as dbGetUsers, getUserById as dbGetUserById } from '@/lib/actions/users';
 import { getAttributes as dbGetAttributes, getAttributeById as dbGetAttributeById } from '@/lib/actions/attributes';
+import { getOffers as dbGetOffers, getOfferById as dbGetOfferById, getActiveOffers as dbGetActiveOffers } from '@/lib/actions/offers';
 
 
 // == CACHING CONFIG ==
@@ -77,3 +78,16 @@ export const getAttributes = cache(async () => {
 export const getAttributeById = cache(async (id: string) => {
     return dbGetAttributeById(id);
 }, ['attribute'], { revalidate: REVALIDATE_TIME });
+
+// Offers
+export const getOffers = cache(async () => {
+    return dbGetOffers();
+}, ['offers'], { revalidate: REVALIDATE_TIME });
+
+export const getActiveOffers = cache(async () => {
+    return dbGetActiveOffers();
+}, ['active-offers'], { revalidate: REVALIDATE_TIME });
+
+export const getOfferById = cache(async (id: string) => {
+    return dbGetOfferById(id);
+}, ['offer'], { revalidate: REVALIDATE_TIME });

@@ -1,10 +1,8 @@
 
-'use client'
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/products/ProductCard";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getProducts, getCategories } from "@/lib/cached-data";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
@@ -12,34 +10,19 @@ import Image from "next/image";
 import { DealsSection } from "@/components/layout/DealsSection";
 import { InfoSection } from "@/components/layout/InfoSection";
 import { CallToActionSection } from "@/components/layout/CallToActionSection";
-import type { Product, Category } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { Product } from "@/lib/types";
+import { HomePageClient } from "./_components/HomePageClient";
 
-export default function Home() {
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [bestSellingProducts, setBestSellingProducts] = useState<Product[]>([]);
-  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+async function getPageData() {
+    const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+    const bestSellingProducts = products.slice(0, 8);
+    const popularProducts = products.slice(8, 12);
+    return { products, categories, bestSellingProducts, popularProducts };
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      const [products, cats] = await Promise.all([getProducts(), getCategories()]);
-      setAllProducts(products);
-      setCategories(cats);
-      setBestSellingProducts(products.slice(0, 8));
-      setPopularProducts(products.slice(8, 12));
-      setIsLoading(false);
-    }
-    fetchData();
-  }, []);
 
-  const filteredBestSelling = bestSellingProducts.filter(p => 
-    selectedCategory === 'All' || p.category === selectedCategory
-  );
-
+export default async function Home() {
+  const { categories, bestSellingProducts, popularProducts } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -78,36 +61,11 @@ export default function Home() {
       <section className="py-16 md:py-24">
         <FeaturedCategories />
       </section>
-
-      <section className="container mx-auto px-4 pb-16 md:pb-24">
-        <div className="text-left mb-10">
-          <h2 className="text-3xl font-bold font-headline">
-            Todays Best Selling Product!
-          </h2>
-        </div>
-         <div className="flex flex-wrap gap-2 mb-8">
-            {filterCategories.map(category => (
-                <Button 
-                    key={category}
-                    variant={selectedCategory === category ? 'default' : 'outline'}
-                    className={cn(
-                        "rounded-full",
-                        selectedCategory === category ? "bg-primary text-primary-foreground" : "bg-white"
-                    )}
-                    onClick={() => setSelectedCategory(category)}
-                >
-                    {category}
-                </Button>
-            ))}
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
-            {isLoading ? 
-              Array.from({ length: 8 }).map((_, i) => <div key={i} className="bg-gray-100 rounded-lg h-80 animate-pulse" />)
-              : filteredBestSelling.map((product) => (
-                <ProductCard key={product.id} product={product} />
-            ))}
-        </div>
-      </section>
+      
+      <HomePageClient 
+        bestSellingProducts={bestSellingProducts} 
+        filterCategories={filterCategories} 
+      />
 
       <DealsSection />
 
