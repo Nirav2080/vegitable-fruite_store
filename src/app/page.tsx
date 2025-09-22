@@ -21,25 +21,25 @@ export default async function Home() {
       <section className="bg-accent">
         <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
             <div className="py-12 md:py-24 text-center md:text-left">
-                <p className="text-primary font-semibold tracking-wider">Welcome to our Culinary Paradise</p>
+                <p className="text-primary font-semibold tracking-wider">Welcome to a Culinary Paradise</p>
                 <h1 className="text-4xl md:text-6xl font-bold font-headline mt-2">
                     Indulge in Exquisite Flavors with FoodieCart
                 </h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
-                    From farm-fresh produce to gourmet deliveries, our handpicked selection is sure to delight your senses.
+                    Discover a world of exceptional tastes curated just for you. From farm-fresh produce to gourmet delicacies, our handpicked.
                 </p>
-                <Button asChild size="lg" className="mt-8 rounded-full">
+                <Button asChild size="lg" className="mt-8 rounded-md">
                   <Link href="/products">
-                    <ShoppingBag className="mr-2 h-5 w-5" />
                     Shop Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
             </div>
              <div className="relative h-64 md:h-auto self-end">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[70%] bg-primary/20 rounded-t-full" />
+                <div className="absolute bottom-0 right-0 w-[80%] h-[80%] bg-primary/80 rounded-full" />
                  <Image
-                    src="https://picsum.photos/seed/h/600/600"
-                    alt="Woman holding vegetables"
+                    src="https://picsum.photos/seed/hero-woman/600/600"
+                    alt="Woman holding a basket of fresh groceries"
                     data-ai-hint="woman groceries"
                     width={600}
                     height={600}
