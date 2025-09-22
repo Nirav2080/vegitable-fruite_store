@@ -7,9 +7,9 @@ import Image from "next/image";
 export function CallToActionSection() {
     return (
         <section className="bg-accent overflow-hidden">
-            <div className="container mx-auto px-4 py-16">
-                <div className="relative">
-                    <div className="relative z-10 text-center">
+            <div className="container mx-auto px-4">
+                <div className="relative py-16 md:py-24">
+                    <div className="relative z-10 text-center max-w-2xl mx-auto">
                         <p className="font-semibold text-primary">Organic & Garden Fresh</p>
                         <h2 className="text-3xl md:text-4xl font-bold font-headline mt-2">Need Organic & quality product everyday?</h2>
                          <Button asChild className="mt-6 rounded-full" size="lg">
@@ -18,23 +18,23 @@ export function CallToActionSection() {
                             </Link>
                         </Button>
                     </div>
-                    <div className="absolute -left-32 -bottom-24 z-0 opacity-50 md:opacity-100">
+                    <div className="absolute -left-48 -bottom-32 z-0 opacity-20 md:opacity-100">
                          <Image
-                            src="https://picsum.photos/seed/cta-left/400/400"
+                            src="https://picsum.photos/seed/veggies/500/500"
                             alt="Groceries in a bag"
-                            data-ai-hint="groceries bag"
-                            width={400}
-                            height={400}
+                            data-ai-hint="vegetables"
+                            width={500}
+                            height={500}
                             className="object-contain"
                         />
                     </div>
-                    <div className="absolute -right-32 -bottom-24 z-0 opacity-50 md:opacity-100">
+                    <div className="absolute -right-48 -bottom-32 z-0 opacity-20 md:opacity-100">
                          <Image
-                            src="https://picsum.photos/seed/cta-right/400/400"
+                            src="https://picsum.photos/seed/fruits/500/500"
                             alt="Fresh vegetables in a bag"
-                            data-ai-hint="vegetables bag"
-                            width={400}
-                            height={400}
+                            data-ai-hint="fruits"
+                            width={500}
+                            height={500}
                             className="object-contain"
                         />
                     </div>
