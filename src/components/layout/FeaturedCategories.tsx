@@ -56,21 +56,22 @@ export function FeaturedCategories() {
                     Array.from({ length: 6 }).map((_, i) => <CategorySkeleton key={i} />)
                 ) : (
                     categories.slice(0, 6).map((category, index) => (
-                        <Link key={category.id} href={`/products?categoryId=${category.id}`} className="group block text-center">
-                            <div className={`relative aspect-square w-full rounded-lg ${categoryBackgrounds[index % categoryBackgrounds.length]} flex items-center justify-center border-2 border-transparent group-hover:border-primary group-hover:shadow-lg transition-all duration-300 transform group-hover:-translate-y-2 p-4`}>
-                                {category.icon ? (
-                                    <Image 
-                                        src={category.icon}
-                                        alt={category.name}
-                                        width={120}
-                                        height={120}
-                                        className="object-contain"
-                                    />
-                                ) : (
-                                    <span className="text-primary text-sm font-semibold px-2">{category.name}</span>
-                                )}
+                        <Link key={category.id} href={`/products?categoryId=${category.id}`} className="group block">
+                             <div className={`p-4 rounded-lg flex flex-col items-center justify-between aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:scale-105 ${categoryBackgrounds[index % categoryBackgrounds.length]}`}>
+                                <div className="relative w-full h-2/3">
+                                    {category.icon ? (
+                                        <Image 
+                                            src={category.icon}
+                                            alt={category.name}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    ) : (
+                                        <div className="h-full w-full bg-gray-200 rounded-md" />
+                                    )}
+                                </div>
+                                <h3 className="font-semibold text-sm mt-3 text-center text-foreground">{category.name}</h3>
                             </div>
-                            <h3 className="font-semibold text-base mt-3 group-hover:text-primary transition-colors">{category.name}</h3>
                         </Link>
                     ))
                 )}
