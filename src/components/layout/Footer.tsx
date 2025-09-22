@@ -118,9 +118,6 @@ export function Footer() {
            <div className="flex items-center gap-2">
                 <p className="text-sm">We accept:</p>
                 <div className="flex items-center gap-2">
-                    <img src="https://img.icons8.com/color/48/visa.png" alt="Visa" className="h-6" />
-                    <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard" className="h-6" />
-                    <img src="https://img.icons8.com/color/48/paypal.png" alt="PayPal" className="h-6" />
                 </div>
            </div>
         </div>

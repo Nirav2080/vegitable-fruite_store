@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -11,17 +11,47 @@ import { InfoSection } from "@/components/layout/InfoSection";
 import { CallToActionSection } from "@/components/layout/CallToActionSection";
 import { HomePageClient } from "./_components/HomePageClient";
 import { PopularProductsSection } from "@/components/layout/PopularProductsSection";
+import { Skeleton } from "@/components/ui/skeleton";
 
 async function getPageData() {
     const [products, categories] = await Promise.all([getProducts(), getCategories()]);
     const bestSellingProducts = products.slice(0, 8);
-    const popularProducts = products.filter(p => p.isPopular);
-    return { categories, bestSellingProducts, popularProducts };
+    return { categories, bestSellingProducts };
+}
+
+function DealsSkeleton() {
+  return (
+    <div className="bg-secondary/50">
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid md:grid-cols-2 gap-8">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PopularProductsSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24">
+       <div className="flex items-center justify-between mb-8">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-8 w-16" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    </div>
+  )
 }
 
 
 export default async function Home() {
-  const { categories, bestSellingProducts, popularProducts } = await getPageData();
+  const { categories, bestSellingProducts } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -66,9 +96,13 @@ export default async function Home() {
         filterCategories={filterCategories} 
       />
 
-      <DealsSection />
+      <Suspense fallback={<DealsSkeleton />}>
+        <DealsSection />
+      </Suspense>
 
-      <PopularProductsSection products={popularProducts} />
+      <Suspense fallback={<PopularProductsSkeleton />}>
+        <PopularProductsSection />
+      </Suspense>
       
       <CallToActionSection />
       <InfoSection />
@@ -76,4 +110,3 @@ export default async function Home() {
     </div>
   );
 }
-

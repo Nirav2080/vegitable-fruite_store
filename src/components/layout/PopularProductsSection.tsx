@@ -10,15 +10,42 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import type { Product } from '@/lib/types'
 import Link from 'next/link'
+import { getProducts } from '@/lib/cached-data'
+import { Skeleton } from '../ui/skeleton'
 
-interface PopularProductsSectionProps {
-  products: Product[]
+function PopularProductsSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-16 md:py-24">
+       <div className="flex items-center justify-between mb-8">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-8 w-16" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    </div>
+  )
 }
 
-export function PopularProductsSection({ products }: PopularProductsSectionProps) {
+export function PopularProductsSection() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [Autoplay()])
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
   const [currentSnap, setCurrentSnap] = useState(0)
+
+  useEffect(() => {
+    async function fetchPopularProducts() {
+      setIsLoading(true);
+      const allProducts = await getProducts();
+      setProducts(allProducts.filter(p => p.isPopular));
+      setIsLoading(false);
+    }
+    fetchPopularProducts();
+  }, []);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
@@ -34,6 +61,10 @@ export function PopularProductsSection({ products }: PopularProductsSectionProps
     emblaApi.on('reInit', onSelect)
   }, [emblaApi, onSelect])
   
+  if (isLoading) {
+    return <PopularProductsSkeleton />;
+  }
+
   if (products.length === 0) {
     return null;
   }
