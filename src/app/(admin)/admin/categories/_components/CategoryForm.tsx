@@ -52,7 +52,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
     try {
       const dataToSubmit = { ...values };
       if (dataToSubmit.icon === '') {
-        delete dataToSubmit.icon;
+        delete (dataToSubmit as Partial<CategoryFormValues>).icon;
       }
       
       if (isEditing && category) {
