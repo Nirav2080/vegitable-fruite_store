@@ -120,7 +120,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                      <div className="flex gap-4 items-start">
                         {iconPreview && (
                             <div className="relative w-24 h-24 p-2 border rounded-md flex items-center justify-center">
-                                <Image src={iconPreview} alt="Category image preview" layout="fill" objectFit="contain" />
+                                <Image src={iconPreview} alt="Category image preview" fill className="object-contain" />
                                 <Button
                                     type="button"
                                     variant="destructive"
