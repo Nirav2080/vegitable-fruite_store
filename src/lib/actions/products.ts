@@ -34,6 +34,7 @@ const productSchema = z.object({
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
+  isPopular: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });

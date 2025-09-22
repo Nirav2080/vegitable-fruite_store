@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ProductCard } from "@/components/products/ProductCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getProducts, getCategories } from "@/lib/cached-data";
@@ -10,13 +9,13 @@ import Image from "next/image";
 import { DealsSection } from "@/components/layout/DealsSection";
 import { InfoSection } from "@/components/layout/InfoSection";
 import { CallToActionSection } from "@/components/layout/CallToActionSection";
-import type { Product } from "@/lib/types";
 import { HomePageClient } from "./_components/HomePageClient";
+import { PopularProductsSection } from "@/components/layout/PopularProductsSection";
 
 async function getPageData() {
     const [products, categories] = await Promise.all([getProducts(), getCategories()]);
     const bestSellingProducts = products.slice(0, 8);
-    const popularProducts = products.slice(8, 12);
+    const popularProducts = products.filter(p => p.isPopular);
     return { products, categories, bestSellingProducts, popularProducts };
 }
 
@@ -69,23 +68,7 @@ export default async function Home() {
 
       <DealsSection />
 
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold font-headline">
-            Popular Food Items
-          </h2>
-           <Button variant="outline" asChild className="rounded-full">
-                <Link href="/products?sort=popularity">
-                    View All <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-            </Button>
-        </div>
-         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
-            {popularProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-            ))}
-        </div>
-      </section>
+      <PopularProductsSection products={popularProducts} />
       
       <CallToActionSection />
       <InfoSection />
