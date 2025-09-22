@@ -16,7 +16,7 @@ async function getPageData() {
     const [products, categories] = await Promise.all([getProducts(), getCategories()]);
     const bestSellingProducts = products.slice(0, 8);
     const popularProducts = products.filter(p => p.isPopular);
-    return { products, categories, bestSellingProducts, popularProducts };
+    return { categories, bestSellingProducts, popularProducts };
 }
 
 
@@ -76,3 +76,4 @@ export default async function Home() {
     </div>
   );
 }
+
