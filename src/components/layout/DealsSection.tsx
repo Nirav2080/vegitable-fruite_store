@@ -2,23 +2,21 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 export function DealsSection() {
     return (
         <section className="bg-secondary/50">
             <div className="container mx-auto px-4 py-16">
                 <div className="grid md:grid-cols-2 gap-8">
-                    <div className="p-8 rounded-lg flex flex-col justify-center" style={{backgroundColor: '#E6F4F4'}}>
-                         <div className="flex justify-between items-start">
-                            <div>
-                                <p className="font-semibold text-primary">Exclusive Offer</p>
-                                <h3 className="text-3xl font-bold mt-2">Best Online Deals, Free Stuff</h3>
-                                <p className="text-muted-foreground mt-1">Only on this week... don't miss</p>
+                    <div className="p-8 rounded-lg flex flex-col justify-center" style={{backgroundColor: '#F3F7E8'}}>
+                         <div className="flex flex-col items-start">
+                            <div className="flex items-center gap-2">
+                                <p className="font-semibold text-foreground/80">Exclusive Offer</p>
+                                <Badge className="bg-primary text-primary-foreground">15% OFF</Badge>
                             </div>
-                            <div className="bg-primary text-primary-foreground text-sm font-bold w-16 h-16 rounded-full flex items-center justify-center rotate-12">
-                                15% OFF
-                            </div>
+                            <h3 className="text-3xl font-bold mt-2">Best Online Deals, Free Stuff</h3>
+                            <p className="text-muted-foreground mt-1">Only on this week... don't miss</p>
                          </div>
                         <Button asChild className="mt-6 self-start rounded-full">
                             <Link href="/deals">
@@ -27,7 +25,7 @@ export function DealsSection() {
                         </Button>
                     </div>
                      <div className="p-8 rounded-lg flex flex-col justify-center" style={{backgroundColor: '#E6F4F4'}}>
-                        <p className="font-semibold text-primary">Regular Offer</p>
+                        <p className="font-semibold text-foreground/80">Regular Offer</p>
                         <h3 className="text-3xl font-bold mt-2">10% cash-back on personal care</h3>
                         <p className="text-muted-foreground mt-1">Max cashback: $12. Code: <span className="font-semibold text-primary">CARE10</span></p>
                          <Button asChild className="mt-6 self-start rounded-full">
