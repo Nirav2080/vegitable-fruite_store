@@ -50,11 +50,16 @@ export function CategoryForm({ category }: CategoryFormProps) {
 
   async function onSubmit(values: CategoryFormValues) {
     try {
+      const dataToSubmit = { ...values };
+      if (dataToSubmit.icon === '') {
+        delete dataToSubmit.icon;
+      }
+      
       if (isEditing && category) {
-        await updateCategory(category.id, values);
+        await updateCategory(category.id, dataToSubmit);
         toast({ title: "Success", description: "Category updated successfully." });
       } else {
-        await createCategory(values);
+        await createCategory(dataToSubmit);
         toast({ title: "Success", description: "Category created successfully." });
       }
       router.push("/admin/categories");
