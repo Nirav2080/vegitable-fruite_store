@@ -8,31 +8,30 @@ const infoCards = [
     {
         icon: Leaf,
         title: "Grow my business with FoodieCart",
-        description: "Let us help you reach more customers and grow your business.",
+        description: "Let us help your business reach more customers.",
         bgColor: "bg-pink-100/50",
     },
     {
         icon: BadgeCheck,
         title: "Advertise brand on FoodieCart",
-        description: "Let us help you reach more customers and grow your brand.",
+        description: "Let us help your business reach more customers.",
         bgColor: "bg-blue-100/50",
 
     },
     {
         icon: PiggyBank,
         title: "Learn more about FoodieCart",
-        description: "Discover how we are changing the way people shop for groceries.",
+        description: "Let us help your business reach more customers.",
         bgColor: "bg-purple-100/50",
     },
 ]
 
 export function InfoSection() {
     return (
-        <section className="bg-secondary/50">
+        <section className="bg-background">
             <div className="container mx-auto px-4 py-16 md:py-24">
-                 <div className="text-center mb-12">
+                 <div className="text-left mb-12">
                     <h2 className="text-3xl font-bold font-headline">Ready to get started?</h2>
-                    <p className="text-muted-foreground mt-2">Join our community of sellers and partners.</p>
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                    {infoCards.map(card => (
@@ -40,7 +39,7 @@ export function InfoSection() {
                         <div className="p-4 bg-background rounded-full mb-4">
                            <card.icon className="h-8 w-8 text-primary" />
                         </div>
-                        <h3 className="text-xl font-bold">{card.title}</h3>
+                        <h3 className="text-xl font-bold font-headline">{card.title}</h3>
                         <p className="text-muted-foreground mt-2 flex-grow">{card.description}</p>
                          <Button asChild variant="outline" className="mt-6 rounded-full bg-background">
                             <Link href="#">
