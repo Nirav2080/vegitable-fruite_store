@@ -66,9 +66,9 @@ export function ProductCard({ product }: ProductCardProps) {
   
   return (
     <div 
-        className="flex flex-col h-full overflow-hidden group transition-all duration-300 border rounded-lg bg-card"
+        className="flex flex-col h-full overflow-hidden group transition-all duration-300"
     >
-      <div className="relative overflow-hidden p-4 bg-secondary rounded-t-lg">
+      <div className="relative overflow-hidden p-4 bg-secondary rounded-lg">
         <Link href={`/products/${product.slug}`} className="block aspect-square relative">
           <Image
             src={primaryImage}
@@ -81,30 +81,29 @@ export function ProductCard({ product }: ProductCardProps) {
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md"
             onClick={handleWishlistClick}
             aria-label="Add to wishlist"
         >
             <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
         </Button>
       </div>
-      <div className="p-4 flex-grow flex flex-col text-center">
-        <h3 className="text-base font-medium leading-tight mt-1 flex-grow">
-          <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
-            {product.name}
-          </Link>
-        </h3>
-        <p className="text-sm text-muted-foreground mt-1">Available in: {product.variants.length} variant(s)</p>
-        <div className="flex items-center justify-center gap-2 mt-2">
+      <div className="pt-4 flex-grow flex flex-col">
+        <div className="flex justify-between items-start">
+            <h3 className="text-base font-medium leading-tight flex-grow pr-2">
+                <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
+                    {product.name}
+                </Link>
+            </h3>
+            <p className="text-base font-semibold text-primary">${defaultVariant.price.toFixed(2)}</p>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
+        <div className="flex items-center gap-2 mt-2">
             {renderStars(product.rating || 0)}
             <span className='text-xs text-muted-foreground'>({product.reviews?.length || 0})</span>
         </div>
-        <div className="flex items-center justify-center gap-2 mt-2">
-            <p className="text-lg font-semibold text-primary">${defaultVariant.price.toFixed(2)}</p>
-            {defaultVariant.originalPrice && <p className="text-sm text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
-        </div>
-         <Button variant="outline" size="sm" className="w-full mt-3 rounded-full" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
-            {defaultVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
+         <Button variant="outline" size="sm" className="w-full mt-4 rounded-full" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
+            {defaultVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </div>
     </div>
