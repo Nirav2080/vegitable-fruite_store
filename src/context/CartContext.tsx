@@ -24,26 +24,28 @@ const generateCartItemId = (productId: string, variantWeight?: string) => {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedCart = localStorage.getItem('cart');
-      try {
-        const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-        // Basic validation to prevent malformed cart state
-        if (Array.isArray(parsedCart)) {
-          return parsedCart;
-        }
-      } catch (error) {
-        console.error("Failed to parse cart from localStorage", error);
-        return [];
-      }
-    }
-    return [];
-  });
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isInitial, setIsInitial] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    try {
+      const savedCart = localStorage.getItem('cart');
+      const parsedCart = savedCart ? JSON.parse(savedCart) : [];
+      if (Array.isArray(parsedCart)) {
+        setCartItems(parsedCart);
+      }
+    } catch (error) {
+      console.error("Failed to parse cart from localStorage", error);
+      setCartItems([]);
+    }
+    setIsInitial(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isInitial) {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    }
+  }, [cartItems, isInitial]);
 
   const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant) => {
     // Ensure we have a variant, defaulting to the first one if not provided.

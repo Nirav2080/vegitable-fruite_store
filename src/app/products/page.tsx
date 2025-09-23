@@ -248,7 +248,7 @@ export default function ProductsPage() {
               <Select defaultValue="popularity">
                 <SelectTrigger className="w-[150px] bg-background">
                   <SelectValue placeholder="Sort by" />
-                </Trigger>
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="popularity">Popularity</SelectItem>
                   <SelectItem value="price-asc">Price: Low to High</SelectItem>
