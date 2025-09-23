@@ -111,7 +111,7 @@ export async function createProduct(data: unknown) {
     
     const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-    const newProduct: Omit<Product, 'id' | 'category'> = {
+    const newProduct: Omit<Product, 'id' | 'category' | 'rating' | 'reviews'> & { categoryId: ObjectId, createdAt: Date, reviews: [], rating: number } = {
       ...parsedData,
       categoryId: new ObjectId(parsedData.categoryId),
       images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
