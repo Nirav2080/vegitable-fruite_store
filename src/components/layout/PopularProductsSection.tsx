@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import type { Product } from '@/lib/types'
 import Link from 'next/link'
-import { getProducts } from '@/lib/cached-data'
 import { Skeleton } from '../ui/skeleton'
 
 function PopularProductsSkeleton() {
@@ -30,22 +29,11 @@ function PopularProductsSkeleton() {
   )
 }
 
-export function PopularProductsSection() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function PopularProductsSection({ products }: { products: Product[] }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' }, [Autoplay()])
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([])
   const [currentSnap, setCurrentSnap] = useState(0)
 
-  useEffect(() => {
-    async function fetchPopularProducts() {
-      setIsLoading(true);
-      const allProducts = await getProducts();
-      setProducts(allProducts.filter(p => p.isPopular));
-      setIsLoading(false);
-    }
-    fetchPopularProducts();
-  }, []);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
@@ -61,11 +49,7 @@ export function PopularProductsSection() {
     emblaApi.on('reInit', onSelect)
   }, [emblaApi, onSelect])
   
-  if (isLoading) {
-    return <PopularProductsSkeleton />;
-  }
-
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return null;
   }
 

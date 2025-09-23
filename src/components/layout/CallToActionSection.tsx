@@ -20,7 +20,7 @@ export function CallToActionSection() {
                     </div>
                     <div className="absolute -left-48 -bottom-32 z-0 opacity-20 md:opacity-100">
                          <Image
-                            src="https://picsum.photos/seed/veggies/500/500"
+                            src="https://placehold.co/500x500/E9F5DB/34495E?text=Vegetables"
                             alt="Groceries in a bag"
                             data-ai-hint="vegetables"
                             width={500}
@@ -30,7 +30,7 @@ export function CallToActionSection() {
                     </div>
                     <div className="absolute -right-48 -bottom-32 z-0 opacity-20 md:opacity-100">
                          <Image
-                            src="https://picsum.photos/seed/fruits/500/500"
+                            src="https://placehold.co/500x500/FADBD8/34495E?text=Fruits"
                             alt="Fresh vegetables in a bag"
                             data-ai-hint="fruits"
                             width={500}

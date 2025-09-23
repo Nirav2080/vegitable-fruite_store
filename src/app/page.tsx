@@ -16,7 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 async function getPageData() {
     const [products, categories] = await Promise.all([getProducts(), getCategories()]);
     const bestSellingProducts = products.slice(0, 8);
-    return { categories, bestSellingProducts };
+    const popularProducts = products.filter(p => p.isPopular);
+    return { categories, bestSellingProducts, popularProducts };
 }
 
 function DealsSkeleton() {
@@ -51,7 +52,7 @@ function PopularProductsSkeleton() {
 
 
 export default async function Home() {
-  const { categories, bestSellingProducts } = await getPageData();
+  const { categories, bestSellingProducts, popularProducts } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -76,7 +77,7 @@ export default async function Home() {
              <div className="relative h-[500px]">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[70%] bg-primary/20 rounded-t-full" />
                  <Image
-                    src="https://picsum.photos/seed/h/600/600"
+                    src="https://placehold.co/600x600/A8D5BA/34495E?text=Fresh+Produce"
                     alt="Woman holding vegetables"
                     data-ai-hint="woman groceries"
                     width={600}
@@ -101,7 +102,7 @@ export default async function Home() {
       </Suspense>
 
       <Suspense fallback={<PopularProductsSkeleton />}>
-        <PopularProductsSection />
+        <PopularProductsSection products={popularProducts} />
       </Suspense>
       
       <CallToActionSection />
