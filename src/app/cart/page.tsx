@@ -52,7 +52,9 @@ export default function CartPage() {
                         </div>
                         <div className="flex-1">
                             <h3 className="font-semibold text-sm md:text-base">{item.name}</h3>
-                            <p className="text-xs md:text-sm text-muted-foreground">Unit: {item.selectedVariant.weight}</p>
+                            <p className="text-xs md:text-sm text-muted-foreground">
+                              {item.unitType === 'weight' ? 'Weight' : 'Unit'}: {item.selectedVariant.weight}
+                            </p>
                             <p className="font-bold text-primary mt-1 text-sm md:text-base">${item.selectedVariant.price.toFixed(2)}</p>
                         </div>
                         <div className="flex flex-col md:flex-row items-center gap-2">
