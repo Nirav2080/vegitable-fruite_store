@@ -42,11 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (cartItems.length > 0) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
-    } else {
-      localStorage.removeItem('cart');
-    }
+    localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1, variant?: ProductVariant) => {
@@ -66,13 +62,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prevItems.find(item => item.id === cartItemId);
       
       let newItems;
-      let displayQuantity = quantity;
 
       if (existingItem) {
-        displayQuantity = existingItem.quantity + quantity;
         newItems = prevItems.map(item =>
           item.id === cartItemId
-            ? { ...item, quantity: displayQuantity }
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
@@ -84,6 +78,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         };
         newItems = [...prevItems, newCartItem];
       }
+
+      const updatedItem = newItems.find(item => item.id === cartItemId);
+      const displayQuantity = updatedItem ? updatedItem.quantity : quantity;
       
       toast({
         title: "Added to cart",
