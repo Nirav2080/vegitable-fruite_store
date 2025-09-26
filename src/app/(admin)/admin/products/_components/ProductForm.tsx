@@ -80,6 +80,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const defaultValues = isEditing && product ? {
       ...product,
+      categoryId: String(product.categoryId),
       images: Array.isArray(product.images) ? product.images : [],
       unitType: product.unitType || 'weight',
   } : {

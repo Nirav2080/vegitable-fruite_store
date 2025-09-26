@@ -33,7 +33,7 @@ export interface Product {
   name: string;
   description: string;
   images: string[];
-  categoryId: string;
+  categoryId: string | ObjectId;
   category: string;
   brand?: string;
   unitType?: 'weight' | 'piece';
