@@ -25,27 +25,29 @@ const generateCartItemId = (productId: string, variantWeight?: string) => {
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isInitial, setIsInitial] = useState(true);
-
+  
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('cart');
-      const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-      if (Array.isArray(parsedCart)) {
-        setCartItems(parsedCart);
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          setCartItems(parsedCart);
+        }
       }
     } catch (error) {
       console.error("Failed to parse cart from localStorage", error);
       setCartItems([]);
     }
-    setIsInitial(false);
   }, []);
 
   useEffect(() => {
-    if (!isInitial) {
+    if (cartItems.length > 0) {
       localStorage.setItem('cart', JSON.stringify(cartItems));
+    } else {
+      localStorage.removeItem('cart');
     }
-  }, [cartItems, isInitial]);
+  }, [cartItems]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1, variant?: ProductVariant) => {
     const selectedVariant = variant || product.variants?.[0];
@@ -61,15 +63,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setCartItems(prevItems => {
       const cartItemId = generateCartItemId(product.id, selectedVariant.weight);
-      const existingItemIndex = prevItems.findIndex(item => item.id === cartItemId);
+      const existingItem = prevItems.find(item => item.id === cartItemId);
+      
       let newItems;
+      let displayQuantity = quantity;
 
-      if (existingItemIndex > -1) {
-        newItems = [...prevItems];
-        newItems[existingItemIndex] = {
-            ...newItems[existingItemIndex],
-            quantity: newItems[existingItemIndex].quantity + quantity
-        };
+      if (existingItem) {
+        displayQuantity = existingItem.quantity + quantity;
+        newItems = prevItems.map(item =>
+          item.id === cartItemId
+            ? { ...item, quantity: displayQuantity }
+            : item
+        );
       } else {
         const newCartItem: CartItem = {
           ...product,
@@ -82,7 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       toast({
         title: "Added to cart",
-        description: `${product.name} (${selectedVariant.weight}) has been added to your cart.`,
+        description: `${product.name} (${displayQuantity}) has been added to your cart.`,
       });
 
       return newItems;
@@ -90,7 +95,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   const removeFromCart = (cartItemId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== cartItemId));
+    setCartItems(prevItems => {
+        const newItems = prevItems.filter(item => item.id !== cartItemId);
+        if(newItems.length === 0) {
+            localStorage.removeItem('cart');
+        }
+        return newItems;
+    });
     toast({
       title: "Item removed",
       description: `The item has been removed from your cart.`,
@@ -112,6 +123,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem('cart');
   };
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
