@@ -1,7 +1,7 @@
 
 'use client'
 
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import type { CartItem, Product, ProductVariant } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -47,8 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems, isInitial]);
 
-  const addToCart = (product: Product, quantity: number = 1, variant?: ProductVariant) => {
-    // Ensure we have a variant, defaulting to the first one if not provided.
+  const addToCart = useCallback((product: Product, quantity: number = 1, variant?: ProductVariant) => {
     const selectedVariant = variant || product.variants?.[0];
     
     if (!selectedVariant) {
@@ -62,32 +61,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setCartItems(prevItems => {
       const cartItemId = generateCartItemId(product.id, selectedVariant.weight);
-      const existingItem = prevItems.find(item => item.id === cartItemId);
-      
-      if (existingItem) {
-        // If item exists, update its quantity
-        return prevItems.map(item =>
-          item.id === cartItemId
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+      const existingItemIndex = prevItems.findIndex(item => item.id === cartItemId);
+      let newItems;
+
+      if (existingItemIndex > -1) {
+        newItems = [...prevItems];
+        newItems[existingItemIndex] = {
+            ...newItems[existingItemIndex],
+            quantity: newItems[existingItemIndex].quantity + quantity
+        };
       } else {
-        // If item does not exist, add it to the cart
         const newCartItem: CartItem = {
           ...product,
-          id: cartItemId, // This is now the unique cart item ID
+          id: cartItemId,
           quantity: quantity,
           selectedVariant: selectedVariant,
         };
-        return [...prevItems, newCartItem];
+        newItems = [...prevItems, newCartItem];
       }
-    });
+      
+      toast({
+        title: "Added to cart",
+        description: `${product.name} (${selectedVariant.weight}) has been added to your cart.`,
+      });
 
-    toast({
-      title: "Added to cart",
-      description: `${product.name} (${selectedVariant.weight}) has been added to your cart.`,
-    })
-  };
+      return newItems;
+    });
+  }, [toast]);
 
   const removeFromCart = (cartItemId: string) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== cartItemId));
@@ -117,7 +117,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const cartTotal = cartItems.reduce((acc, item) => {
-    // Ensure selectedVariant and its price exist to prevent crashes
     if (item.selectedVariant && typeof item.selectedVariant.price === 'number') {
       return acc + item.selectedVariant.price * item.quantity;
     }
