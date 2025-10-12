@@ -6,8 +6,8 @@ import Link from "next/link";
 import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 
 const mainNavLinks = [
@@ -37,6 +38,7 @@ export function Header() {
   const { wishlistCount } = useWishlist();
   const [isClient, setIsClient] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     setIsClient(true);
@@ -75,14 +77,14 @@ export function Header() {
             ))}
         </nav>
 
-        <div className="flex items-center gap-2 md:gap-4">
-            <div className="hidden md:block w-64">
+        <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
+            <div className="hidden md:block w-full max-w-xs">
                  <DynamicSearch />
             </div>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative hover:bg-accent">
+                <Button variant="ghost" size="icon" className="relative shrink-0 hover:bg-accent">
                     <User className="h-6 w-6" />
                     <span className="sr-only">My Account</span>
                 </Button>
@@ -135,7 +137,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button asChild variant="ghost" size="icon" className="relative hover:bg-accent">
+            <Button asChild variant="ghost" size="icon" className="relative shrink-0 hover:bg-accent">
                 <Link href="/wishlist">
                 <Heart className="h-6 w-6" />
                  {isClient && wishlistCount > 0 && (
@@ -144,7 +146,7 @@ export function Header() {
                 <span className="sr-only">Wishlist</span>
                 </Link>
             </Button>
-            <Button asChild variant="ghost" size="icon" className="relative hover:bg-accent">
+            <Button asChild variant="ghost" size="icon" className="relative shrink-0 hover:bg-accent">
                 <Link href="/cart">
                 <ShoppingCart className="h-6 w-6" />
                 {isClient && cartCount > 0 && (
@@ -154,28 +156,25 @@ export function Header() {
                 </Link>
             </Button>
             <div className="lg:hidden">
-                <Sheet>
+                <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
                     <Button variant="ghost" size="icon" className="hover:bg-accent">
                     <Menu className="h-6 w-6" />
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right">
-                    <nav className="flex flex-col gap-4 mt-8">
-                    <Link href="/" className="mb-4">
-                       <Logo className="h-10 w-auto text-primary"/>
-                    </Link>
-                    {[...mainNavLinks].map((link) => (
-                        <Link key={link.href} href={link.href} className="text-lg font-medium">
-                        {link.label}
-                        </Link>
+                <SheetContent side="right" className="p-0">
+                    <div className="p-4">
+                        <DynamicSearch />
+                    </div>
+                    <Separator />
+                    <nav className="flex flex-col gap-1 p-4">
+                    {mainNavLinks.map((link) => (
+                        <SheetClose asChild key={link.href}>
+                            <Link href={link.href} className="text-lg font-medium p-2 rounded-md hover:bg-accent">
+                                {link.label}
+                            </Link>
+                        </SheetClose>
                     ))}
-                    <hr/>
-                    {isClient && isLoggedIn ? (
-                        <Button onClick={handleLogout}>Logout</Button>
-                    ) : (
-                        <Button asChild><Link href="/login">Login</Link></Button>
-                    )}
                     </nav>
                 </SheetContent>
                 </Sheet>

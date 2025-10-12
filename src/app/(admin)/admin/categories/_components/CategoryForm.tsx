@@ -39,8 +39,8 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const { toast } = useToast();
   const isEditing = !!category;
 
-  const [iconPreview, setIconPreview] = useState<string | null>(isEditing && category ? category.icon : null);
-
+  const [iconPreview, setIconPreview] = useState<string | null | undefined>( isEditing && category ? category.icon : null);
+  
   const defaultValues = isEditing && category ? category : { name: "", icon: "" };
 
   const form = useForm<CategoryFormValues>({
