@@ -7,7 +7,7 @@ import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search, X } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -163,8 +163,15 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="p-0">
-                    <div className="p-4">
-                        <DynamicSearch />
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex-1">
+                          <DynamicSearch />
+                      </div>
+                      <SheetClose asChild>
+                          <Button variant="ghost" size="icon" className="ml-2 h-9 w-9">
+                              <X className="h-6 w-6" />
+                          </Button>
+                      </SheetClose>
                     </div>
                     <Separator />
                     <nav className="flex flex-col gap-1 p-4">
