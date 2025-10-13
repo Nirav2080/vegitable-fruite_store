@@ -162,18 +162,10 @@ export function Header() {
                     <Menu className="h-6 w-6" />
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="p-0">
-                    <div className="flex items-center justify-between p-4">
-                      <div className="flex-1">
-                          <DynamicSearch />
-                      </div>
-                      <SheetClose asChild>
-                          <Button variant="ghost" size="icon" className="ml-2 h-9 w-9">
-                              <X className="h-6 w-6" />
-                          </Button>
-                      </SheetClose>
+                <SheetContent side="right" className="flex flex-col p-0">
+                    <div className="p-4 border-b">
+                      <DynamicSearch />
                     </div>
-                    <Separator />
                     <nav className="flex flex-col gap-1 p-4">
                     {mainNavLinks.map((link) => (
                         <SheetClose asChild key={link.href}>
