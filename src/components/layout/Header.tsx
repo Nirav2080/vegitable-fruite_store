@@ -173,8 +173,7 @@ export function Header() {
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
                     <SheetHeader className="p-4 border-b">
-                         <div className="flex items-center justify-between">
-                            <Search className="h-6 w-6" />
+                         <div className="flex items-center justify-end">
                             <SheetClose asChild>
                                 <Button variant="ghost" size="icon">
                                     <X className="h-6 w-6" />
