@@ -171,10 +171,12 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                    <SheetHeader className="p-4 border-b">
-                         <div className="relative">
-                            <DynamicSearch />
-                         </div>
+                    <SheetHeader className="p-4 border-b flex flex-row items-center gap-4">
+                        <DynamicSearch />
+                        <SheetClose>
+                            <X className="h-6 w-6" />
+                            <span className="sr-only">Close</span>
+                        </SheetClose>
                     </SheetHeader>
                     <nav className="flex flex-col gap-1 p-4">
                     {mainNavLinks.map((link) => (
