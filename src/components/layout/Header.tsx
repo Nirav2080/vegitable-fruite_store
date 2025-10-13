@@ -7,7 +7,7 @@ import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search, X } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -172,24 +172,21 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                  <SheetHeader className="flex-row items-center justify-between p-4 border-b">
-                    <SheetTitle>Menu</SheetTitle>
-                    <SheetClose>
-                      <X className="h-6 w-6" />
-                    </SheetClose>
-                  </SheetHeader>
-                  <div className="p-4">
-                    <DynamicSearch />
-                  </div>
-                  <nav className="flex flex-col gap-1 p-4">
-                    {mainNavLinks.map((link) => (
-                        <SheetClose asChild key={link.href}>
-                            <Link href={link.href} className="text-lg font-medium p-2 rounded-md hover:bg-accent">
-                                {link.label}
-                            </Link>
-                        </SheetClose>
-                    ))}
-                  </nav>
+                    <SheetHeader className="p-4 pb-0 flex flex-row items-center justify-end mb-4">
+                        <SheetClose />
+                    </SheetHeader>
+                    <div className="p-4 pt-0">
+                        <DynamicSearch />
+                    </div>
+                    <nav className="flex flex-col gap-1 p-4 pt-0">
+                        {mainNavLinks.map((link) => (
+                            <SheetClose asChild key={link.href}>
+                                <Link href={link.href} className="text-lg font-medium p-2 rounded-md hover:bg-accent">
+                                    {link.label}
+                                </Link>
+                            </SheetClose>
+                        ))}
+                    </nav>
                 </SheetContent>
                 </Sheet>
             </div>
