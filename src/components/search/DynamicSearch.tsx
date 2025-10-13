@@ -49,7 +49,7 @@ export function DynamicSearch() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div className="w-full relative">
+        <div className="w-full  relative">
           <Input
             ref={inputRef}
             type="search"

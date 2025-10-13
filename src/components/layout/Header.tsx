@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search, X } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
@@ -43,21 +43,29 @@ export function Header() {
   React.useEffect(() => {
     setIsClient(true);
     const checkLoginStatus = () => {
-        setIsLoggedIn(localStorage.getItem('isCustomerLoggedIn') === 'true');
+        const loggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
+        if (loggedIn !== isLoggedIn) {
+          setIsLoggedIn(loggedIn);
+        }
     };
     checkLoginStatus();
     
     window.addEventListener('storage', checkLoginStatus);
+    window.addEventListener('loginStateChange', checkLoginStatus);
+
 
     return () => {
         window.removeEventListener('storage', checkLoginStatus);
+        window.removeEventListener('loginStateChange', checkLoginStatus);
     }
-  }, []);
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem('isCustomerLoggedIn');
     localStorage.removeItem('currentUser');
     setIsLoggedIn(false);
+    const event = new Event('loginStateChange');
+    window.dispatchEvent(event);
     router.push('/login');
     router.refresh();
   };
@@ -163,9 +171,11 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                    <div className="p-4 border-b">
-                      <DynamicSearch />
-                    </div>
+                    <SheetHeader className="p-4 border-b">
+                         <div className="relative">
+                            <DynamicSearch />
+                         </div>
+                    </SheetHeader>
                     <nav className="flex flex-col gap-1 p-4">
                     {mainNavLinks.map((link) => (
                         <SheetClose asChild key={link.href}>
