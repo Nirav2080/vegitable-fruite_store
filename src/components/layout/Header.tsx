@@ -172,19 +172,16 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                    <SheetHeader className="p-4 border-b">
-                         <div className="flex items-center justify-end">
-                            <SheetClose asChild>
-                                <Button variant="ghost" size="icon">
-                                    <X className="h-6 w-6" />
-                                </Button>
-                            </SheetClose>
-                        </div>
-                        <div className="mt-4">
-                            <DynamicSearch />
-                        </div>
-                    </SheetHeader>
-                    <nav className="flex flex-col gap-1 p-4">
+                  <SheetHeader className="flex-row items-center justify-between p-4 border-b">
+                    <SheetTitle>Menu</SheetTitle>
+                    <SheetClose>
+                      <X className="h-6 w-6" />
+                    </SheetClose>
+                  </SheetHeader>
+                  <div className="p-4">
+                    <DynamicSearch />
+                  </div>
+                  <nav className="flex flex-col gap-1 p-4">
                     {mainNavLinks.map((link) => (
                         <SheetClose asChild key={link.href}>
                             <Link href={link.href} className="text-lg font-medium p-2 rounded-md hover:bg-accent">
@@ -192,7 +189,7 @@ export function Header() {
                             </Link>
                         </SheetClose>
                     ))}
-                    </nav>
+                  </nav>
                 </SheetContent>
                 </Sheet>
             </div>
