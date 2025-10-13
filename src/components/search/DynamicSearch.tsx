@@ -49,12 +49,12 @@ export function DynamicSearch() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div className="w-full  relative">
+        <div className="w-full relative">
           <Input
             ref={inputRef}
             type="search"
             placeholder="Search products..."
-            className="w-full pr-10 bg-secondary text-foreground rounded-full h-10 border-none focus-visible:ring-2 focus-visible:ring-primary"
+            className=" pr-10 bg-secondary text-foreground rounded-full h-10 border-none focus-visible:ring-2 focus-visible:ring-primary"
             value={query}
             onChange={(e) => {
               const newQuery = e.target.value;

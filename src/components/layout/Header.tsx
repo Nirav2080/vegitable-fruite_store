@@ -86,8 +86,9 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
-            <div className="hidden md:block w-full max-w-xs">
-                 <DynamicSearch />
+            <div className="hidden md:block  max-w-xs">
+                 <DynamicSearch/>
+
             </div>
             
             <DropdownMenu>
@@ -171,12 +172,18 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                    <SheetHeader className="p-4 border-b flex flex-row items-center gap-4">
-                        <DynamicSearch />
-                        <SheetClose>
-                            <X className="h-6 w-6" />
-                            <span className="sr-only">Close</span>
-                        </SheetClose>
+                    <SheetHeader className="p-4 border-b">
+                         <div className="flex items-center justify-between">
+                            <Search className="h-6 w-6" />
+                            <SheetClose asChild>
+                                <Button variant="ghost" size="icon">
+                                    <X className="h-6 w-6" />
+                                </Button>
+                            </SheetClose>
+                        </div>
+                        <div className="mt-4">
+                            <DynamicSearch />
+                        </div>
                     </SheetHeader>
                     <nav className="flex flex-col gap-1 p-4">
                     {mainNavLinks.map((link) => (
