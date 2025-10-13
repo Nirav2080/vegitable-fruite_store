@@ -172,10 +172,10 @@ export function Header() {
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="flex flex-col p-0">
-                    <SheetHeader className="p-4 pb-0 flex flex-row items-center justify-end mb-4">
+                    <SheetHeader className="p-4 pb-0 flex flex-row items-center justify-end ">
                         <SheetClose />
                     </SheetHeader>
-                    <div className="p-4 pt-0">
+                    <div className="p-4 mt-6 pt-0">
                         <DynamicSearch />
                     </div>
                     <nav className="flex flex-col gap-1 p-4 pt-0">
