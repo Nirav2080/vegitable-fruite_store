@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import type { Category } from "@/lib/types"
-import { createCategory, updateCategory, getCategories } from "@/lib/actions/categories"
+import { createCategory, updateCategory } from "@/lib/actions/categories"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { getCategories } from "@/lib/cached-data";
 
 const formSchema = z.object({
   name: z.string().min(1, "Category name is required"),
@@ -72,7 +73,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
       if (dataToSubmit.icon === '') {
         delete dataToSubmit.icon;
       }
-       if (dataToSubmit.parentId === '') {
+      if (dataToSubmit.parentId === '' || dataToSubmit.parentId === 'none') {
         delete dataToSubmit.parentId;
       }
       
@@ -137,14 +138,14 @@ export function CategoryForm({ category }: CategoryFormProps) {
             render={({ field }) => (
                 <FormItem>
                 <FormLabel>Parent Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} defaultValue={field.value || 'none'}>
                     <FormControl>
                     <SelectTrigger>
                         <SelectValue placeholder="Select a parent category (optional)" />
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         {categories.map((cat) => (
                             <SelectItem key={cat.id} value={cat.id}>
                                 {cat.name}
