@@ -21,6 +21,7 @@ async function getCategoriesCollection() {
 const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
   icon: z.string().optional(),
+  parentId: z.string().optional(),
 });
 
 function serializeCategory(category: any): Category {
@@ -32,10 +33,31 @@ function serializeCategory(category: any): Category {
     } as Category;
 }
 
-export async function getCategories(): Promise<Category[]> {
+export async function getCategories(includeSubcategories = false): Promise<Category[]> {
     const categoriesCollection = await getCategoriesCollection();
-    const categories = await categoriesCollection.find({}).sort({ name: 1 }).toArray();
-    return categories.map(serializeCategory);
+    const categoriesData = await categoriesCollection.find({}).sort({ name: 1 }).toArray();
+    const categories = categoriesData.map(serializeCategory);
+
+    if (includeSubcategories) {
+        const categoryMap = new Map<string, Category>();
+        const rootCategories: Category[] = [];
+
+        categories.forEach(category => {
+            category.subcategories = [];
+            categoryMap.set(category.id, category);
+        });
+
+        categories.forEach(category => {
+            if (category.parentId && categoryMap.has(category.parentId)) {
+                categoryMap.get(category.parentId)!.subcategories!.push(category);
+            } else {
+                rootCategories.push(category);
+            }
+        });
+        return rootCategories;
+    }
+    
+    return categories;
 }
 
 export async function getCategoryById(id: string): Promise<Category | null> {
@@ -54,10 +76,16 @@ export async function createCategory(data: unknown) {
     const parsedData = categorySchema.parse(data);
     const categoriesCollection = await getCategoriesCollection();
     
-    await categoriesCollection.insertOne({
+    const dataToInsert: any = {
       ...parsedData,
       createdAt: new Date(),
-    } as any);
+    };
+
+    if (parsedData.parentId) {
+        dataToInsert.parentId = parsedData.parentId;
+    }
+
+    await categoriesCollection.insertOne(dataToInsert);
     
     revalidatePath('/admin/categories');
     revalidatePath('/');
@@ -70,7 +98,14 @@ export async function updateCategory(id: string, data: unknown) {
   const parsedData = categorySchema.parse(data);
   const categoriesCollection = await getCategoriesCollection();
 
-  const result = await categoriesCollection.updateOne({ _id: new ObjectId(id) }, { $set: parsedData });
+  const dataToUpdate: any = { ...parsedData };
+    if (parsedData.parentId) {
+        dataToUpdate.parentId = parsedData.parentId;
+    } else {
+        dataToUpdate.parentId = null;
+    }
+
+  const result = await categoriesCollection.updateOne({ _id: new ObjectId(id) }, { $set: dataToUpdate });
 
   if (result.matchedCount === 0) {
       notFound();
@@ -89,13 +124,19 @@ export async function deleteCategory(id: string) {
     
     const db = await getDb();
     const productsCollection = db.collection<Product>('products');
-    const productCount = await productsCollection.countDocuments({ categoryId: new ObjectId(id) });
+    const productCount = await productsCollection.countDocuments({ categoryId: id });
 
     if (productCount > 0) {
         throw new Error('Cannot delete category with associated products.');
     }
 
     const categoriesCollection = await getCategoriesCollection();
+    const subcategoryCount = await categoriesCollection.countDocuments({ parentId: id });
+
+     if (subcategoryCount > 0) {
+        throw new Error('Cannot delete category with subcategories.');
+    }
+
     const result = await categoriesCollection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {

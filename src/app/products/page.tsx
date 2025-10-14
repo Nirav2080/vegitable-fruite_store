@@ -56,15 +56,33 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
                             <AccordionContent className="px-6">
                                 <div className="grid gap-2">
                                     {categories.map((category) => (
-                                        <div key={category.id} className="flex items-center justify-between">
-                                            <Label htmlFor={`cat-${category.id}`} className="flex items-center gap-2 font-normal cursor-pointer">
-                                                <Checkbox 
-                                                    id={`cat-${category.id}`}
-                                                    checked={selectedFilters['categoryId']?.includes(category.id)}
-                                                    onCheckedChange={() => handleFilterChange('categoryId', category.id)}
-                                                />
-                                                {category.name}
-                                            </Label>
+                                        <div key={category.id}>
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor={`cat-${category.id}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                                    <Checkbox 
+                                                        id={`cat-${category.id}`}
+                                                        checked={selectedFilters['categoryId']?.includes(category.id)}
+                                                        onCheckedChange={() => handleFilterChange('categoryId', category.id)}
+                                                    />
+                                                    {category.name}
+                                                </Label>
+                                            </div>
+                                            {category.subcategories && category.subcategories.length > 0 && (
+                                                <div className="pl-6 pt-2 grid gap-2">
+                                                    {category.subcategories.map(sub => (
+                                                        <div key={sub.id} className="flex items-center justify-between">
+                                                            <Label htmlFor={`cat-${sub.id}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                                                <Checkbox 
+                                                                    id={`cat-${sub.id}`}
+                                                                    checked={selectedFilters['categoryId']?.includes(sub.id)}
+                                                                    onCheckedChange={() => handleFilterChange('categoryId', sub.id)}
+                                                                />
+                                                                {sub.name}
+                                                            </Label>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -125,7 +143,7 @@ export default function ProductsPage() {
         setIsLoading(true);
         const [fetchedProducts, fetchedCategories, fetchedAttributes] = await Promise.all([
             getProducts(),
-            getCategories(),
+            getCategories(true),
             getAttributes(),
         ]);
         setProducts(fetchedProducts);
@@ -164,7 +182,7 @@ export default function ProductsPage() {
                 return true;
             }
             if (filterName === 'categoryId') {
-                return selectedValues.includes(product.categoryId);
+                return selectedValues.includes(product.categoryId as string);
             }
             if (filterName === 'isOrganic') {
                 return product.isOrganic;

@@ -24,6 +24,9 @@ export interface Category {
   name: string;
   icon?: string;
   createdAt: Date;
+  parentId?: string;
+  parentName?: string;
+  subcategories?: Category[];
 }
 
 export interface Product {

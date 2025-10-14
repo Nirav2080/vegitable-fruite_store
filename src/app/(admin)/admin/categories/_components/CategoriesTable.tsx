@@ -44,10 +44,10 @@ export function CategoriesTable({ data }: { data: Category[] }) {
                 description: "Category deleted successfully.",
             });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Failed to delete category. Make sure no products are using it.",
+                description: error.message || "Failed to delete category.",
                 variant: "destructive",
             });
         } finally {
@@ -61,6 +61,11 @@ export function CategoriesTable({ data }: { data: Category[] }) {
         setIsDeleteDialogOpen(true);
     };
 
+    const categoriesWithParents = data.map(category => {
+        const parent = data.find(p => p.id === category.parentId);
+        return { ...category, parentName: parent ? parent.name : null };
+    });
+
   return (
     <>
       <Table>
@@ -68,11 +73,12 @@ export function CategoriesTable({ data }: { data: Category[] }) {
           <TableRow>
             <TableHead className="w-[80px]">Icon</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Parent Category</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((category) => (
+          {categoriesWithParents.map((category) => (
             <TableRow key={category.id}>
               <TableCell>
                   <div className="w-10 h-10 border rounded-md flex items-center justify-center bg-muted">
@@ -90,6 +96,7 @@ export function CategoriesTable({ data }: { data: Category[] }) {
                   </div>
               </TableCell>
               <TableCell className="font-medium">{category.name}</TableCell>
+              <TableCell className="text-muted-foreground">{category.parentName || '—'}</TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
                     <Button asChild variant="outline" size="icon">

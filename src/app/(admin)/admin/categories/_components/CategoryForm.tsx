@@ -16,16 +16,24 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import type { Category } from "@/lib/types"
-import { createCategory, updateCategory } from "@/lib/actions/categories"
+import { createCategory, updateCategory, getCategories } from "@/lib/actions/categories"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const formSchema = z.object({
   name: z.string().min(1, "Category name is required"),
   icon: z.string().optional(),
+  parentId: z.string().optional(),
 })
 
 type CategoryFormValues = z.infer<typeof formSchema>
@@ -40,8 +48,18 @@ export function CategoryForm({ category }: CategoryFormProps) {
   const isEditing = !!category;
 
   const [iconPreview, setIconPreview] = useState<string | null | undefined>( isEditing && category ? category.icon : null);
+  const [categories, setCategories] = useState<Category[]>([]);
   
-  const defaultValues = isEditing && category ? category : { name: "", icon: "" };
+  const defaultValues = isEditing && category ? { ...category, parentId: category.parentId || "" } : { name: "", icon: "", parentId: "" };
+
+   useEffect(() => {
+    async function fetchCategories() {
+        const fetchedCategories = await getCategories();
+        // Filter out the current category from the list of possible parents
+        setCategories(fetchedCategories.filter(c => c.id !== category?.id));
+    }
+    fetchCategories();
+  }, [category?.id])
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
@@ -50,9 +68,12 @@ export function CategoryForm({ category }: CategoryFormProps) {
 
   async function onSubmit(values: CategoryFormValues) {
     try {
-      const dataToSubmit = { ...values };
+      const dataToSubmit: any = { ...values };
       if (dataToSubmit.icon === '') {
-        delete (dataToSubmit as Partial<CategoryFormValues>).icon;
+        delete dataToSubmit.icon;
+      }
+       if (dataToSubmit.parentId === '') {
+        delete dataToSubmit.parentId;
       }
       
       if (isEditing && category) {
@@ -109,6 +130,34 @@ export function CategoryForm({ category }: CategoryFormProps) {
               <FormMessage />
             </FormItem>
           )}
+        />
+        <FormField
+            control={form.control}
+            name="parentId"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Parent Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Select a parent category (optional)" />
+                    </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                                {cat.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                 <FormDescription>
+                    Leave empty to create a top-level category.
+                </FormDescription>
+                <FormMessage />
+                </FormItem>
+            )}
         />
 
         <FormField
