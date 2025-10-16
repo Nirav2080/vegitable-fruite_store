@@ -20,6 +20,7 @@ import {
   Star,
   Sparkles,
   Percent,
+  Settings,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -88,6 +89,7 @@ export default function AdminLayout({
     { href: '/admin/banners', icon: ImageIcon, label: 'Banners' },
     { href: '/admin/offers', icon: Percent, label: 'Offers' },
     { href: '/admin/coupons', icon: Gift, label: 'Coupons' },
+    { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
   if (pathname === '/admin/login') {
