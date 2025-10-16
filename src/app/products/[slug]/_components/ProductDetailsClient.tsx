@@ -15,7 +15,13 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Breadcrumbs } from '@/app/(customer)/_components/Breadcrumbs';
 import { useWishlist } from '@/hooks/use-wishlist';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
 
 interface ProductDetailsClientProps {
@@ -124,30 +130,25 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
 
             {product.variants && product.variants.length > 1 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium mb-2">Select Weight:</h3>
-                <RadioGroup 
+                <Label className="text-sm font-medium mb-2 block">Select Weight:</Label>
+                <Select
                   defaultValue={selectedVariant.weight}
                   onValueChange={(weight) => {
                     const newVariant = product.variants.find(v => v.weight === weight);
                     setSelectedVariant(newVariant);
                   }}
-                  className="flex flex-wrap gap-2"
                 >
-                  {product.variants.map((variant) => (
-                    <div key={variant.weight}>
-                      <RadioGroupItem value={variant.weight} id={variant.weight} className="sr-only" />
-                      <Label 
-                        htmlFor={variant.weight}
-                        className={cn(
-                          "block p-2 border rounded-md cursor-pointer",
-                          selectedVariant.weight === variant.weight ? "border-primary bg-primary/10" : "border-input"
-                        )}
-                      >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a variant" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {product.variants.map((variant) => (
+                      <SelectItem key={variant.weight} value={variant.weight}>
                         {variant.weight}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 

@@ -1,7 +1,7 @@
 
 'use client'
 
-import type { Product } from "@/lib/types";
+import type { Product, ProductVariant } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -11,6 +11,13 @@ import { useCart } from "@/hooks/use-cart";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "@/hooks/use-wishlist";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface ProductListCardProps {
   product: Product;
@@ -38,13 +45,13 @@ export function ProductListCard({ product }: ProductListCardProps) {
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [isClient, setIsClient] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(product.variants?.[0]);
   
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const defaultVariant = product.variants?.[0];
-  if (!defaultVariant) {
+  if (!selectedVariant) {
     return null; 
   }
 
@@ -54,7 +61,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, 1, defaultVariant);
+    addToCart(product, 1, selectedVariant);
   }
 
   const handleWishlistClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -63,8 +70,15 @@ export function ProductListCard({ product }: ProductListCardProps) {
     toggleWishlist(product);
   }
 
+  const handleVariantChange = (variantWeight: string) => {
+    const newVariant = product.variants.find(v => v.weight === variantWeight);
+    if(newVariant) {
+        setSelectedVariant(newVariant);
+    }
+  }
+
   const onWishlist = isClient && isInWishlist(product.id);
-  const discountPercentage = defaultVariant.originalPrice ? Math.round(((defaultVariant.originalPrice - defaultVariant.price) / defaultVariant.originalPrice) * 100) : 0;
+  const discountPercentage = selectedVariant.originalPrice ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.price) * 100) : 0;
   
   const isNew = () => {
     const today = new Date();
@@ -131,19 +145,32 @@ export function ProductListCard({ product }: ProductListCardProps) {
                     {renderStars(product.rating || 0)}
                     <span className="text-xs text-muted-foreground">({product.reviews.length} reviews)</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2 line-clamp-2 flex-grow">
-                    {product.description}
-                </p>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4">
-                    <div className="flex items-center gap-2">
-                        <p className="text-lg font-bold text-primary">${defaultVariant.price.toFixed(2)}</p>
-                        {defaultVariant.originalPrice && <p className="text-sm text-muted-foreground line-through">${defaultVariant.originalPrice.toFixed(2)}</p>}
+                     <div className="flex items-center gap-2">
+                        <p className="text-lg font-bold text-primary">${selectedVariant.price.toFixed(2)}</p>
+                        {selectedVariant.originalPrice && <p className="text-sm text-muted-foreground line-through">${selectedVariant.originalPrice.toFixed(2)}</p>}
                     </div>
-                    <Button size="sm" className="mt-2 sm:mt-0" onClick={handleAddToCart} disabled={defaultVariant.stock === 0}>
-                        <ShoppingCart className="mr-2 h-4 w-4" />
-                        {defaultVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
-                    </Button>
                 </div>
+
+                {product.variants.length > 1 ? (
+                    <Select defaultValue={selectedVariant.weight} onValueChange={handleVariantChange}>
+                        <SelectTrigger className="mt-2 h-9">
+                            <SelectValue placeholder="Select unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {product.variants.map((variant) => (
+                                <SelectItem key={variant.weight} value={variant.weight}>
+                                    {variant.weight} - ${variant.price.toFixed(2)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                ) : null}
+
+                 <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
+                </Button>
             </div>
         </div>
     </div>
