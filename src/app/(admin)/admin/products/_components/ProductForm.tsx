@@ -113,6 +113,27 @@ export function ProductForm({ product }: ProductFormProps) {
   
   const unitType = form.watch('unitType');
 
+  useEffect(() => {
+    if (unitType && !isEditing) { // Only run on create and when unitType is selected
+      let defaultVariantWeight = '';
+      switch (unitType) {
+        case "kg":
+        case "Bag(e.g, 1kg, 1.5kg)":
+          defaultVariantWeight = "1kg";
+          break;
+        case "Each":
+        case "Bunch":
+        case "Punnet":
+          defaultVariantWeight = unitType;
+          break;
+        default:
+          defaultVariantWeight = "Each";
+      }
+      form.setValue('variants.0.weight', defaultVariantWeight, { shouldDirty: true });
+    }
+  }, [unitType, form.setValue, isEditing]);
+
+
   async function onSubmit(values: ProductFormValues) {
     try {
       if (isEditing && product) {
@@ -275,7 +296,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select unit" />
+                        <SelectValue placeholder="Select unit type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent >
