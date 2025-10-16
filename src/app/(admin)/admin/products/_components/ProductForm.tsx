@@ -43,7 +43,7 @@ const variantSchema = z.object({
 });
 
 const unitOptions = [
-    "Loose", "Bag(e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "kg", "Mix Pepper Bag", "Dozen(e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub(e.g 700g)"
+    "Loose", "Bag(e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "Mix Pepper Bag", "Dozen(e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub(e.g 700g)"
 ];
 
 const formSchema = z.object({
@@ -124,7 +124,6 @@ export function ProductForm({ product }: ProductFormProps) {
         case "Punnet": placeholder = "e.g. 250g Punnet"; break;
         case "Bunch": placeholder = "e.g. Bunch"; break;
         case "Piece (e.g Quarter, half)": placeholder = "e.g. Quarter Piece, Half Piece"; break;
-        case "kg": placeholder = "e.g. 1kg, 2.5kg"; break;
         case "Mix Pepper Bag": placeholder = "e.g. 500g Mixed Bag"; break;
         case "Dozen(e.g half Dozen, Tray)": placeholder = "e.g. Half Dozen, Tray of 12"; break;
         case "Liter Bottles(e.g, 1 liter, 2 liter)": placeholder = "e.g. 1L Bottle"; break;

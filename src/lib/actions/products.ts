@@ -25,12 +25,16 @@ const variantSchema = z.object({
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
 });
 
+const unitOptions = [
+    "Loose", "Bag(e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "Mix Pepper Bag", "Dozen(e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub(e.g 700g)"
+];
+
 const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
-  unitType: z.enum(['weight', 'piece']).default('weight'),
+  unitType: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
@@ -45,9 +49,12 @@ async function serializeProduct(product: any): Promise<Product | null> {
     const db = await getDb();
     const categoriesCollection = db.collection<Category>('categories');
     
-    const category = await categoriesCollection.findOne({ _id: new ObjectId(product.categoryId) });
+    // categoryId can be a string or ObjectId, so we handle both
+    const categoryId = ObjectId.isValid(product.categoryId) ? new ObjectId(product.categoryId) : product.categoryId;
 
-    const { _id, categoryId, ...rest } = product;
+    const category = await categoriesCollection.findOne({ _id: categoryId });
+
+    const { _id, ...rest } = product;
 
     const serializedReviews = Array.isArray(product.reviews) 
         ? product.reviews.map((review: any) => ({
