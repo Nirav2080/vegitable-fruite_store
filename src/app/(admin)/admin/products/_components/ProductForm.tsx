@@ -73,6 +73,7 @@ export function ProductForm({ product }: ProductFormProps) {
   
   const [categories, setCategories] = useState<Category[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
+  const [variantPlaceholder, setVariantPlaceholder] = useState("e.g. 1kg or Each");
 
   useEffect(() => {
     async function fetchCategories() {
@@ -98,7 +99,7 @@ export function ProductForm({ product }: ProductFormProps) {
       isDeal: false,
       isPopular: false,
       images: [],
-      variants: [{ weight: '1kg', price: 0, originalPrice: 0, stock: 0 }],
+      variants: [{ weight: '', price: 0, originalPrice: 0, stock: 0 }],
   }
 
   const form = useForm<ProductFormValues>({
@@ -114,24 +115,24 @@ export function ProductForm({ product }: ProductFormProps) {
   const unitType = form.watch('unitType');
 
   useEffect(() => {
-    if (unitType && !isEditing) { // Only run on create and when unitType is selected
-      let defaultVariantWeight = '';
-      switch (unitType) {
-        case "kg":
-        case "Bag(e.g, 1kg, 1.5kg)":
-          defaultVariantWeight = "1kg";
-          break;
-        case "Each":
-        case "Bunch":
-        case "Punnet":
-          defaultVariantWeight = unitType;
-          break;
-        default:
-          defaultVariantWeight = "Each";
-      }
-      form.setValue('variants.0.weight', defaultVariantWeight, { shouldDirty: true });
+    let placeholder = "e.g. 1kg or Each";
+    switch (unitType) {
+        case "Loose": placeholder = "e.g. Loose"; break;
+        case "Bag(e.g, 1kg, 1.5kg)": placeholder = "e.g. 1kg Bag, 1.5kg Bag"; break;
+        case "Each": placeholder = "e.g. Each"; break;
+        case "Half": placeholder = "e.g. Half"; break;
+        case "Punnet": placeholder = "e.g. 250g Punnet"; break;
+        case "Bunch": placeholder = "e.g. Bunch"; break;
+        case "Piece (e.g Quarter, half)": placeholder = "e.g. Quarter Piece, Half Piece"; break;
+        case "kg": placeholder = "e.g. 1kg, 2.5kg"; break;
+        case "Mix Pepper Bag": placeholder = "e.g. 500g Mixed Bag"; break;
+        case "Dozen(e.g half Dozen, Tray)": placeholder = "e.g. Half Dozen, Tray of 12"; break;
+        case "Liter Bottles(e.g, 1 liter, 2 liter)": placeholder = "e.g. 1L Bottle"; break;
+        case "Tub(e.g 700g)": placeholder = "e.g. 700g Tub"; break;
+        default: placeholder = "e.g. 1kg or Each";
     }
-  }, [unitType, form.setValue, isEditing]);
+    setVariantPlaceholder(placeholder);
+  }, [unitType]);
 
 
   async function onSubmit(values: ProductFormValues) {
@@ -338,9 +339,9 @@ export function ProductForm({ product }: ProductFormProps) {
                         name={`variants.${index}.weight`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Unit/Weight</FormLabel>
+                            <FormLabel>Unit</FormLabel>
                              <FormControl>
-                                <Input placeholder="e.g. 1kg or Each" {...field} />
+                                <Input placeholder={variantPlaceholder} {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
