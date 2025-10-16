@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useSearchParams } from "next/navigation";
 
 function ProductsSkeleton() {
     return (
@@ -131,6 +132,7 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
 
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
@@ -149,10 +151,16 @@ export default function ProductsPage() {
         setProducts(fetchedProducts);
         setCategories(fetchedCategories);
         setAttributes(fetchedAttributes);
+        
+        const categoryId = searchParams.get('categoryId');
+        if (categoryId) {
+            setSelectedFilters(prev => ({ ...prev, categoryId: [categoryId] }));
+        }
+        
         setIsLoading(false);
     }
     loadData();
-  }, [])
+  }, [searchParams])
 
   const handleFilterChange = (filterName: string, value: string) => {
     setSelectedFilters(prev => {
@@ -300,3 +308,5 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+    
