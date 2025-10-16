@@ -39,7 +39,7 @@ export interface Product {
   categoryId: string | ObjectId;
   category: string;
   brand?: string;
-  unitType?: 'weight' | 'piece';
+  unitType?: 'weight' | 'pieces' | 'loose' ;
   isOrganic: boolean;
   isFeatured: boolean;
   isDeal: boolean;

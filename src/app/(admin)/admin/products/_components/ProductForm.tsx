@@ -62,6 +62,10 @@ interface ProductFormProps {
   product?: Product
 }
 
+const unitOptions = [
+    "Loose", "1kg Bag", "1.5kg Bag", "Each", "Bag", "Half", "Punnet", "Bunch", "Quarter Piece", "Half Piece", "kg", "Mix Pepper Bag", "Dozen", "Half Dozen", "Tray", "2 Liter Bottles", "1 Liter Bottles", "750gm Tub"
+];
+
 export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -312,10 +316,19 @@ export function ProductForm({ product }: ProductFormProps) {
                         name={`variants.${index}.weight`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>{unitType === 'weight' ? 'Weight' : 'Unit'}</FormLabel>
-                            <FormControl>
-                              <Input placeholder={unitType === 'weight' ? "e.g. 500g, 1kg" : "e.g., 1 piece, 6-pack"} {...field} />
-                            </FormControl>
+                            <FormLabel>Unit/Weight</FormLabel>
+                             <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a unit" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {unitOptions.map(option => (
+                                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
