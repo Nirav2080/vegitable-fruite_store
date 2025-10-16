@@ -42,12 +42,16 @@ const variantSchema = z.object({
   stock: z.coerce.number().int().min(0, 'Stock cannot be negative.'),
 });
 
+const unitOptions = [
+    "Loose", "1kg Bag", "1.5kg Bag", "Each", "Bag", "Half", "Punnet", "Bunch", "Quarter Piece", "Half Piece", "kg", "Mix Pepper Bag", "Dozen", "Half Dozen", "Tray", "2 Liter Bottles", "1 Liter Bottles", "750gm Tub"
+];
+
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brand: z.string().optional(),
-  unitType: z.enum(['weight', 'piece']).default('weight'),
+  unitType: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
@@ -61,10 +65,6 @@ type ProductFormValues = z.infer<typeof formSchema>
 interface ProductFormProps {
   product?: Product
 }
-
-const unitOptions = [
-    "Loose", "1kg Bag", "1.5kg Bag", "Each", "Bag", "Half", "Punnet", "Bunch", "Quarter Piece", "Half Piece", "kg", "Mix Pepper Bag", "Dozen", "Half Dozen", "Tray", "2 Liter Bottles", "1 Liter Bottles", "750gm Tub"
-];
 
 export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
@@ -279,12 +279,13 @@ export function ProductForm({ product }: ProductFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="weight">Weight (e.g., kg, g)</SelectItem>
-                      <SelectItem value="piece">Piece (e.g., each, pack)</SelectItem>
+                      {unitOptions.map(option => (
+                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Choose if the product is sold by weight or by individual pieces/packs.
+                    Choose the general unit type for this product.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -317,18 +318,9 @@ export function ProductForm({ product }: ProductFormProps) {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Unit/Weight</FormLabel>
-                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select a unit" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {unitOptions.map(option => (
-                                        <SelectItem key={option} value={option}>{option}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                             <FormControl>
+                                <Input placeholder="e.g. 1kg or Each" {...field} />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
