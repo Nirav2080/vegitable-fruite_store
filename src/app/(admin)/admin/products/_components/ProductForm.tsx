@@ -43,7 +43,7 @@ const variantSchema = z.object({
 });
 
 const unitOptions = [
-    "Loose", "1kg Bag", "1.5kg Bag", "Each", "Bag", "Half", "Punnet", "Bunch", "Quarter Piece", "Half Piece", "kg", "Mix Pepper Bag", "Dozen", "Half Dozen", "Tray", "2 Liter Bottles", "1 Liter Bottles", "750gm Tub"
+    "Loose", "Bag(e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "kg", "Mix Pepper Bag", "Dozen(e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub(e.g 700g)"
 ];
 
 const formSchema = z.object({
@@ -86,13 +86,13 @@ export function ProductForm({ product }: ProductFormProps) {
       ...product,
       categoryId: String(product.categoryId),
       images: Array.isArray(product.images) ? product.images : [],
-      unitType: product.unitType || 'weight',
+      unitType: product.unitType || '',
   } : {
       name: "",
       description: "",
       categoryId: "",
       brand: "",
-      unitType: 'weight' as const,
+      unitType: '',
       isOrganic: false,
       isFeatured: false,
       isDeal: false,
@@ -275,12 +275,12 @@ export function ProductForm({ product }: ProductFormProps) {
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select how this product is sold" />
+                        <SelectValue placeholder="Select unit" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent >
                       {unitOptions.map(option => (
-                        <SelectItem key={option} value={option}>{option}</SelectItem>
+                        <SelectItem key={option}  value={option}>{option}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
