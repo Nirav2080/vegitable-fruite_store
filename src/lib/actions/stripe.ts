@@ -16,20 +16,12 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
         
-        let imageUrls: string[] = [];
-        if (Array.isArray(item.images) && item.images.length > 0) {
-            imageUrls = [item.images[0]];
-        } else if (typeof item.images === 'string' && item.images) {
-            imageUrls = [item.images];
-        }
-
         return {
             price_data: {
                 currency: 'nzd',
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
-                    images: imageUrls.length > 0 ? imageUrls : undefined,
                 },
                 unit_amount: priceInCents,
             },
