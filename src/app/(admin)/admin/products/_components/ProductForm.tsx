@@ -43,7 +43,7 @@ const variantSchema = z.object({
 });
 
 const unitOptions = [
-    "Loose", "Bag(e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "Mix Pepper Bag", "Dozen(e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub(e.g 700g)"
+    "Loose", "Bag (e.g, 1kg, 1.5kg)", "Each", "Half", "Punnet", "Bunch", "Piece (e.g Quarter, half)", "Mix Pepper Bag", "Dozen (e.g half Dozen, Tray)", "Liter Bottles(e.g, 1 liter, 2 liter)", "Tub (e.g 700g)"
 ];
 
 const formSchema = z.object({
