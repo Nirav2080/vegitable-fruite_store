@@ -10,6 +10,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 export async function createCheckoutSession(cartItems: CartItem[]) {
+    const host = headers().get('host') || 'localhost:9002';
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
@@ -27,16 +29,13 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
-                    images: imageUrls,
+                    images: imageUrls.length > 0 ? imageUrls : undefined,
                 },
                 unit_amount: priceInCents,
             },
             quantity: item.quantity,
         };
     });
-
-    const host = headers().get('host') || 'localhost:9002';
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -52,7 +51,7 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
         } else {
             throw new Error('Failed to create Stripe checkout session');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error("Stripe session creation failed:", error);
         throw new Error('Could not create checkout session.');
     }
