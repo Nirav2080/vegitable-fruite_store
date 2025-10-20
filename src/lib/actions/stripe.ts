@@ -25,8 +25,7 @@ async function getCurrentUser(): Promise<User | null> {
 }
 
 export async function createCheckoutSession(cartItems: CartItem[]) {
-    const host = headers().get('host') || 'localhost:9002';
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const host = headers().get('origin') || 'http://localhost:9002';
 
     const user = await getCurrentUser();
 
@@ -51,8 +50,8 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
             payment_method_types: ['card'],
             line_items,
             mode: 'payment',
-            success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${protocol}://${host}/checkout/cancel`,
+            success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${host}/checkout/cancel`,
             client_reference_id: user?.id,
             metadata: {
                 cartItems: JSON.stringify(cartItems.map(item => ({
