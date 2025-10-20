@@ -13,7 +13,7 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
-
+        
         let imageUrls: string[] = [];
         if (Array.isArray(item.images) && item.images.length > 0) {
             imageUrls = [item.images[0]];
