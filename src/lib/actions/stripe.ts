@@ -3,15 +3,32 @@
 
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import type { CartItem } from '@/lib/types';
+import type { CartItem, User } from '@/lib/types';
+import clientPromise from '@/lib/db';
+import { ObjectId } from 'mongodb';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-06-20',
 });
 
+async function getDb() {
+    const client = await clientPromise;
+    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+}
+
+async function getCurrentUser(): Promise<User | null> {
+    const usersCollection = (await getDb()).collection<User>('users');
+    // In a real app, you would get this from a session
+    const user = await usersCollection.findOne({});
+    if (!user) return null;
+    return { ...user, id: user._id.toString() } as User;
+}
+
 export async function createCheckoutSession(cartItems: CartItem[]) {
     const host = headers().get('host') || 'localhost:9002';
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+
+    const user = await getCurrentUser();
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
@@ -36,6 +53,15 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
             mode: 'payment',
             success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${protocol}://${host}/checkout/cancel`,
+            client_reference_id: user?.id,
+            metadata: {
+                cartItems: JSON.stringify(cartItems.map(item => ({
+                    productId: item.id.split('_')[0], // Get original product ID
+                    quantity: item.quantity,
+                    price: item.selectedVariant.price,
+                    weight: item.selectedVariant.weight
+                })))
+            }
         });
 
         if (session.id) {
@@ -49,13 +75,10 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
     }
 }
 
-export async function retrieveCheckoutSession(sessionId: string) {
+export async function retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session | null> {
     try {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
-        return {
-            status: session.status,
-            customer_email: session.customer_details?.email
-        };
+        return session;
     } catch (error) {
         console.error("Error retrieving session: ", error);
         return null;

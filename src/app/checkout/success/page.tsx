@@ -1,46 +1,70 @@
 
 'use client'
 
-import { useEffect } from 'react';
-import Link from 'next/link';
+import { useEffect, Suspense } from 'react';
 import { useCart } from '@/hooks/use-cart';
-import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { retrieveCheckoutSession } from '@/lib/actions/stripe';
+import { createOrder } from '@/lib/actions/orders';
+import { Loader2 } from 'lucide-react';
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const { clearCart } = useCart();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
     if (sessionId) {
-      // Optional: verify session on server, e.g. to save order details.
-      retrieveCheckoutSession(sessionId).then(session => {
-        if (session && session.status === 'complete') {
-          console.log("Payment successful for session:", sessionId);
+      const processOrder = async () => {
+        try {
+          const session = await retrieveCheckoutSession(sessionId);
+          
+          if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cartItems && session.customer_details?.email) {
+            const cartItems = JSON.parse(session.metadata.cartItems);
+            const newOrder = await createOrder(
+              session.client_reference_id,
+              cartItems,
+              session.amount_total!,
+              session.customer_details.email
+            );
+
+            clearCart();
+            router.replace(`/order/${newOrder.id}`);
+          } else {
+             // Handle case where session is not complete or data is missing
+             console.error("Session not complete or missing data", session);
+             router.replace('/cart'); // Redirect to cart if something is wrong
+          }
+        } catch (error) {
+           console.error("Failed to process order:", error);
+           router.replace('/cart');
         }
-      });
-      clearCart();
+      };
+
+      processOrder();
+    } else {
+        // If there's no session ID, redirect away.
+        router.replace('/');
     }
-  }, [sessionId, clearCart]);
+  }, [sessionId, clearCart, router]);
 
   return (
-    <div className="container mx-auto px-4 py-12 text-center">
-      <CheckCircle className="mx-auto h-24 w-24 text-green-500" />
-      <h1 className="mt-6 text-3xl font-bold font-headline">Payment Successful!</h1>
+    <div className="container mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+      <Loader2 className="mx-auto h-16 w-16 animate-spin text-primary" />
+      <h1 className="mt-6 text-3xl font-bold font-headline">Processing your order...</h1>
       <p className="mt-2 text-muted-foreground">
-        Thank you for your order. We've received your payment and will start processing your order shortly.
+        Please wait while we confirm your payment and create your order. Do not close this page.
       </p>
-      <div className="mt-8 flex justify-center gap-4">
-        <Button asChild>
-          <Link href="/products">Continue Shopping</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/account/orders">View My Orders</Link>
-        </Button>
-      </div>
     </div>
   );
+}
+
+
+export default function CheckoutSuccessPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SuccessContent />
+        </Suspense>
+    )
 }
