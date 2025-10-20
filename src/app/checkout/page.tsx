@@ -11,8 +11,9 @@ import { getStripe } from '@/lib/stripe'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CustomerAuthGuard } from '@/components/auth/CustomerAuthGuard'
 
-export default function CheckoutPage() {
+function CheckoutPageContent() {
   const { cartItems, cartTotal, cartCount } = useCart()
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -20,12 +21,13 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsLoading(true);
     try {
-        const { sessionId } = await createCheckoutSession(cartItems);
         const stripe = await getStripe();
         
         if (!stripe) {
             throw new Error("Stripe.js has not loaded yet.");
         }
+
+        const { sessionId } = await createCheckoutSession(cartItems);
 
         const { error } = await stripe.redirectToCheckout({ sessionId });
         
@@ -129,4 +131,13 @@ export default function CheckoutPage() {
       </div>
     </div>
   )
+}
+
+
+export default function CheckoutPage() {
+    return (
+        <CustomerAuthGuard>
+            <CheckoutPageContent />
+        </CustomerAuthGuard>
+    )
 }
