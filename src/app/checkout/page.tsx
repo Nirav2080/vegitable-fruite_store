@@ -22,28 +22,26 @@ export default function CheckoutPage() {
     try {
         const { sessionId } = await createCheckoutSession(cartItems);
         const stripe = await getStripe();
-        if (stripe) {
-            const { error } = await stripe.redirectToCheckout({ sessionId });
-            if (error) {
-                console.error(error.message);
-                toast({
-                    title: 'Error',
-                    description: 'Failed to redirect to Stripe. Please try again.',
-                    variant: 'destructive',
-                });
-            }
-        } else {
+        
+        if (!stripe) {
+            throw new Error("Stripe.js has not loaded yet.");
+        }
+
+        const { error } = await stripe.redirectToCheckout({ sessionId });
+        
+        if (error) {
+            console.error(error.message);
             toast({
                 title: 'Error',
-                description: 'Stripe is not available. Please try again later.',
+                description: 'Failed to redirect to Stripe. Please try again.',
                 variant: 'destructive',
             });
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error("Checkout error:", error);
         toast({
             title: 'Error',
-            description: 'Something went wrong. Please try again.',
+            description: error.message || 'Something went wrong. Please try again.',
             variant: 'destructive',
         });
     } finally {
@@ -116,7 +114,7 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold font-headline mb-4">Payment</h2>
             <div className="border rounded-lg p-6 bg-muted/20">
                 <p className="text-muted-foreground">You will be redirected to our secure payment partner, Stripe, to complete your purchase.</p>
-                 <Button onClick={handleCheckout} disabled={isLoading} size="lg" className="w-full mt-6">
+                 <Button onClick={handleCheckout} disabled={isLoading || cartCount === 0} size="lg" className="w-full mt-6">
                     {isLoading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
