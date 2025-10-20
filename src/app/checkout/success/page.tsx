@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { retrieveCheckoutSession } from '@/lib/actions/stripe';
@@ -13,9 +13,14 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('session_id');
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (sessionId) {
+    let processed = false;
+    if (sessionId && !processed) {
+      processed = true; // Prevents re-running
+      
       const processOrder = async () => {
         try {
           const session = await retrieveCheckoutSession(sessionId);
@@ -32,22 +37,32 @@ function SuccessContent() {
             clearCart();
             router.replace(`/order/${newOrder.id}`);
           } else {
-             // Handle case where session is not complete or data is missing
              console.error("Session not complete or missing data", session);
-             router.replace('/cart'); // Redirect to cart if something is wrong
+             setError("There was a problem confirming your payment. Please contact support.");
+             setIsProcessing(false);
           }
         } catch (error) {
            console.error("Failed to process order:", error);
-           router.replace('/cart');
+           setError("Failed to process your order. Please contact support.");
+           setIsProcessing(false);
         }
       };
 
       processOrder();
-    } else {
+    } else if (!sessionId) {
         // If there's no session ID, redirect away.
         router.replace('/');
     }
   }, [sessionId, clearCart, router]);
+
+  if (error) {
+     return (
+        <div className="container mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+            <h1 className="mt-6 text-3xl font-bold font-headline text-destructive">Order Processing Failed</h1>
+            <p className="mt-2 text-muted-foreground">{error}</p>
+        </div>
+     )
+  }
 
   return (
     <div className="container mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-[400px]">
