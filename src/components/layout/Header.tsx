@@ -44,21 +44,23 @@ export function Header() {
     setIsClient(true);
     const checkLoginStatus = () => {
       const loggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
-      if (loggedIn !== isLoggedIn) {
-        setIsLoggedIn(loggedIn);
-      }
+      setIsLoggedIn(loggedIn);
     };
+
     checkLoginStatus();
 
-    window.addEventListener('storage', checkLoginStatus);
-    window.addEventListener('loginStateChange', checkLoginStatus);
-
+    const handleStorageChange = () => {
+      checkLoginStatus();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('loginStateChange', handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', checkLoginStatus);
-      window.removeEventListener('loginStateChange', checkLoginStatus);
-    }
-  }, [isLoggedIn]);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('loginStateChange', handleStorageChange);
+    };
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('isCustomerLoggedIn');
