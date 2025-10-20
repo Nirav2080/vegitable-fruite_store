@@ -32,6 +32,12 @@ export default function CheckoutPage() {
                     variant: 'destructive',
                 });
             }
+        } else {
+            toast({
+                title: 'Error',
+                description: 'Stripe is not available. Please try again later.',
+                variant: 'destructive',
+            });
         }
     } catch (error) {
         console.error("Checkout error:", error);

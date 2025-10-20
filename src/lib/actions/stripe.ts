@@ -13,13 +13,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 export async function createCheckoutSession(cartItems: CartItem[]) {
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
-        const price = item.selectedVariant.price * 100;
-        
-        let images: string[] = [];
+        const priceInCents = Math.round(item.selectedVariant.price * 100);
+
+        let imageUrl: string | undefined;
         if (Array.isArray(item.images) && item.images.length > 0) {
-            images = [item.images[0]];
+            imageUrl = item.images[0];
         } else if (typeof item.images === 'string') {
-            images = [item.images];
+            imageUrl = item.images;
         }
 
         return {
@@ -28,9 +28,9 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
-                    images: images,
+                    images: imageUrl ? [imageUrl] : [],
                 },
-                unit_amount: price,
+                unit_amount: priceInCents,
             },
             quantity: item.quantity,
         };
