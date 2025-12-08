@@ -40,32 +40,33 @@ export function Header() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
+   React.useEffect(() => {
     setIsClient(true);
+    
     const checkLoginStatus = () => {
       const loggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
       setIsLoggedIn(loggedIn);
     };
 
+    // Initial check
     checkLoginStatus();
 
-    const handleStorageChange = () => {
-      checkLoginStatus();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('loginStateChange', handleStorageChange);
+    // Listen for storage changes from other tabs
+    window.addEventListener('storage', checkLoginStatus);
+
+    // Listen for custom event from the login/logout functions
+    window.addEventListener('loginStateChange', checkLoginStatus);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('loginStateChange', handleStorageChange);
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('loginStateChange', checkLoginStatus);
     };
   }, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem('isCustomerLoggedIn');
     localStorage.removeItem('currentUser');
-    setIsLoggedIn(false);
     const event = new Event('loginStateChange');
     window.dispatchEvent(event);
     router.push('/login');
@@ -125,7 +126,7 @@ export function Header() {
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                   </DropdownMenuItem>

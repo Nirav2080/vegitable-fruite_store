@@ -39,9 +39,13 @@ export default function CustomerLoginPage() {
         });
         localStorage.setItem('isCustomerLoggedIn', 'true');
         localStorage.setItem('currentUser', JSON.stringify(result.user));
+        
+        // Dispatch a custom event to notify the header
+        window.dispatchEvent(new Event('loginStateChange'));
+
         const redirectTo = searchParams.get('redirectTo') || '/account';
         router.push(redirectTo);
-        router.refresh(); // to update header state
+        router.refresh(); 
       }
     } catch (error: any) {
        toast({
