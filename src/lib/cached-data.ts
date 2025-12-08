@@ -32,9 +32,9 @@ export const getDashboardData = cache(async () => {
 
 
 // Categories
-export const getCategories = cache(async () => {
-    return dbGetCategories();
-}, ['categories'], { revalidate: REVALIDATE_TIME });
+export const getCategories = cache(async (includeSubcategories = false) => {
+    return dbGetCategories(includeSubcategories);
+}, ['categories'], { revalidate: REVALIDATE_TIME, tags: ['categories'] });
 
 export const getCategoryById = cache(async (id: string) => {
     return dbGetCategoryById(id);
