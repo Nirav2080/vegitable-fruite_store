@@ -25,25 +25,34 @@ const generateCartItemId = (productId: string, variantWeight?: string) => {
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  
-  useEffect(() => {
-    try {
-      const savedCart = localStorage.getItem('cart');
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        if (Array.isArray(parsedCart)) {
-          setCartItems(parsedCart);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to parse cart from localStorage", error);
-      setCartItems([]);
-    }
-  }, []);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    setIsMounted(true);
+  }, []);
+  
+  useEffect(() => {
+    if (isMounted) {
+      try {
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          if (Array.isArray(parsedCart)) {
+            setCartItems(parsedCart);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse cart from localStorage", error);
+        setCartItems([]);
+      }
+    }
+  }, [isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    }
+  }, [cartItems, isMounted]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1, variant?: ProductVariant) => {
     const selectedVariant = variant || product.variants?.[0];
@@ -123,14 +132,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('cart');
   };
 
-  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const cartCount = isMounted ? cartItems.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
-  const cartTotal = cartItems.reduce((acc, item) => {
+  const cartTotal = isMounted ? cartItems.reduce((acc, item) => {
     if (item.selectedVariant && typeof item.selectedVariant.price === 'number') {
       return acc + item.selectedVariant.price * item.quantity;
     }
     return acc;
-  }, 0);
+  }, 0) : 0;
 
 
   return (
