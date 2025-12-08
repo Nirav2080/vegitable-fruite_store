@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useEffect, Suspense, useState } from 'react';
+import { useEffect, Suspense, useState, useRef } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { retrieveCheckoutSession } from '@/lib/actions/stripe';
@@ -13,23 +13,24 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get('session_id');
-  const [isProcessing, setIsProcessing] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Use a ref to ensure the processing logic runs only once.
+  const isProcessing = useRef(false);
 
   useEffect(() => {
-    let processed = false;
-    if (sessionId && !processed) {
-      processed = true; // Prevents re-running
+    if (sessionId && !isProcessing.current) {
+      isProcessing.current = true; // Mark as processing immediately.
       
       const processOrder = async () => {
         try {
           const session = await retrieveCheckoutSession(sessionId);
           
           if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cartItems && session.customer_details?.email) {
-            const cartItems = JSON.parse(session.metadata.cartItems);
             const newOrder = await createOrder(
+              session.id,
               session.client_reference_id,
-              cartItems,
+              JSON.parse(session.metadata.cartItems),
               session.amount_total!,
               session.customer_details.email
             );
@@ -39,12 +40,10 @@ function SuccessContent() {
           } else {
              console.error("Session not complete or missing data", session);
              setError("There was a problem confirming your payment. Please contact support.");
-             setIsProcessing(false);
           }
         } catch (error) {
            console.error("Failed to process order:", error);
            setError("Failed to process your order. Please contact support.");
-           setIsProcessing(false);
         }
       };
 

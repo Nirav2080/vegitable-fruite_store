@@ -43,9 +43,16 @@ export async function getOrderById(id: string): Promise<Order | null> {
     return serializeOrder(order);
 }
 
-export async function createOrder(clientReferenceId: string, cartItems: any[], totalAmount: number, customerEmail: string): Promise<Order> {
+export async function createOrder(stripeSessionId: string, clientReferenceId: string, cartItems: any[], totalAmount: number, customerEmail: string): Promise<Order> {
     const db = await getDb();
     const ordersCollection = db.collection<Order>('orders');
+    
+    // Check if an order for this session already exists
+    const existingOrder = await ordersCollection.findOne({ stripeSessionId });
+    if (existingOrder) {
+        return serializeOrder(existingOrder);
+    }
+    
     const usersCollection = db.collection<User>('users');
     
     const user = await usersCollection.findOne({ _id: new ObjectId(clientReferenceId) });
@@ -61,6 +68,7 @@ export async function createOrder(clientReferenceId: string, cartItems: any[], t
     }));
 
     const newOrder: Omit<Order, 'id'> = {
+        stripeSessionId,
         customerName: user.name,
         email: customerEmail,
         date: new Date(),

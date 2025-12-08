@@ -60,6 +60,7 @@ export interface OrderItem {
 export interface Order {
   _id?: ObjectId;
   id: string;
+  stripeSessionId?: string;
   customerName: string;
   email: string;
   date: Date;
