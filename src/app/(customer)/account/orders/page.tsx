@@ -1,5 +1,8 @@
 
-import { getOrders } from "@/lib/cached-data";
+'use client';
+
+import { useState, useEffect } from "react";
+import { getOrders, cancelOrder } from "@/lib/actions/orders";
 import {
   Table,
   TableBody,
@@ -11,8 +14,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
+import { Eye, XCircle } from "lucide-react";
 import type { Order } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 const getStatusClass = (status: Order['status']) => {
@@ -26,8 +40,59 @@ const getStatusClass = (status: Order['status']) => {
     }
 }
 
-export default async function AccountOrdersPage() {
-    const orders = await getOrders();
+export default function AccountOrdersPage() {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            setIsLoading(true);
+            try {
+                const fetchedOrders = await getOrders();
+                setOrders(fetchedOrders);
+            } catch (error) {
+                toast({ title: "Error", description: "Could not fetch orders." });
+            }
+            setIsLoading(false);
+        };
+        fetchOrders();
+    }, [toast]);
+
+    const handleCancelClick = (orderId: string) => {
+        setSelectedOrderId(orderId);
+        setIsDialogOpen(true);
+    };
+
+    const handleConfirmCancel = async () => {
+        if (!selectedOrderId) return;
+        try {
+            await cancelOrder(selectedOrderId);
+            toast({
+                title: "Order Cancelled",
+                description: "Your order has been successfully cancelled.",
+            });
+            // Re-fetch orders to update the list
+            const fetchedOrders = await getOrders();
+            setOrders(fetchedOrders);
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "There was a problem cancelling your order.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsDialogOpen(false);
+            setSelectedOrderId(null);
+        }
+    };
+    
+    if (isLoading) {
+        return <div>Loading orders...</div>
+    }
+
     return (
         <div>
             <h2 className="text-2xl font-bold font-headline mb-4">My Orders</h2>
@@ -38,7 +103,7 @@ export default async function AccountOrdersPage() {
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="w-[100px] text-right">Actions</TableHead>
+                    <TableHead className="w-[150px] text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -54,15 +119,38 @@ export default async function AccountOrdersPage() {
                         </Badge>
                         </TableCell>
                         <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right flex gap-2 justify-end">
                            <Button variant="outline" size="icon">
                                <Eye className="h-4 w-4" />
                            </Button>
+                           {order.status === 'Pending' && (
+                                <Button 
+                                    variant="destructive" 
+                                    size="icon"
+                                    onClick={() => handleCancelClick(order.id)}
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </Button>
+                            )}
                         </TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
             </Table>
+            <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure you want to cancel this order?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. You will not be charged.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Back to safety</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmCancel} className="bg-destructive hover:bg-destructive/90">Yes, Cancel Order</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

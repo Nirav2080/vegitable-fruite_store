@@ -112,3 +112,36 @@ export async function updateOrderStatus(orderId: string, status: Order['status']
     revalidatePath('/admin/orders');
     revalidatePath(`/admin/orders/${orderId}`);
 }
+
+
+export async function cancelOrder(orderId: string) {
+    if (!ObjectId.isValid(orderId)) {
+        throw new Error('Invalid Order ID');
+    }
+
+    const ordersCollection = await getOrdersCollection();
+    
+    const orderToCancel = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
+
+    if (!orderToCancel) {
+        notFound();
+    }
+
+    if (orderToCancel.status !== 'Pending') {
+        throw new Error('Only pending orders can be cancelled.');
+    }
+
+    const result = await ordersCollection.updateOne(
+        { _id: new ObjectId(orderId) },
+        { $set: { status: 'Cancelled' } }
+    );
+
+    if (result.matchedCount === 0) {
+        notFound();
+    }
+
+    revalidatePath('/admin/orders');
+    revalidatePath('/account/orders');
+    revalidatePath(`/admin/orders/${orderId}`);
+    return { success: true };
+}
