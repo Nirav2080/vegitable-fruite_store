@@ -27,6 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import Link from "next/link";
 
 
 const getStatusClass = (status: Order['status']) => {
@@ -120,8 +121,10 @@ export default function AccountOrdersPage() {
                         </TableCell>
                         <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
                         <TableCell className="text-right flex gap-2 justify-end">
-                           <Button variant="outline" size="icon">
-                               <Eye className="h-4 w-4" />
+                           <Button asChild variant="outline" size="icon">
+                               <Link href={`/order/${order.id}`}>
+                                   <Eye className="h-4 w-4" />
+                               </Link>
                            </Button>
                            {order.status === 'Pending' && (
                                 <Button 
