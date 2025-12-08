@@ -5,6 +5,7 @@ import type { Order, OrderItem, User } from '@/lib/types';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
 
 async function getDb() {
     const client = await clientPromise;
@@ -91,4 +92,23 @@ export async function createOrder(stripeSessionId: string, clientReferenceId: st
     revalidatePath('/account');
 
     return { ...newOrder, id: result.insertedId.toString() };
+}
+
+export async function updateOrderStatus(orderId: string, status: Order['status']) {
+    if (!ObjectId.isValid(orderId)) {
+        throw new Error('Invalid Order ID');
+    }
+
+    const ordersCollection = await getOrdersCollection();
+    const result = await ordersCollection.updateOne(
+        { _id: new ObjectId(orderId) },
+        { $set: { status } }
+    );
+
+    if (result.matchedCount === 0) {
+        notFound();
+    }
+
+    revalidatePath('/admin/orders');
+    revalidatePath(`/admin/orders/${orderId}`);
 }

@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { MoreHorizontal, Eye } from "lucide-react";
 import type { Order } from '@/lib/types';
 import { format } from 'date-fns';
+import Link from "next/link";
 
 export function OrdersTable({ data }: { data: Order[] }) {
   const getStatusVariant = (status: Order['status']) => {
@@ -56,7 +57,7 @@ export function OrdersTable({ data }: { data: Order[] }) {
       <TableBody>
         {data.map((order) => (
           <TableRow key={order.id}>
-            <TableCell className="font-medium">#{order.id}</TableCell>
+            <TableCell className="font-medium">#{order.id.slice(-6).toUpperCase()}</TableCell>
             <TableCell>{order.customerName}</TableCell>
             <TableCell>
               <Badge variant={getStatusVariant(order.status)} className={getStatusClass(order.status)}>
@@ -77,8 +78,10 @@ export function OrdersTable({ data }: { data: Order[] }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem>
-                     <Eye className="mr-2 h-4 w-4" /> View Details
+                  <DropdownMenuItem asChild>
+                     <Link href={`/admin/orders/${order.id}`}>
+                        <Eye className="mr-2 h-4 w-4" /> View Details
+                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
