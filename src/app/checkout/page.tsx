@@ -23,6 +23,7 @@ export default function CheckoutPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const [isFormValid, setIsFormValid] = useState(false);
     const { toast } = useToast();
     
     useEffect(() => {
@@ -35,6 +36,9 @@ export default function CheckoutPage() {
                 try {
                     const fullUser = await getCurrentUser(userData.id);
                     setUser(fullUser);
+                    if (fullUser?.address) {
+                        setIsFormValid(true);
+                    }
                 } catch(e) {
                     console.error("failed to fetch user", e);
                 }
@@ -59,6 +63,15 @@ export default function CheckoutPage() {
             toast({
                 title: 'Please log in',
                 description: 'You must be logged in to place an order.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (!isFormValid) {
+            toast({
+                title: 'Shipping Information Required',
+                description: 'Please fill out and save your shipping details.',
                 variant: 'destructive',
             });
             return;
@@ -125,7 +138,7 @@ export default function CheckoutPage() {
             
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <div className="space-y-8">
-                {user ? <UserDetailsForm user={user} /> : <CheckoutAuth />}
+                {user ? <UserDetailsForm user={user} onFormValidityChange={setIsFormValid} /> : <CheckoutAuth />}
 
                 <div className="rounded-lg border bg-background p-6">
                   <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
@@ -184,7 +197,7 @@ export default function CheckoutPage() {
                       </div>
                   </div>
 
-                  <Button onClick={handleCheckout} disabled={isLoading || cartCount === 0 || !user} size="lg" className="w-full mt-6">
+                  <Button onClick={handleCheckout} disabled={isLoading || cartCount === 0 || !user || !isFormValid} size="lg" className="w-full mt-6">
                       {isLoading ? (
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       ) : (
@@ -193,6 +206,7 @@ export default function CheckoutPage() {
                       {isLoading ? 'Processing...' : `Place Order & Pay $${cartTotal.toFixed(2)}`}
                   </Button>
                   {!user && <p className="text-xs text-center text-destructive mt-2">Please log in to place your order.</p>}
+                  {user && !isFormValid && <p className="text-xs text-center text-destructive mt-2">Please provide your shipping details.</p>}
                 </div>
               </div>
             </div>

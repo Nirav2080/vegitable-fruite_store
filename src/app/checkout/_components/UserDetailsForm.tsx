@@ -1,13 +1,12 @@
 
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { updateUserProfile } from "@/lib/actions/users";
 import type { User } from "@/lib/types";
@@ -19,21 +18,23 @@ const profileFormSchema = z.object({
   name: z.string().min(2, "Name must have at least 2 characters."),
   email: z.string().email(),
   mobile: z.string().optional(),
-  address: z.string().optional(),
+  address: z.string().min(10, "A valid address of at least 10 characters is required."),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 interface UserDetailsFormProps {
     user: User;
+    onFormValidityChange: (isValid: boolean) => void;
 }
 
-export function UserDetailsForm({ user }: UserDetailsFormProps) {
+export function UserDetailsForm({ user, onFormValidityChange }: UserDetailsFormProps) {
     const { toast } = useToast();
     const [isEditing, setIsEditing] = useState(!user.address);
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
+        mode: 'onChange',
         defaultValues: {
             name: user.name || '',
             email: user.email || '',
@@ -41,6 +42,12 @@ export function UserDetailsForm({ user }: UserDetailsFormProps) {
             address: user.address || '',
         }
     });
+
+    const { formState: { isValid } } = form;
+
+    useEffect(() => {
+        onFormValidityChange(isValid);
+    }, [isValid, onFormValidityChange]);
 
     async function onSubmit(data: ProfileFormValues) {
         try {
@@ -142,4 +149,3 @@ export function UserDetailsForm({ user }: UserDetailsFormProps) {
         </div>
     );
 }
-
