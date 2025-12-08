@@ -74,11 +74,8 @@
   *:focus-visible {
     @apply outline-none ring-0;
   }
-  
-  .step {
-    @apply relative flex items-center justify-center w-8 h-8 rounded-full font-semibold;
-  }
-  .step-line {
-    @apply absolute top-1/2 -translate-y-1/2 h-0.5 w-full;
+
+  .step-icon {
+    @apply relative flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg transition-colors duration-300;
   }
 }

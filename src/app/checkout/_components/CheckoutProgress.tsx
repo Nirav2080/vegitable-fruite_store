@@ -2,6 +2,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { Check } from 'lucide-react'
 
 const steps = [
   { step: 1, label: 'Cart' },
@@ -15,43 +16,37 @@ interface CheckoutProgressProps {
 
 export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
   return (
-    <div className="w-full">
-      <div className="relative flex items-center justify-between">
+    <div className="w-full max-w-md mx-auto">
+      <div className="flex items-center justify-between">
         {steps.map((step, index) => {
           const isActive = currentStep >= step.step;
           const isCompleted = currentStep > step.step;
           return (
-            <div key={step.step} className="z-10 flex flex-col items-center">
-              <div 
-                className={cn(
-                  "step transition-colors duration-300",
-                  isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-                )}
-              >
-                {step.step}
+            <React.Fragment key={step.step}>
+              <div className="flex flex-col items-center">
+                <div
+                  className={cn(
+                    "step-icon",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                    isCompleted && "bg-green-600 text-white"
+                  )}
+                >
+                  {isCompleted ? <Check className="h-5 w-5" /> : step.step}
+                </div>
+                <p className={cn(
+                  "mt-2 text-xs sm:text-sm font-semibold transition-colors duration-300",
+                  isActive ? "text-primary" : "text-muted-foreground"
+                )}>
+                  {step.label}
+                </p>
               </div>
-              <p className={cn(
-                "mt-2 text-sm font-semibold transition-colors duration-300",
-                isActive ? "text-primary" : "text-muted-foreground"
-              )}>
-                {step.label}
-              </p>
-               {index < steps.length - 1 && (
-                  <div 
-                    className="step-line"
-                    style={{ 
-                      left: 'calc(50% + 1rem)', 
-                      width: 'calc(100% - 2rem)',
-                      transform: 'translateX(0) translateY(-50%)'
-                     }}
-                  >
-                     <div className={cn(
-                       "h-full transition-all duration-500",
-                       isCompleted ? "bg-primary" : "bg-muted"
-                     )}></div>
-                  </div>
+              {index < steps.length - 1 && (
+                <div className={cn(
+                  "flex-1 h-1 mx-2",
+                  isCompleted ? "bg-primary" : "bg-muted"
+                )} />
               )}
-            </div>
+            </React.Fragment>
           );
         })}
       </div>
