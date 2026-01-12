@@ -12,12 +12,23 @@ import { CallToActionSection } from "@/components/layout/CallToActionSection";
 import { HomePageClient } from "./_components/HomePageClient";
 import { PopularProductsSection } from "@/components/layout/PopularProductsSection";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Product, Category } from "@/lib/types";
 
 async function getPageData() {
+  try {
     const [products, categories] = await Promise.all([getProducts(), getCategories()]);
     const bestSellingProducts = products.slice(0, 8);
     const popularProducts = products.filter(p => p.isPopular);
     return { categories, bestSellingProducts, popularProducts };
+  } catch (error) {
+    console.error("Failed to fetch page data, returning default values:", error);
+    // Return default empty values if there's an error (e.g., DB connection issue)
+    return {
+      categories: [],
+      bestSellingProducts: [],
+      popularProducts: [],
+    };
+  }
 }
 
 function DealsSkeleton() {
