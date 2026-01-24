@@ -1,6 +1,6 @@
 
 import React, { Suspense } from "react";
-import { getProducts, getCategories } from "@/lib/cached-data";
+import { getProducts, getCategories, getActiveOffers } from "@/lib/cached-data";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
 import { DealsSection } from "@/components/layout/DealsSection";
 import { PopularProductsSection } from "@/components/layout/PopularProductsSection";
@@ -9,17 +9,19 @@ import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { TrustSection } from "@/components/layout/TrustSection";
 import { TestimonialsSection } from "@/components/layout/TestimonialsSection";
 import { BestSellersSection } from "@/components/layout/BestSellersSection";
+import { OffersSection } from "@/components/layout/OffersSection";
 
 async function getPageData() {
   try {
     const products = await getProducts();
     const categories = await getCategories();
+    const offers = await getActiveOffers();
     const bestSellingProducts = products.filter(p => p.isPopular).slice(0, 8);
     const popularProducts = products.filter(p => p.isPopular).slice(0, 8);
     const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
     const dealProducts = products.filter(p => p.isDeal).slice(0,4);
 
-    return { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts };
+    return { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts, offers };
   } catch (error) {
     console.error("Failed to fetch page data, returning default values:", error);
     // Return default empty values if there's an error (e.g., DB connection issue)
@@ -29,6 +31,7 @@ async function getPageData() {
       popularProducts: [],
       organicProducts: [],
       dealProducts: [],
+      offers: [],
     };
   }
 }
@@ -68,7 +71,7 @@ function ProductsGridSkeleton() {
 
 
 export default async function Home() {
-  const { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts } = await getPageData();
+  const { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts, offers } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -92,6 +95,10 @@ export default async function Home() {
 
       <Suspense fallback={<Skeleton className="h-72 w-full" />}>
         <DealsSection products={dealProducts} />
+      </Suspense>
+      
+      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+        <OffersSection offers={offers} />
       </Suspense>
 
       <TrustSection />
