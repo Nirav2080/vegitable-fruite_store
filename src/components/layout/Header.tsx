@@ -7,7 +7,7 @@ import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search, MapPin, ChevronDown } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -89,9 +89,14 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
-          <div className="hidden md:flex  max-w-xs">
-            <DynamicSearch />
+          <Button variant="outline" className="hidden md:flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span>Auckland</span>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
 
+          <div className="hidden md:flex w-full max-w-xs">
+            <DynamicSearch />
           </div>
 
           <DropdownMenu>

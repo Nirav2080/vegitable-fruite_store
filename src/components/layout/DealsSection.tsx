@@ -2,45 +2,33 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { getActiveOffers } from "@/lib/cached-data";
+import { getProducts } from "@/lib/cached-data";
+import { ProductCard } from "../products/ProductCard";
 
 export async function DealsSection() {
-    let offers = [];
+    let dealProducts = [];
     try {
-        offers = await getActiveOffers();
+        const allProducts = await getProducts();
+        dealProducts = allProducts.filter(p => p.isDeal).slice(0, 4);
     } catch (error) {
-        console.error("Failed to fetch active offers:", error);
-        // Silently fail, this section is not critical
+        console.error("Failed to fetch deal products:", error);
     }
 
-    if (offers.length === 0) {
+    if (dealProducts.length === 0) {
         return null;
     }
 
     return (
         <section className="bg-secondary/50">
             <div className="container mx-auto px-4 py-16">
-                <div className="grid md:grid-cols-2 gap-8">
-                    {offers.map((offer) => (
-                        <div key={offer.id} className="p-8 rounded-lg flex flex-col justify-center" style={{backgroundColor: offer.bgColor}}>
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h3 className="text-3xl font-bold font-headline">{offer.title}</h3>
-                                    <p className="text-muted-foreground mt-1">{offer.description}
-                                        {offer.code && <span className="font-semibold text-primary"> {offer.code}</span>}
-                                    </p>
-                                </div>
-                                {offer.discount && (
-                                     <Badge className="bg-primary text-primary-foreground">{offer.discount}% OFF</Badge>
-                                )}
-                            </div>
-                            <Button asChild className="mt-6 self-start rounded-full">
-                                <Link href={offer.link}>
-                                    Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-                                </Link>
-                            </Button>
-                        </div>
+                 <div className="text-left mb-10">
+                    <h2 className="text-3xl font-bold font-headline">
+                    Today's Deals
+                    </h2>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    {dealProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
                     ))}
                 </div>
             </div>

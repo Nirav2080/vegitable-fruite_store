@@ -3,10 +3,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Inter, Poppins } from 'next/font/google';
+import { PT_Sans } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-poppins' });
+const ptSans = PT_Sans({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-pt-sans' });
 
 export const metadata: Metadata = {
   title: 'Aotearoa Organics | Fresh & Local New Zealand Produce',
@@ -20,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable, poppins.variable)}>
+      <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable)}>
         <MainLayout>{children}</MainLayout>
       </body>
     </html>

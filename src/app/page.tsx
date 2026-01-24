@@ -1,26 +1,23 @@
 
 import React, { Suspense } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import { getProducts, getCategories } from "@/lib/cached-data";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
-import Image from "next/image";
 import { DealsSection } from "@/components/layout/DealsSection";
-import { InfoSection } from "@/components/layout/InfoSection";
-import { CallToActionSection } from "@/components/layout/CallToActionSection";
-import { HomePageClient } from "./_components/HomePageClient";
 import { PopularProductsSection } from "@/components/layout/PopularProductsSection";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Product, Category } from "@/lib/types";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
+import { TrustSection } from "@/components/layout/TrustSection";
+import { TestimonialsSection } from "@/components/layout/TestimonialsSection";
+import { BestSellersSection } from "@/components/layout/BestSellersSection";
 
 async function getPageData() {
   try {
-    const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+    const products = await getProducts();
+    const categories = await getCategories();
     const bestSellingProducts = products.slice(0, 8);
-    const popularProducts = products.filter(p => p.isPopular);
-    return { categories, bestSellingProducts, popularProducts };
+    const popularProducts = products.filter(p => p.isPopular).slice(0, 8);
+    const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
+    return { categories, bestSellingProducts, popularProducts, organicProducts };
   } catch (error) {
     console.error("Failed to fetch page data, returning default values:", error);
     // Return default empty values if there's an error (e.g., DB connection issue)
@@ -28,6 +25,7 @@ async function getPageData() {
       categories: [],
       bestSellingProducts: [],
       popularProducts: [],
+      organicProducts: [],
     };
   }
 }
@@ -50,39 +48,24 @@ function HeroSkeleton() {
   )
 }
 
-function DealsSkeleton() {
+function ProductsGridSkeleton() {
   return (
-    <div className="bg-secondary/50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-2 gap-8">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-48 w-full" />
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
+        {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-8 w-full" />
+            </div>
+        ))}
       </div>
-    </div>
-  )
-}
-
-function PopularProductsSkeleton() {
-  return (
-    <div className="container mx-auto px-4 py-16 md:py-24">
-       <div className="flex items-center justify-between mb-8">
-        <Skeleton className="h-8 w-1/3" />
-        <Skeleton className="h-8 w-16" />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-96 w-full" />
-      </div>
-    </div>
   )
 }
 
 
 export default async function Home() {
-  const { categories, bestSellingProducts, popularProducts } = await getPageData();
+  const { categories, bestSellingProducts, popularProducts, organicProducts } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -95,21 +78,30 @@ export default async function Home() {
         <FeaturedCategories />
       </section>
       
-      <HomePageClient 
-        bestSellingProducts={bestSellingProducts} 
-        filterCategories={filterCategories} 
-      />
+      <section className="container mx-auto px-4 pb-16 md:pb-24">
+        <Suspense fallback={<ProductsGridSkeleton />}>
+          <BestSellersSection 
+            products={bestSellingProducts} 
+            categories={filterCategories} 
+          />
+        </Suspense>
+      </section>
 
-      <Suspense fallback={<DealsSkeleton />}>
+      <Suspense fallback={<Skeleton className="h-72 w-full" />}>
         <DealsSection />
       </Suspense>
 
-      <Suspense fallback={<PopularProductsSkeleton />}>
-        <PopularProductsSection products={popularProducts} />
+      <TrustSection />
+
+      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+        <PopularProductsSection products={popularProducts} title="Popular Products" link="/products?sort=popularity" />
       </Suspense>
-      
-      <CallToActionSection />
-      <InfoSection />
+
+       <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+        <PopularProductsSection products={organicProducts} title="Seasonal & Organic Picks" link="/products?filter=isOrganic" />
+      </Suspense>
+
+      <TestimonialsSection />
 
     </div>
   );

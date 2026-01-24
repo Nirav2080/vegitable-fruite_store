@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Toaster } from '@/components/ui/toaster'
 import { CartProvider } from '@/context/CartContext'
 import { WishlistProvider } from '@/context/WishlistContext'
+import { DeliveryInfoBanner } from './DeliveryInfoBanner'
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -26,6 +27,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <WishlistProvider>
         <div className="relative flex min-h-screen flex-col">
           <Header />
+          <DeliveryInfoBanner />
           <main className="flex-1">{children}</main>
           <Footer />
           <Toaster />

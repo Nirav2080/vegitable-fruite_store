@@ -40,16 +40,14 @@ export function HeroCarousel() {
             <section className="bg-accent">
                 <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
                     <div className="py-12 md:py-24 text-center md:text-left">
-                        <p className="text-primary font-semibold tracking-wider">AOTEAROA ORGANICS</p>
                         <h1 className="text-4xl md:text-6xl font-bold font-headline mt-2">
-                           Naturally Fresh, Locally Sourced
+                           Farm Fresh Fruits & Vegetables Delivered Fast
                         </h1>
                         <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
                            Experience the taste of Aotearoa with our range of fresh, organic produce delivered right to your door.
                         </p>
                         <Button asChild size="lg" className="mt-8 rounded-full">
                           <Link href="/products">
-                            <ArrowRight className="mr-2 h-5 w-5" />
                             Shop Now
                           </Link>
                         </Button>

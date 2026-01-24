@@ -20,10 +20,11 @@ const accountLinks = [
 ];
 
 const helpfulLinks = [
-    { label: "Gift-Cards", href: "/gift-cards" },
-    { label: "Support", href: "/support" },
-    { label: "Our Story", href: "/story" },
+    { label: "Gift-Cards", href: "#" },
+    { label: "Support", href: "#" },
+    { label: "Our Story", href: "#" },
     { label: "FAQs", href: "/faq" },
+    { label: "Refund Policy", href: "#" },
 ]
 
 const socialLinks = [
