@@ -161,6 +161,10 @@ export default function ProductsPage() {
                 description: "Could not load products. Please try again later.",
                 variant: "destructive"
             });
+            // Set to empty arrays to prevent crash
+            setProducts([]);
+            setCategories([]);
+            setAttributes([]);
         }
         
         const categoryId = searchParams.get('categoryId');
@@ -319,5 +323,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-    

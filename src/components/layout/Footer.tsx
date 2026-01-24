@@ -66,21 +66,6 @@ const PaymentMethods = () => (
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground/80">
-        <div>
-            <div className="container mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-                {infoItems.map(item => (
-                    <div key={item.title} className="flex items-center gap-4">
-                        <div className="bg-primary-foreground/10 p-3 rounded-full">
-                            <item.icon className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-primary-foreground">{item.title}</h4>
-                            <p className="text-sm">{item.description}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           <div className="lg:col-span-2">
