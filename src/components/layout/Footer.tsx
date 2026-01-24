@@ -66,7 +66,7 @@ const PaymentMethods = () => (
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground/80">
-        <div className="border-b border-primary-foreground/10">
+        <div>
             <div className="container mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
                 {infoItems.map(item => (
                     <div key={item.title} className="flex items-center gap-4">
