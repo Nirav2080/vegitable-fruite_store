@@ -9,12 +9,14 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getProductsCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Product>('products');
 }
 
@@ -73,6 +75,7 @@ function serializeProduct(product: any, categoryMap: Map<string, string>): Produ
 
 export async function getProducts(): Promise<Product[]> {
     const db = await getDb();
+    if (!db) return [];
     const productsCollection = db.collection('products');
     const categoriesCollection = db.collection('categories');
 
@@ -95,6 +98,7 @@ export async function searchProducts(query: string): Promise<ProductSearchResult
         return [];
     }
     const productsCollection = await getProductsCollection();
+    if (!productsCollection) return [];
     const products = await productsCollection.find({ name: { $regex: query, $options: 'i' } }).limit(10).toArray();
 
     return products.map(p => ({
@@ -111,6 +115,7 @@ export async function getProductById(id: string): Promise<Product | null> {
         return null;
     }
     const db = await getDb();
+    if (!db) return null;
     const productsCollection = db.collection('products');
     const categoriesCollection = db.collection('categories');
     
@@ -131,6 +136,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function createProduct(data: unknown) {
     const parsedData = productSchema.parse(data);
     const productsCollection = await getProductsCollection();
+    if (!productsCollection) throw new Error("Database not connected.");
     
     const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -155,6 +161,7 @@ export async function updateProduct(id: string, data: unknown) {
       notFound();
   }
   const productsCollection = await getProductsCollection();
+  if (!productsCollection) throw new Error("Database not connected.");
   
   const existingProduct = await productsCollection.findOne({ _id: new ObjectId(id) });
   if (!existingProduct) {
@@ -190,6 +197,7 @@ export async function deleteProduct(id: string) {
         notFound();
     }
     const productsCollection = await getProductsCollection();
+    if (!productsCollection) throw new Error("Database not connected.");
     const result = await productsCollection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
@@ -202,8 +210,11 @@ export async function deleteProduct(id: string) {
 }
 
 export async function getDashboardData() {
-    const productsCollection = await getProductsCollection();
-    const ordersCollection = (await getDb()).collection('orders');
+    const db = await getDb();
+    if (!db) return { totalRevenue: 0, totalSales: 0, totalProducts: 0, salesData: [], recentTransactions: [] };
+
+    const productsCollection = db.collection('products');
+    const ordersCollection = db.collection('orders');
 
     const totalProducts = await productsCollection.countDocuments();
     

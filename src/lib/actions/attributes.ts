@@ -9,12 +9,14 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getAttributesCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Attribute>('attributes');
 }
 
@@ -33,6 +35,7 @@ function serializeAttribute(attribute: any): Attribute {
 
 export async function getAttributes(): Promise<Attribute[]> {
     const attributesCollection = await getAttributesCollection();
+    if (!attributesCollection) return [];
     const attributes = await attributesCollection.find({}).sort({ name: 1 }).toArray();
     return attributes.map(serializeAttribute);
 }
@@ -42,6 +45,7 @@ export async function getAttributeById(id: string): Promise<Attribute | null> {
         return null;
     }
     const attributesCollection = await getAttributesCollection();
+    if (!attributesCollection) return null;
     const attribute = await attributesCollection.findOne({ _id: new ObjectId(id) });
     if (!attribute) {
         return null;
@@ -52,6 +56,7 @@ export async function getAttributeById(id: string): Promise<Attribute | null> {
 export async function createAttribute(data: unknown) {
     const parsedData = attributeSchema.parse(data);
     const attributesCollection = await getAttributesCollection();
+    if (!attributesCollection) throw new Error("Database not connected.");
     
     await attributesCollection.insertOne({
       ...parsedData,
@@ -67,6 +72,7 @@ export async function updateAttribute(id: string, data: unknown) {
   }
   const parsedData = attributeSchema.parse(data);
   const attributesCollection = await getAttributesCollection();
+  if (!attributesCollection) throw new Error("Database not connected.");
 
   const result = await attributesCollection.updateOne({ _id: new ObjectId(id) }, { $set: parsedData });
 
@@ -83,6 +89,7 @@ export async function deleteAttribute(id: string) {
         notFound();
     }
     const attributesCollection = await getAttributesCollection();
+    if (!attributesCollection) throw new Error("Database not connected.");
     const result = await attributesCollection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {

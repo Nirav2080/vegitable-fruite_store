@@ -9,12 +9,14 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getOffersCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Offer>('offers');
 }
 
@@ -38,12 +40,14 @@ function serializeOffer(offer: any): Offer {
 
 export async function getOffers(): Promise<Offer[]> {
     const offersCollection = await getOffersCollection();
+    if (!offersCollection) return [];
     const offers = await offersCollection.find({}).sort({ createdAt: -1 }).toArray();
     return offers.map(serializeOffer);
 }
 
 export async function getActiveOffers(): Promise<Offer[]> {
     const offersCollection = await getOffersCollection();
+    if (!offersCollection) return [];
     const offers = await offersCollection.find({ isActive: true }).sort({ createdAt: -1 }).limit(2).toArray();
     return offers.map(serializeOffer);
 }
@@ -53,6 +57,7 @@ export async function getOfferById(id: string): Promise<Offer | null> {
         return null;
     }
     const offersCollection = await getOffersCollection();
+    if (!offersCollection) return null;
     const offer = await offersCollection.findOne({ _id: new ObjectId(id) });
     if (!offer) {
         return null;
@@ -63,6 +68,7 @@ export async function getOfferById(id: string): Promise<Offer | null> {
 export async function createOffer(data: unknown) {
     const parsedData = offerSchema.parse(data);
     const offersCollection = await getOffersCollection();
+    if (!offersCollection) throw new Error("Database not connected.");
     
     await offersCollection.insertOne({
       ...parsedData,
@@ -79,6 +85,7 @@ export async function updateOffer(id: string, data: unknown) {
   }
   const parsedData = offerSchema.parse(data);
   const offersCollection = await getOffersCollection();
+  if (!offersCollection) throw new Error("Database not connected.");
 
   const result = await offersCollection.updateOne({ _id: new ObjectId(id) }, { $set: parsedData });
 
@@ -96,6 +103,7 @@ export async function deleteOffer(id: string) {
         notFound();
     }
     const offersCollection = await getOffersCollection();
+    if (!offersCollection) throw new Error("Database not connected.");
     const result = await offersCollection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {

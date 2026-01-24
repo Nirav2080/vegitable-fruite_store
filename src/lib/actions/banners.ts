@@ -9,12 +9,14 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getBannersCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Banner>('banners');
 }
 
@@ -37,12 +39,14 @@ function serializeBanner(banner: any): Banner {
 
 export async function getBanners(): Promise<Banner[]> {
     const bannersCollection = await getBannersCollection();
+    if (!bannersCollection) return [];
     const banners = await bannersCollection.find({}).sort({ createdAt: -1 }).toArray();
     return banners.map(serializeBanner);
 }
 
 export async function getActiveBanners(): Promise<Banner[]> {
     const bannersCollection = await getBannersCollection();
+    if (!bannersCollection) return [];
     const banners = await bannersCollection.find({ isActive: true }).sort({ createdAt: -1 }).toArray();
     return banners.map(serializeBanner);
 }
@@ -52,6 +56,7 @@ export async function getBannerById(id: string): Promise<Banner | null> {
         return null;
     }
     const bannersCollection = await getBannersCollection();
+    if (!bannersCollection) return null;
     const banner = await bannersCollection.findOne({ _id: new ObjectId(id) });
     if (!banner) {
         return null;
@@ -62,6 +67,7 @@ export async function getBannerById(id: string): Promise<Banner | null> {
 export async function createBanner(data: unknown) {
     const parsedData = bannerSchema.parse(data);
     const bannersCollection = await getBannersCollection();
+    if (!bannersCollection) throw new Error("Database not connected.");
     
     const newBanner: Omit<Banner, 'id'> = {
       ...parsedData,
@@ -80,6 +86,7 @@ export async function updateBanner(id: string, data: unknown) {
   }
   const parsedData = bannerSchema.parse(data);
   const bannersCollection = await getBannersCollection();
+  if (!bannersCollection) throw new Error("Database not connected.");
 
   const result = await bannersCollection.updateOne({ _id: new ObjectId(id) }, { $set: parsedData });
 
@@ -97,6 +104,7 @@ export async function deleteBanner(id: string) {
         notFound();
     }
     const bannersCollection = await getBannersCollection();
+    if (!bannersCollection) throw new Error("Database not connected.");
     const result = await bannersCollection.deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {

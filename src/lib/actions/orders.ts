@@ -8,12 +8,14 @@ import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getOrdersCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Order>('orders');
 }
 
@@ -28,6 +30,7 @@ function serializeOrder(order: any): Order {
 
 export async function getOrders(): Promise<Order[]> {
     const ordersCollection = await getOrdersCollection();
+    if (!ordersCollection) return [];
     const orders = await ordersCollection.find({}).sort({ date: -1 }).toArray();
     return orders.map(serializeOrder);
 }
@@ -37,6 +40,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
         return null;
     }
     const ordersCollection = await getOrdersCollection();
+    if (!ordersCollection) return null;
     const order = await ordersCollection.findOne({ _id: new ObjectId(id) });
     if (!order) {
         return null;
@@ -46,6 +50,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
 
 export async function createOrder(stripeSessionId: string, clientReferenceId: string, cartItems: any[], totalAmount: number, customerEmail: string): Promise<Order> {
     const db = await getDb();
+    if (!db) throw new Error("Database not connected.");
     const ordersCollection = db.collection<Order>('orders');
     
     // Check if an order for this session already exists
@@ -100,6 +105,7 @@ export async function updateOrderStatus(orderId: string, status: Order['status']
     }
 
     const ordersCollection = await getOrdersCollection();
+    if (!ordersCollection) throw new Error("Database not connected.");
     const result = await ordersCollection.updateOne(
         { _id: new ObjectId(orderId) },
         { $set: { status } }
@@ -120,6 +126,7 @@ export async function cancelOrder(orderId: string) {
     }
 
     const ordersCollection = await getOrdersCollection();
+    if (!ordersCollection) throw new Error("Database not connected.");
     
     const orderToCancel = await ordersCollection.findOne({ _id: new ObjectId(orderId) });
 

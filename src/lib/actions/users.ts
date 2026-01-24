@@ -9,12 +9,14 @@ import { revalidatePath } from 'next/cache';
 import { AuthError } from '../exceptions';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getUsersCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<User>('users');
 }
 
@@ -28,6 +30,7 @@ function serializeUser(user: any): User {
 
 export async function getUsers(): Promise<User[]> {
     const usersCollection = await getUsersCollection();
+    if (!usersCollection) return [];
     const users = await usersCollection.find({}).sort({ registeredAt: -1 }).toArray();
     return users.map(serializeUser);
 }
@@ -37,6 +40,7 @@ export async function getUserById(id: string): Promise<User | null> {
         return null;
     }
     const usersCollection = await getUsersCollection();
+    if (!usersCollection) return null;
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
         return null;
@@ -50,6 +54,7 @@ export async function getCurrentUser(userId?: string): Promise<User | null> {
         return null;
     }
     const usersCollection = await getUsersCollection();
+    if (!usersCollection) return null;
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
     if (!user) {
         return null;
@@ -75,6 +80,7 @@ export async function updateUserProfile(userId: string, data: unknown) {
 
   const { name, mobile, address } = result.data;
   const usersCollection = await getUsersCollection();
+  if (!usersCollection) throw new Error("Database not connected.");
 
   const updateResult = await usersCollection.updateOne(
     { _id: new ObjectId(userId) },

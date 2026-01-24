@@ -19,6 +19,7 @@ const registerSchema = z.object({
 })
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
@@ -32,6 +33,7 @@ export async function login(data: unknown): Promise<{ success: boolean; message:
   const { email, password } = result.data;
   
   const db = await getDb();
+  if (!db) throw new Error("Database not connected.");
   const usersCollection = db.collection<User>('users');
   const user = await usersCollection.findOne({ email });
 
@@ -67,6 +69,7 @@ export async function register(data: unknown): Promise<{ success: boolean; messa
     const { name, email, password } = result.data;
 
     const db = await getDb();
+    if (!db) throw new Error("Database not connected.");
     const usersCollection = db.collection<User>('users');
     
     const existingUser = await usersCollection.findOne({ email });

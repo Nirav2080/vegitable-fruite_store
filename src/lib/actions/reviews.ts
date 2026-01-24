@@ -15,6 +15,7 @@ const reviewSchema = z.object({
 });
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
@@ -32,6 +33,7 @@ export async function addReview(productId: string, data: unknown) {
   // For demo purposes, we'll just grab the first user.
   // In a real app, you'd get the logged-in user from the session.
   const db = await getDb();
+  if (!db) throw new Error("Database not connected.");
   const usersCollection = db.collection<User>('users');
   const user = await usersCollection.findOne({}); 
 

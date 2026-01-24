@@ -9,12 +9,14 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getCategoriesCollection() {
     const db = await getDb();
+    if (!db) return null;
     return db.collection<Category>('categories');
 }
 
@@ -35,6 +37,7 @@ function serializeCategory(category: any): Category {
 
 export async function getCategories(includeSubcategories = false): Promise<Category[]> {
     const categoriesCollection = await getCategoriesCollection();
+    if (!categoriesCollection) return [];
     const categoriesData = await categoriesCollection.find({}).sort({ name: 1 }).toArray();
     const categories = categoriesData.map(serializeCategory);
 
@@ -65,6 +68,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
         return null;
     }
     const categoriesCollection = await getCategoriesCollection();
+    if (!categoriesCollection) return null;
     const category = await categoriesCollection.findOne({ _id: new ObjectId(id) });
     if (!category) {
         return null;
@@ -75,6 +79,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
 export async function createCategory(data: unknown) {
     const parsedData = categorySchema.parse(data);
     const categoriesCollection = await getCategoriesCollection();
+    if (!categoriesCollection) throw new Error("Database not connected.");
     
     const dataToInsert: any = {
       ...parsedData,
@@ -97,6 +102,7 @@ export async function updateCategory(id: string, data: unknown) {
   }
   const parsedData = categorySchema.parse(data);
   const categoriesCollection = await getCategoriesCollection();
+  if (!categoriesCollection) throw new Error("Database not connected.");
 
   const dataToUpdate: any = { ...parsedData };
     if (parsedData.parentId) {
@@ -123,6 +129,7 @@ export async function deleteCategory(id: string) {
     }
     
     const db = await getDb();
+    if (!db) throw new Error("Database not connected.");
     const productsCollection = db.collection<Product>('products');
     const productCount = await productsCollection.countDocuments({ categoryId: id });
 
@@ -131,6 +138,7 @@ export async function deleteCategory(id: string) {
     }
 
     const categoriesCollection = await getCategoriesCollection();
+    if (!categoriesCollection) throw new Error("Database not connected.");
     const subcategoryCount = await categoriesCollection.countDocuments({ parentId: id });
 
      if (subcategoryCount > 0) {

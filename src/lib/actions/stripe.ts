@@ -12,12 +12,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 async function getDb() {
+    if (!clientPromise) return null;
     const client = await clientPromise;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
 async function getCurrentUser(): Promise<User | null> {
-    const usersCollection = (await getDb()).collection<User>('users');
+    const db = await getDb();
+    if (!db) return null;
+    const usersCollection = db.collection<User>('users');
     // In a real app, you would get this from a session
     const user = await usersCollection.findOne({});
     if (!user) return null;
