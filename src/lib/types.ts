@@ -50,6 +50,14 @@ export interface Product {
   variants: ProductVariant[];
 }
 
+export interface ProductSearchResult {
+    id: string;
+    name: string;
+    slug: string;
+    images: string[];
+    price: number;
+}
+
 export interface OrderItem {
   productId: string;
   quantity: number;

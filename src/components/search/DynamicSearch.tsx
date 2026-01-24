@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDebounce } from '@/hooks/use-debounce';
 import { searchProducts } from '@/lib/actions/products';
-import type { Product } from '@/lib/types';
+import type { ProductSearchResult } from '@/lib/types';
 import { Search, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,7 +14,7 @@ import Image from 'next/image';
 export function DynamicSearch() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 300);
-  const [results, setResults] = useState<Product[]>([]);
+  const [results, setResults] = useState<ProductSearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -99,7 +99,7 @@ export function DynamicSearch() {
                 />
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{product.name}</p>
-                  <p className="text-sm text-primary font-bold">${(product as any).price.toFixed(2)}</p>
+                  <p className="text-sm text-primary font-bold">${product.price.toFixed(2)}</p>
                 </div>
               </Link>
             ))}

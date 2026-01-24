@@ -1,10 +1,9 @@
 
 
 import { notFound } from 'next/navigation';
-import { getProducts, getProductById } from '@/lib/cached-data';
+import { getProducts } from '@/lib/cached-data';
 import { ProductDetailsClient } from './_components/ProductDetailsClient';
 import type { Metadata } from 'next'
-import type { Product } from '@/lib/types';
 
 type ProductPageProps = {
   params: {
@@ -30,19 +29,17 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 async function getProductAndRelated(slug: string) {
     try {
         const allProducts = await getProducts();
-        const productData = allProducts.find((p) => p.slug === slug);
+        const product = allProducts.find((p) => p.slug === slug);
         
-        if (!productData) {
+        if (!product) {
           return { product: null, relatedProducts: [] };
         }
         
-        const fullProduct = await getProductById(productData.id);
-
         const relatedProducts = allProducts
-            .filter(p => p.category === productData.category && p.id !== productData.id)
+            .filter(p => p.category === product.category && p.id !== product.id)
             .slice(0, 4);
         
-        return { product: fullProduct, relatedProducts };
+        return { product, relatedProducts };
     } catch (error) {
         console.error(`Failed to fetch product data for slug ${slug}:`, error);
         return { product: null, relatedProducts: [] };

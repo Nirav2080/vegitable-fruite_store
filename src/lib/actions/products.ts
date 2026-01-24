@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import type { Product, ProductVariant, Category } from '@/lib/types';
+import type { Product, ProductVariant, Category, ProductSearchResult } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
@@ -43,20 +43,12 @@ const productSchema = z.object({
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });
 
-async function serializeProduct(product: any): Promise<Product | null> {
+function serializeProduct(product: any, categoryMap: Map<string, string>): Product | null {
     if (!product || !product.categoryId) return null;
-
-    const db = await getDb();
-    const categoriesCollection = db.collection<Category>('categories');
-    
-    // categoryId can be a string or ObjectId, so we handle both
-    const categoryId = ObjectId.isValid(product.categoryId) ? new ObjectId(product.categoryId) : product.categoryId;
-
-    const category = await categoriesCollection.findOne({ _id: categoryId });
 
     const { _id, ...rest } = product;
 
-    const serializedReviews = Array.isArray(product.reviews) 
+    const serializedReviews = Array.isArray(product.reviews)
         ? product.reviews.map((review: any) => ({
             ...review,
             _id: review._id.toString(),
@@ -64,52 +56,73 @@ async function serializeProduct(product: any): Promise<Product | null> {
           }))
         : [];
 
+    const categoryIdString = product.categoryId.toString();
+
     return {
         ...rest,
         id: _id.toString(),
-        categoryId: categoryId.toString(),
-        category: category ? category.name : 'Uncategorized',
+        categoryId: categoryIdString,
+        category: categoryMap.get(categoryIdString) || 'Uncategorized',
         reviews: serializedReviews,
         rating: typeof product.rating === 'number' ? product.rating : 0,
     } as Product;
 }
 
 export async function getProducts(): Promise<Product[]> {
-    const productsCollection = await getProductsCollection();
-    const productsData = await productsCollection.find({}).sort({ createdAt: -1 }).toArray();
+    const db = await getDb();
+    const productsCollection = db.collection('products');
+    const categoriesCollection = db.collection('categories');
 
-    const serializedProducts = await Promise.all(productsData.map(serializeProduct));
+    const [productsData, categoriesData] = await Promise.all([
+        productsCollection.find({}).sort({ createdAt: -1 }).toArray(),
+        categoriesCollection.find({}).toArray()
+    ]);
+
+    const categoryMap = new Map<string, string>();
+    categoriesData.forEach(cat => {
+        categoryMap.set(cat._id.toString(), cat.name);
+    });
+
+    const serializedProducts = productsData.map(product => serializeProduct(product, categoryMap));
     return serializedProducts.filter((p): p is Product => p !== null);
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
+export async function searchProducts(query: string): Promise<ProductSearchResult[]> {
     if (!query) {
         return [];
     }
     const productsCollection = await getProductsCollection();
-    const products = await productsCollection.find({ name: { $regex: query, $options: 'i' } }).toArray();
-    
-    // In this simplified search, we're only returning a subset of fields.
+    const products = await productsCollection.find({ name: { $regex: query, $options: 'i' } }).limit(10).toArray();
+
     return products.map(p => ({
         id: p._id.toString(),
         name: p.name,
         slug: p.slug,
         images: p.images,
-        price: p.variants?.[0]?.price ?? 0, // Simplified for search result
-        // We are not returning all fields to keep the payload small.
-    })) as unknown as Product[];
+        price: p.variants?.[0]?.price ?? 0,
+    }));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
     if (!ObjectId.isValid(id)) {
         return null;
     }
-    const productsCollection = await getProductsCollection();
+    const db = await getDb();
+    const productsCollection = db.collection('products');
+    const categoriesCollection = db.collection('categories');
+    
     const productData = await productsCollection.findOne({ _id: new ObjectId(id) });
     if (!productData) {
         return null;
     }
-    return serializeProduct(productData);
+
+    const categoriesData = await categoriesCollection.find({}).toArray();
+    const categoryMap = new Map<string, string>();
+    categoriesData.forEach(cat => {
+        categoryMap.set(cat._id.toString(), cat.name);
+    });
+
+    return serializeProduct(productData, categoryMap);
 }
 
 export async function createProduct(data: unknown) {
