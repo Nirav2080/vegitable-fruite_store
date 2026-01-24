@@ -88,9 +88,9 @@ export default async function Home() {
              <div className="relative h-[500px]">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[70%] bg-primary/20 rounded-t-full" />
                  <Image
-                    src="https://placehold.co/600x600/A8D5BA/34495E?text=Fresh+Produce"
-                    alt="Woman holding vegetables"
-                    data-ai-hint="woman groceries"
+                    src="https://picsum.photos/seed/groceries/600/600"
+                    alt="Woman holding a bag of fresh groceries"
+                    data-ai-hint="fresh groceries"
                     width={600}
                     height={600}
                     className="relative z-10 w-full h-full object-contain"

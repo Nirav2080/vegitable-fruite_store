@@ -16,6 +16,7 @@ import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useSearchParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 function ProductsSkeleton() {
     return (
@@ -133,6 +134,7 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
@@ -143,14 +145,23 @@ export default function ProductsPage() {
   useEffect(() => {
     async function loadData() {
         setIsLoading(true);
-        const [fetchedProducts, fetchedCategories, fetchedAttributes] = await Promise.all([
-            getProducts(),
-            getCategories(true),
-            getAttributes(),
-        ]);
-        setProducts(fetchedProducts);
-        setCategories(fetchedCategories);
-        setAttributes(fetchedAttributes);
+        try {
+            const [fetchedProducts, fetchedCategories, fetchedAttributes] = await Promise.all([
+                getProducts(),
+                getCategories(true),
+                getAttributes(),
+            ]);
+            setProducts(fetchedProducts);
+            setCategories(fetchedCategories);
+            setAttributes(fetchedAttributes);
+        } catch (error) {
+            console.error("Failed to load products page data:", error);
+            toast({
+                title: "Error",
+                description: "Could not load products. Please try again later.",
+                variant: "destructive"
+            });
+        }
         
         const categoryId = searchParams.get('categoryId');
         if (categoryId) {
@@ -160,7 +171,7 @@ export default function ProductsPage() {
         setIsLoading(false);
     }
     loadData();
-  }, [searchParams])
+  }, [searchParams, toast])
 
   const handleFilterChange = (filterName: string, value: string) => {
     setSelectedFilters(prev => {

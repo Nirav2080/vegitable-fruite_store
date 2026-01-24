@@ -6,7 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { getActiveOffers } from "@/lib/cached-data";
 
 export async function DealsSection() {
-    const offers = await getActiveOffers();
+    let offers = [];
+    try {
+        offers = await getActiveOffers();
+    } catch (error) {
+        console.error("Failed to fetch active offers:", error);
+        // Silently fail, this section is not critical
+    }
 
     if (offers.length === 0) {
         return null;
@@ -20,7 +26,7 @@ export async function DealsSection() {
                         <div key={offer.id} className="p-8 rounded-lg flex flex-col justify-center" style={{backgroundColor: offer.bgColor}}>
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-3xl font-bold">{offer.title}</h3>
+                                    <h3 className="text-3xl font-bold font-headline">{offer.title}</h3>
                                     <p className="text-muted-foreground mt-1">{offer.description}
                                         {offer.code && <span className="font-semibold text-primary"> {offer.code}</span>}
                                     </p>

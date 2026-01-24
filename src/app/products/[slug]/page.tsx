@@ -13,8 +13,7 @@ type ProductPageProps = {
 };
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const products = await getProducts();
-  const product = products.find((p) => p.slug === params.slug);
+  const { product } = await getProductAndRelated(params.slug);
 
   if (!product) {
     return {
@@ -29,20 +28,25 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 }
 
 async function getProductAndRelated(slug: string) {
-    const allProducts = await getProducts();
-    const productData = allProducts.find((p) => p.slug === slug);
-    
-    if (!productData) {
-      return { product: null, relatedProducts: [] };
-    }
-    
-    const fullProduct = await getProductById(productData.id);
+    try {
+        const allProducts = await getProducts();
+        const productData = allProducts.find((p) => p.slug === slug);
+        
+        if (!productData) {
+          return { product: null, relatedProducts: [] };
+        }
+        
+        const fullProduct = await getProductById(productData.id);
 
-    const relatedProducts = allProducts
-        .filter(p => p.category === productData.category && p.id !== productData.id)
-        .slice(0, 4);
-    
-    return { product: fullProduct, relatedProducts };
+        const relatedProducts = allProducts
+            .filter(p => p.category === productData.category && p.id !== productData.id)
+            .slice(0, 4);
+        
+        return { product: fullProduct, relatedProducts };
+    } catch (error) {
+        console.error(`Failed to fetch product data for slug ${slug}:`, error);
+        return { product: null, relatedProducts: [] };
+    }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -56,8 +60,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 export async function generateStaticParams() {
+  try {
     const products = await getProducts();
     return products.map((product) => ({
         slug: product.slug,
     }));
+  } catch (error) {
+    console.error('Failed to generate static params for products:', error);
+    return [];
+  }
 }
