@@ -3,42 +3,47 @@ import { MongoClient } from 'mongodb'
 
 const uri = process.env.MONGODB_URI
 
-let client: MongoClient | undefined;
-let clientPromise: Promise<MongoClient> | undefined;
+let client: MongoClient;
+let clientPromise: Promise<MongoClient | null>;
 
-
-if (!uri || uri.includes('<') || uri.includes('>')) {
+if (!process.env.MONGODB_URI || process.env.MONGODB_URI.includes('<')) {
   if (process.env.NODE_ENV === 'development') {
-    console.error(
+    console.warn(
       '----------------------------------------------------------------\n' +
-      'WARNING: MONGODB_URI is not defined or is still a placeholder.\n' +
+      'WARNING: MONGODB_URI is not defined or is a placeholder.\n' +
       'The application will run in a demo mode without a database.\n' +
-      'Please add your correct MongoDB connection string to the .env file to connect to your database.\n' +
+      'Please add your correct MongoDB connection string to the .env file.\n' +
       '----------------------------------------------------------------'
-    )
+    );
   }
-  clientPromise = undefined;
+  clientPromise = Promise.resolve(null);
 } else {
-    if (process.env.NODE_ENV === 'development') {
-        // In development mode, use a global variable so that the value
-        // is preserved across module reloads caused by HMR (Hot Module Replacement).
-        let globalWithMongo = global as typeof globalThis & {
-            _mongoClientPromise?: Promise<MongoClient>
-        }
-
-        if (!globalWithMongo._mongoClientPromise) {
-            client = new MongoClient(uri, {})
-            globalWithMongo._mongoClientPromise = client.connect()
-        }
-        clientPromise = globalWithMongo._mongoClientPromise
-    } else {
-        // In production mode, it's best to not use a global variable.
-        client = new MongoClient(uri, {})
-        clientPromise = client.connect()
+  const options = {};
+  if (process.env.NODE_ENV === 'development') {
+    let globalWithMongo = global as typeof globalThis & {
+      _mongoClientPromise?: Promise<MongoClient | null>
     }
+    if (!globalWithMongo._mongoClientPromise) {
+      client = new MongoClient(process.env.MONGODB_URI, options);
+      globalWithMongo._mongoClientPromise = client.connect().catch(err => {
+        console.error(
+            '----------------------------------------------------------------\n' +
+            `ERROR: Failed to connect to MongoDB: ${err.message}\n` +
+            'Please check your MONGODB_URI credentials in the .env file.\n' +
+            'The application will run in a demo mode.\n' +
+            '----------------------------------------------------------------'
+        );
+        return null;
+      });
+    }
+    clientPromise = globalWithMongo._mongoClientPromise;
+  } else {
+    client = new MongoClient(process.env.MONGODB_URI, options);
+    clientPromise = client.connect().catch(err => {
+        console.error(`Failed to connect to MongoDB: ${err.message}`);
+        return null;
+    });
+  }
 }
 
-
-// Export a module-scoped MongoClient promise. By doing this in a
-// separate module, the client can be shared across functions.
-export default clientPromise
+export default clientPromise;

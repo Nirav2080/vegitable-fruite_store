@@ -9,8 +9,10 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
-    if (!clientPromise) return null;
     const client = await clientPromise;
+    if (!client) {
+      return null;
+    }
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 

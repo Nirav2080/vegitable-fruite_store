@@ -12,8 +12,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 });
 
 async function getDb() {
-    if (!clientPromise) return null;
     const client = await clientPromise;
+    if (!client) {
+      return null;
+    }
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
