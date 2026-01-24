@@ -2,19 +2,15 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { getProducts } from "@/lib/cached-data";
 import { ProductCard } from "../products/ProductCard";
+import type { Product } from "@/lib/types";
 
-export async function DealsSection() {
-    let dealProducts = [];
-    try {
-        const allProducts = await getProducts();
-        dealProducts = allProducts.filter(p => p.isDeal).slice(0, 4);
-    } catch (error) {
-        console.error("Failed to fetch deal products:", error);
-    }
+interface DealsSectionProps {
+    products: Product[];
+}
 
-    if (dealProducts.length === 0) {
+export function DealsSection({ products }: DealsSectionProps) {
+    if (!products || products.length === 0) {
         return null;
     }
 
@@ -27,7 +23,7 @@ export async function DealsSection() {
                     </h2>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    {dealProducts.map((product) => (
+                    {products.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>

@@ -14,10 +14,12 @@ async function getPageData() {
   try {
     const products = await getProducts();
     const categories = await getCategories();
-    const bestSellingProducts = products.slice(0, 8);
+    const bestSellingProducts = products.filter(p => p.isPopular).slice(0, 8);
     const popularProducts = products.filter(p => p.isPopular).slice(0, 8);
     const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
-    return { categories, bestSellingProducts, popularProducts, organicProducts };
+    const dealProducts = products.filter(p => p.isDeal).slice(0,4);
+
+    return { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts };
   } catch (error) {
     console.error("Failed to fetch page data, returning default values:", error);
     // Return default empty values if there's an error (e.g., DB connection issue)
@@ -26,6 +28,7 @@ async function getPageData() {
       bestSellingProducts: [],
       popularProducts: [],
       organicProducts: [],
+      dealProducts: [],
     };
   }
 }
@@ -65,7 +68,7 @@ function ProductsGridSkeleton() {
 
 
 export default async function Home() {
-  const { categories, bestSellingProducts, popularProducts, organicProducts } = await getPageData();
+  const { categories, bestSellingProducts, popularProducts, organicProducts, dealProducts } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
@@ -88,7 +91,7 @@ export default async function Home() {
       </section>
 
       <Suspense fallback={<Skeleton className="h-72 w-full" />}>
-        <DealsSection />
+        <DealsSection products={dealProducts} />
       </Suspense>
 
       <TrustSection />
