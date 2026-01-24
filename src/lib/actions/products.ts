@@ -49,11 +49,14 @@ function serializeProduct(product: any, categoryMap: Map<string, string>): Produ
     const { _id, ...rest } = product;
 
     const serializedReviews = Array.isArray(product.reviews)
-        ? product.reviews.map((review: any) => ({
-            ...review,
-            _id: review._id.toString(),
-            date: review.date.toISOString(),
-          }))
+        ? product.reviews.map((review: any) => {
+            const date = review.date ? new Date(review.date) : new Date();
+            return {
+                ...review,
+                _id: review._id.toString(),
+                date: isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString(),
+            }
+          })
         : [];
 
     const categoryIdString = product.categoryId.toString();
