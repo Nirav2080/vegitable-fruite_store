@@ -46,10 +46,10 @@ export function AttributesTable({ data }: { data: Attribute[] }) {
                 description: "Attribute deleted successfully.",
             });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Failed to delete attribute.",
+                description: error.message || "Failed to delete attribute.",
                 variant: "destructive",
             });
         } finally {

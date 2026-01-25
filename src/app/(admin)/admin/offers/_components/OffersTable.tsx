@@ -45,10 +45,10 @@ export function OffersTable({ data }: { data: Offer[] }) {
                 description: "Offer deleted successfully.",
             });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: "Error",
-                description: "Failed to delete offer.",
+                description: error.message || "Failed to delete offer.",
                 variant: "destructive",
             });
         } finally {

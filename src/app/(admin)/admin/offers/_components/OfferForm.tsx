@@ -68,10 +68,10 @@ export function OfferForm({ offer }: OfferFormProps) {
       }
       router.push("/admin/offers");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} offer.`,
+        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} offer.`,
         variant: "destructive",
       });
     }

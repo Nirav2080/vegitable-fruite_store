@@ -145,10 +145,10 @@ export function ProductForm({ product }: ProductFormProps) {
       }
       router.push("/admin/products");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} product.`,
+        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} product.`,
         variant: "destructive",
       });
     }

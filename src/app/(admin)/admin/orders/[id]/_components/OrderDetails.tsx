@@ -46,10 +46,10 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                 description: 'Order status updated successfully.',
             });
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             toast({
                 title: 'Error',
-                description: 'Failed to update order status.',
+                description: error.message || 'Failed to update order status.',
                 variant: 'destructive',
             });
         } finally {

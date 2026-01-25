@@ -71,10 +71,10 @@ export function BannerForm({ banner }: BannerFormProps) {
       }
       router.push("/admin/banners");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} banner.`,
+        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} banner.`,
         variant: "destructive",
       });
     }

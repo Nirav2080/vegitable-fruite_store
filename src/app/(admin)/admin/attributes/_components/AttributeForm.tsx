@@ -67,10 +67,10 @@ export function AttributeForm({ attribute }: AttributeFormProps) {
       }
       router.push("/admin/attributes");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
        toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} attribute.`,
+        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} attribute.`,
         variant: "destructive",
       });
     }
