@@ -108,7 +108,7 @@ export default async function Home() {
       </Suspense>
 
        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-        <PopularProductsSection products={organicProducts} title="Seasonal & Organic Picks" link="/products?filter=isOrganic" />
+        <PopularProductsSection products={organicProducts} title="Fresh Fruits & Vegetables" link="/products?filter=isOrganic" />
       </Suspense>
 
       <TestimonialsSection />

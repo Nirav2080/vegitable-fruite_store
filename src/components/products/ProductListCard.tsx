@@ -106,6 +106,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {discountPercentage > 0 && <Badge variant="destructive" className="rounded-md">-{discountPercentage}%</Badge>}
                     {isNew() && <Badge className="bg-white text-black hover:bg-white/90 border border-gray-200 rounded-md">New</Badge>}
+                    {product.isOrganic && <Badge className="bg-primary text-primary-foreground rounded-md">Fresh</Badge>}
                 </div>
                 <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover/list-card:opacity-100 transition-opacity duration-300">
                      <Button

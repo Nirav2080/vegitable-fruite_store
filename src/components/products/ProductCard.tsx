@@ -97,9 +97,14 @@ export function ProductCard({ product }: ProductCardProps) {
             className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
-        {discountPercentage > 0 && (
-            <Badge variant="destructive" className="absolute top-2 left-2 z-10">-{discountPercentage}%</Badge>
-        )}
+        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+            {discountPercentage > 0 && (
+                <Badge variant="destructive">-{discountPercentage}%</Badge>
+            )}
+            {product.isOrganic && (
+                <Badge className="bg-primary text-primary-foreground">Fresh</Badge>
+            )}
+        </div>
         <Button
             variant="ghost"
             size="icon"
