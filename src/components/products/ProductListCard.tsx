@@ -78,7 +78,9 @@ export function ProductListCard({ product }: ProductListCardProps) {
   }
 
   const onWishlist = isClient && isInWishlist(product.id);
-  const discountPercentage = selectedVariant.originalPrice ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.price) * 100) : 0;
+  const discountPercentage = selectedVariant.originalPrice && selectedVariant.originalPrice > selectedVariant.price
+    ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.originalPrice) * 100)
+    : 0;
   
   const isNew = () => {
     const today = new Date();

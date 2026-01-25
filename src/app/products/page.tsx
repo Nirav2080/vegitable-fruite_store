@@ -44,6 +44,7 @@ interface FilterSidebarContentProps {
 
 function FilterSidebarContent({ categories, attributes, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
     const isOrganicChecked = selectedFilters['isOrganic']?.includes('true') || false;
+    const isDealChecked = selectedFilters['isDeal']?.includes('true') || false;
 
     return (
         <div className="space-y-6">
@@ -102,6 +103,16 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
                                                 onCheckedChange={() => handleFilterChange('isOrganic', 'true')}
                                             />
                                             Organic
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="isDeal" className="flex items-center gap-2 font-normal cursor-pointer">
+                                            <Checkbox
+                                                id="isDeal"
+                                                checked={isDealChecked}
+                                                onCheckedChange={() => handleFilterChange('isDeal', 'true')}
+                                            />
+                                            Deals
                                         </Label>
                                     </div>
                                     {attributes.map((attribute) => (
@@ -167,11 +178,21 @@ export default function ProductsPage() {
             setAttributes([]);
         }
         
+        const initialFilters: Record<string, string[]> = {};
         const categoryId = searchParams.get('categoryId');
         if (categoryId) {
-            setSelectedFilters(prev => ({ ...prev, categoryId: [categoryId] }));
+            initialFilters['categoryId'] = [categoryId];
         }
         
+        const filter = searchParams.get('filter');
+        if (filter === 'isOrganic') {
+            initialFilters['isOrganic'] = ['true'];
+        }
+        if (filter === 'isDeal') {
+            initialFilters['isDeal'] = ['true'];
+        }
+        
+        setSelectedFilters(initialFilters);
         setIsLoading(false);
     }
     loadData();
@@ -209,6 +230,9 @@ export default function ProductsPage() {
             }
             if (filterName === 'isOrganic') {
                 return product.isOrganic;
+            }
+            if (filterName === 'isDeal') {
+                return product.isDeal;
             }
             // For other attributes, just return true for now to avoid crashing.
             // A more complex logic would be needed if products had these attributes.

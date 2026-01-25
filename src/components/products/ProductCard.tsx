@@ -3,6 +3,7 @@
 
 import type { Product, ProductVariant } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, Heart } from "lucide-react";
@@ -78,6 +79,9 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   const onWishlist = isClient && isInWishlist(product.id);
+  const discountPercentage = selectedVariant.originalPrice && selectedVariant.originalPrice > selectedVariant.price
+    ? Math.round(((selectedVariant.originalPrice - selectedVariant.price) / selectedVariant.originalPrice) * 100)
+    : 0;
   
   return (
     <div 
@@ -93,6 +97,9 @@ export function ProductCard({ product }: ProductCardProps) {
             className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
+        {discountPercentage > 0 && (
+            <Badge variant="destructive" className="absolute top-2 left-2 z-10">-{discountPercentage}%</Badge>
+        )}
         <Button
             variant="ghost"
             size="icon"
@@ -104,13 +111,18 @@ export function ProductCard({ product }: ProductCardProps) {
         </Button>
       </div>
       <div className="pt-4 flex-grow flex flex-col">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start gap-2">
             <h3 className="text-base font-medium leading-tight flex-grow pr-2">
                 <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
                     {product.name}
                 </Link>
             </h3>
-            <p className="text-base font-semibold text-primary">${selectedVariant.price.toFixed(2)}</p>
+            <div className="flex flex-col items-end flex-shrink-0">
+                <p className="text-base font-semibold text-primary">${selectedVariant.price.toFixed(2)}</p>
+                {discountPercentage > 0 && selectedVariant.originalPrice && (
+                    <p className="text-sm text-muted-foreground line-through">${selectedVariant.originalPrice.toFixed(2)}</p>
+                )}
+            </div>
         </div>
          <div className="flex items-center gap-2 mt-2">
             {renderStars(product.rating || 0)}
