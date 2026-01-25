@@ -7,12 +7,16 @@ import { getCategories } from '@/lib/cached-data';
 import type { Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 function CategorySkeleton() {
     return (
-        <div className="flex flex-col items-center gap-3">
-            <Skeleton className="h-32 w-32 rounded-lg" />
-            <Skeleton className="h-5 w-24" />
+        <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square">
+             <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
+                <Skeleton className="h-full w-full" />
+             </div>
+            <Skeleton className="h-5 w-20 mt-3" />
         </div>
     )
 }
@@ -25,7 +29,9 @@ export function FeaturedCategories() {
         async function fetchCategories() {
             try {
                 const fetchedCategories = await getCategories();
-                setCategories(fetchedCategories);
+                // We only want top-level categories here
+                const topLevelCategories = fetchedCategories.filter(c => !c.parentId);
+                setCategories(topLevelCategories);
             } catch (error) {
                 console.error("Failed to fetch categories:", error);
             } finally {
@@ -35,42 +41,42 @@ export function FeaturedCategories() {
         fetchCategories();
     }, []);
 
-    const categoryBackgrounds = [
-        'bg-green-100/50',
-        'bg-blue-100/50',
-        'bg-purple-100/50',
-        'bg-yellow-100/50',
-        'bg-pink-100/50',
-        'bg-indigo-100/50',
-    ]
+    const displayedCategories = categories.slice(0, 8);
+    const skeletonCount = 8;
+
 
     return (
         <div className="container mx-auto px-4">
-            <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold font-headline">
-                    Choose Your Featured Categories
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl md:text-3xl font-bold font-headline">
+                    Shop by Categories
                 </h2>
+                 <Button asChild variant="link" className="hidden md:flex">
+                    <Link href="/products">
+                        View All <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
                 {isLoading ? (
-                    Array.from({ length: 6 }).map((_, i) => <CategorySkeleton key={i} />)
+                    Array.from({ length: skeletonCount }).map((_, i) => <CategorySkeleton key={i} />)
                 ) : (
-                    categories.slice(0, 6).map((category, index) => (
+                    displayedCategories.map((category) => (
                         <Link key={category.id} href={`/products?categoryId=${category.id}`} className="group block">
-                             <div className={`p-4 rounded-lg flex flex-col items-center justify-between aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:scale-105 ${categoryBackgrounds[index % categoryBackgrounds.length]}`}>
-                                <div className="relative w-full h-2/3">
+                             <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
+                                <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
                                     {category.icon ? (
                                         <Image 
                                             src={category.icon}
                                             alt={category.name}
                                             fill
-                                            className="object-contain"
+                                            className="object-contain transition-transform duration-300 group-hover:scale-105"
                                         />
                                     ) : (
                                         <div className="h-full w-full bg-gray-200 rounded-md" />
                                     )}
                                 </div>
-                                <h3 className="font-semibold text-sm mt-3 text-center text-foreground">{category.name}</h3>
+                                <h3 className="font-semibold text-sm mt-3 text-center text-foreground truncate w-full">{category.name}</h3>
                             </div>
                         </Link>
                     ))
