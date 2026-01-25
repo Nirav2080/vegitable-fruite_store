@@ -59,6 +59,66 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [isMounted]);
+  
+  const subtotal = isMounted ? cartItems.reduce((acc, item) => {
+    if (item.selectedVariant && typeof item.selectedVariant.price === 'number') {
+      return acc + item.selectedVariant.price * item.quantity;
+    }
+    return acc;
+  }, 0) : 0;
+
+  const cartTotal = subtotal - discountAmount;
+
+  const applyDiscount = useCallback(async (code: string) => {
+    if (!code) { // Handle removal
+      setDiscountAmount(0);
+      setCouponCode(null);
+      return;
+    }
+
+    const offer = await getOfferByCode(code);
+
+    if (offer && offer.discountValue >= 0) {
+        let calculatedDiscount = 0;
+        if (offer.scope === 'cart') {
+            if (offer.discountType === 'percentage') {
+                calculatedDiscount = (subtotal * offer.discountValue) / 100;
+            } else { // fixed
+                calculatedDiscount = offer.discountValue;
+            }
+        } else if (offer.scope === 'product' && offer.applicableProductIds) {
+            calculatedDiscount = cartItems.reduce((acc, item) => {
+                const productId = item.id.split('_')[0];
+                if (offer.applicableProductIds?.includes(productId)) {
+                    if (offer.discountType === 'percentage') {
+                        return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
+                    } else { // fixed
+                        return acc + (offer.discountValue * item.quantity);
+                    }
+                }
+                return acc;
+            }, 0);
+        }
+        
+        calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+
+        setDiscountAmount(calculatedDiscount);
+        setCouponCode(code);
+        toast({
+            title: "Coupon Applied",
+            description: `Your discount has been applied!`,
+        });
+    } else {
+        setDiscountAmount(0);
+        setCouponCode(null);
+        toast({
+            title: "Invalid Coupon",
+            description: "The coupon code you entered is not valid or has expired.",
+            variant: "destructive",
+        });
+    }
+  }, [subtotal, toast, cartItems]);
+
 
   useEffect(() => {
     if (isMounted) {
@@ -71,60 +131,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems, isMounted, couponCode]);
 
-  const subtotal = isMounted ? cartItems.reduce((acc, item) => {
-    if (item.selectedVariant && typeof item.selectedVariant.price === 'number') {
-      return acc + item.selectedVariant.price * item.quantity;
-    }
-    return acc;
-  }, 0) : 0;
-
-  const cartTotal = subtotal - discountAmount;
-
   useEffect(() => {
-    if (couponCode) {
-      // Re-apply discount if cart items change
-      const reapply = async () => {
-        const offer = await getOfferByCode(couponCode);
-        if (offer && offer.discount) {
-          const newDiscountValue = (subtotal * offer.discount) / 100;
-          setDiscountAmount(newDiscountValue);
-        } else {
-          // Coupon might have been deactivated
-          setDiscountAmount(0);
-          setCouponCode(null);
-        }
-      };
-      reapply();
+    if(isMounted && couponCode) {
+      applyDiscount(couponCode);
     }
-  }, [subtotal, couponCode]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subtotal, isMounted]);
 
-
-  const applyDiscount = useCallback(async (code: string) => {
-    if (!code) { // Handle removal
-      setDiscountAmount(0);
-      setCouponCode(null);
-      return;
-    }
-
-    const offer = await getOfferByCode(code);
-    if (offer && offer.discount) {
-        const discountValue = (subtotal * offer.discount) / 100;
-        setDiscountAmount(discountValue);
-        setCouponCode(code);
-        toast({
-            title: "Coupon Applied",
-            description: `You saved ${offer.discount}% on your order!`,
-        });
-    } else {
-        setDiscountAmount(0);
-        setCouponCode(null);
-        toast({
-            title: "Invalid Coupon",
-            description: "The coupon code you entered is not valid or has expired.",
-            variant: "destructive",
-        });
-    }
-  }, [subtotal, toast]);
 
   const addToCart = useCallback((product: Product, quantity: number = 1, variant?: ProductVariant) => {
     const selectedVariant = variant || product.variants?.[0];

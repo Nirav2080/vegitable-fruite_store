@@ -31,9 +31,7 @@ async function getCurrentUser(): Promise<User | null> {
 
 export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null) {
     const host = headers().get('origin') || 'http://localhost:9002';
-
     const user = await getCurrentUser();
-
     let stripeCouponId: string | undefined = undefined;
 
     if (couponCode) {
@@ -42,20 +40,56 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
         const offersCollection = db.collection<Offer>('offers');
         const offer = await offersCollection.findOne({ code: couponCode, isActive: true });
 
-        if (offer && offer.discount) {
-            // Check if coupon exists in Stripe by name (for simplicity)
-            // In a production app, you might store stripe coupon IDs in your DB
-            const existingCoupons = await stripe.coupons.list({ limit: 100 });
-            let coupon = existingCoupons.data.find(c => c.name === couponCode);
+        if (offer && offer.discountValue > 0) {
+            const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
+            let calculatedDiscount = 0;
+            let couponName = couponCode;
 
-            if (!coupon) {
-                 coupon = await stripe.coupons.create({
-                    percent_off: offer.discount,
-                    duration: 'once',
-                    name: couponCode,
-                });
+            if (offer.scope === 'cart') {
+                if (offer.discountType === 'percentage') {
+                    const existingCoupons = await stripe.coupons.list({ limit: 100 });
+                    let coupon = existingCoupons.data.find(c => c.name === couponCode && c.percent_off === offer.discountValue);
+                    if (!coupon) {
+                        coupon = await stripe.coupons.create({
+                            percent_off: offer.discountValue,
+                            duration: 'once',
+                            name: couponCode,
+                        });
+                    }
+                    stripeCouponId = coupon.id;
+                } else { // fixed cart discount
+                    calculatedDiscount = Math.min(offer.discountValue, subtotal);
+                }
+            } else if (offer.scope === 'product' && offer.applicableProductIds) {
+                const productDiscount = cartItems.reduce((acc, item) => {
+                    const productId = item.id.split('_')[0];
+                    if (offer.applicableProductIds?.includes(productId)) {
+                        if (offer.discountType === 'percentage') {
+                            return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
+                        } else {
+                            return acc + (offer.discountValue * item.quantity);
+                        }
+                    }
+                    return acc;
+                }, 0);
+                calculatedDiscount = Math.min(productDiscount, subtotal);
             }
-            stripeCouponId = coupon.id;
+
+            // For any locally calculated fixed discount, create a temporary Stripe coupon
+            if (calculatedDiscount > 0 && !stripeCouponId) {
+                couponName = `${couponCode}-${calculatedDiscount.toFixed(2)}`;
+                const existingCoupons = await stripe.coupons.list({ limit: 100 });
+                let coupon = existingCoupons.data.find(c => c.name === couponName);
+                if (!coupon) {
+                    coupon = await stripe.coupons.create({
+                        amount_off: Math.round(calculatedDiscount * 100),
+                        currency: 'nzd',
+                        duration: 'once',
+                        name: couponName,
+                    });
+                }
+                stripeCouponId = coupon.id;
+            }
         }
     }
 
@@ -85,7 +119,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             client_reference_id: user?.id,
             metadata: {
                 cartItems: JSON.stringify(cartItems.map(item => ({
-                    productId: item.id.split('_')[0], // Get original product ID
+                    productId: item.id.split('_')[0],
                     quantity: item.quantity,
                     price: item.selectedVariant.price,
                     weight: item.selectedVariant.weight

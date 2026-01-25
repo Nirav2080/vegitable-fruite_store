@@ -79,7 +79,12 @@ export function OffersTable({ data }: { data: Offer[] }) {
           {data.map((offer) => (
             <TableRow key={offer.id}>
               <TableCell className="font-medium">{offer.title}</TableCell>
-              <TableCell>{offer.discount ? `${offer.discount}%` : 'N/A'}</TableCell>
+              <TableCell>
+                {offer.discountValue > 0 
+                    ? `${offer.discountType === 'fixed' ? '$' : ''}${offer.discountValue}${offer.discountType === 'percentage' ? '%' : ''} off ${offer.scope === 'product' ? 'products' : 'cart'}`
+                    : 'N/A'
+                }
+              </TableCell>
               <TableCell>
                 <Badge variant={offer.isActive ? "secondary" : "destructive"} className={offer.isActive ? 'bg-green-100 text-green-800' : ''}>
                   {offer.isActive ? "Active" : "Inactive"}

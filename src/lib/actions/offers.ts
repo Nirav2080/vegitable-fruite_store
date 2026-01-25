@@ -25,12 +25,24 @@ async function getOffersCollection() {
 const offerSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  code: z.string().optional(),
-  discount: z.coerce.number().optional(),
+  code: z.string().optional().transform(v => v === '' ? undefined : v),
+  discountValue: z.coerce.number().min(0, "Discount must be a positive value"),
+  discountType: z.enum(['percentage', 'fixed']),
+  scope: z.enum(['cart', 'product']),
+  applicableProductIds: z.array(z.string()).optional(),
   link: z.string().min(1, "A link URL is required"),
   image: z.string().min(1, "An image is required"),
   isActive: z.boolean().default(true),
+}).refine(data => {
+    if (data.scope === 'product' && (!data.applicableProductIds || data.applicableProductIds.length === 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "You must select at least one product for a product-specific discount.",
+    path: ["applicableProductIds"],
 });
+
 
 function serializeOffer(offer: any): Offer {
     const { _id, ...rest } = offer;

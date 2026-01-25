@@ -110,7 +110,10 @@ export interface Offer {
     title: string;
     description: string;
     code?: string;
-    discount?: number;
+    discountValue: number;
+    discountType: 'percentage' | 'fixed';
+    scope: 'cart' | 'product';
+    applicableProductIds?: string[];
     link: string;
     image: string;
     isActive: boolean;

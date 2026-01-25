@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
@@ -16,25 +16,42 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
-import type { Offer } from "@/lib/types"
+import type { Offer, Product } from "@/lib/types"
 import { createOffer, updateOffer } from "@/lib/actions/offers"
+import { getProducts } from "@/lib/cached-data"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-const formSchema = z.object({
+
+const offerSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  code: z.string().optional(),
-  discount: z.coerce.number().optional(),
+  code: z.string().optional().transform(v => v === '' ? undefined : v),
+  discountValue: z.coerce.number().min(0, "Discount must be a positive value"),
+  discountType: z.enum(['percentage', 'fixed']),
+  scope: z.enum(['cart', 'product']),
+  applicableProductIds: z.array(z.string()).optional(),
   link: z.string().min(1, "A link URL is required"),
   image: z.string().min(1, "An image is required"),
   isActive: z.boolean().default(true),
-})
+}).refine(data => {
+    if (data.scope === 'product' && (!data.applicableProductIds || data.applicableProductIds.length === 0)) {
+        return false;
+    }
+    return true;
+}, {
+    message: "You must select at least one product for a product-specific discount.",
+    path: ["applicableProductIds"],
+});
 
-type OfferFormValues = z.infer<typeof formSchema>
+type OfferFormValues = z.infer<typeof offerSchema>
 
 interface OfferFormProps {
   offer?: Offer
@@ -46,29 +63,49 @@ export function OfferForm({ offer }: OfferFormProps) {
   const isEditing = !!offer;
 
   const [imagePreview, setImagePreview] = useState<string | null>(isEditing && offer ? offer.image : null);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const defaultValues = isEditing && offer ? offer : {
+  useEffect(() => {
+    async function fetchProducts() {
+        const prods = await getProducts();
+        setProducts(prods);
+    }
+    fetchProducts();
+  }, []);
+
+  const defaultValues = isEditing && offer ? {
+      ...offer,
+      applicableProductIds: offer.applicableProductIds || [],
+  } : {
       title: "",
       description: "",
       code: "",
-      discount: 0,
+      discountValue: 0,
+      discountType: 'percentage' as 'percentage' | 'fixed',
+      scope: 'cart' as 'cart' | 'product',
+      applicableProductIds: [],
       link: "/products",
       image: "",
       isActive: true,
   }
 
   const form = useForm<OfferFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(offerSchema),
     defaultValues,
   })
 
   async function onSubmit(values: OfferFormValues) {
     try {
+      const dataToSubmit = { ...values };
+      if (dataToSubmit.scope !== 'product') {
+          delete dataToSubmit.applicableProductIds;
+      }
+      
       if (isEditing && offer) {
-        await updateOffer(offer.id, values);
+        await updateOffer(offer.id, dataToSubmit);
         toast({ title: "Success", description: "Offer updated successfully." });
       } else {
-        await createOffer(values);
+        await createOffer(dataToSubmit);
         toast({ title: "Success", description: "Offer created successfully." });
       }
       router.push("/admin/offers");
@@ -102,6 +139,8 @@ export function OfferForm({ offer }: OfferFormProps) {
         setImagePreview(null);
     };
 
+    const scope = form.watch('scope');
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -131,34 +170,137 @@ export function OfferForm({ offer }: OfferFormProps) {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
-            <FormField
-            control={form.control}
-            name="discount"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Discount (%)</FormLabel>
-                <FormControl>
-                    <Input type="number" placeholder="15" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-            <FormField
-            control={form.control}
-            name="code"
-            render={({ field }) => (
-                <FormItem>
-                <FormLabel>Discount Code</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g. CARE10" {...field} />
-                </FormControl>
-                <FormMessage />
-                </FormItem>
-            )}
-            />
-        </div>
+        
+        <Card>
+            <CardHeader><CardTitle>Discount Details</CardTitle></CardHeader>
+            <CardContent className="space-y-6">
+                <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Discount Code</FormLabel>
+                        <FormControl>
+                            <Input placeholder="e.g. SALE10" {...field} />
+                        </FormControl>
+                        <FormDescription>Customers will enter this code at checkout. Leave blank for automatic offers.</FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                        control={form.control}
+                        name="discountType"
+                        render={({ field }) => (
+                            <FormItem className="space-y-3">
+                            <FormLabel>Discount Type</FormLabel>
+                            <FormControl>
+                                <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-1"
+                                >
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                    <RadioGroupItem value="percentage" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">Percentage</FormLabel>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                    <FormControl>
+                                    <RadioGroupItem value="fixed" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">Fixed Amount</FormLabel>
+                                </FormItem>
+                                </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="discountValue"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Discount Value</FormLabel>
+                            <FormControl>
+                                <Input type="number" placeholder={form.getValues('discountType') === 'percentage' ? '15' : '10'} {...field} />
+                            </FormControl>
+                            <FormDescription>{form.getValues('discountType') === 'percentage' ? 'As a percentage (e.g., 15 for 15%)' : 'As a fixed amount (e.g., 10 for $10)'}</FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <FormField
+                    control={form.control}
+                    name="scope"
+                    render={({ field }) => (
+                        <FormItem className="space-y-3">
+                        <FormLabel>Apply Discount To</FormLabel>
+                        <FormControl>
+                            <RadioGroup
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            className="flex flex-col space-y-1"
+                            >
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="cart" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Entire Cart</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                <RadioGroupItem value="product" />
+                                </FormControl>
+                                <FormLabel className="font-normal">Specific Products</FormLabel>
+                            </FormItem>
+                            </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                
+                {scope === 'product' && (
+                    <Controller
+                        control={form.control}
+                        name="applicableProductIds"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Applicable Products</FormLabel>
+                                <ScrollArea className="h-48 w-full rounded-md border p-4">
+                                     {products.map((product) => (
+                                        <div key={product.id} className="flex items-center space-x-2 mb-2">
+                                            <Checkbox
+                                                id={product.id}
+                                                checked={field.value?.includes(product.id)}
+                                                onCheckedChange={(checked) => {
+                                                    const currentValues = field.value || [];
+                                                    return checked
+                                                    ? field.onChange([...currentValues, product.id])
+                                                    : field.onChange(currentValues.filter((id) => id !== product.id))
+                                                }}
+                                            />
+                                            <label htmlFor={product.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                {product.name}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </ScrollArea>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                )}
+            </CardContent>
+        </Card>
+
          <FormField
             control={form.control}
             name="image"
