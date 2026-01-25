@@ -7,7 +7,6 @@ import { PopularProductsSection as PopularProductsSlider } from "@/components/la
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { TrustSection } from "@/components/layout/TrustSection";
-import { TestimonialsSection } from "@/components/layout/TestimonialsSection";
 import { BestSellersSection } from "@/components/layout/BestSellersSection";
 import { OffersSection } from "@/components/layout/OffersSection";
 import { ShopByBrandSection } from "@/components/layout/ShopByBrandSection";
@@ -83,18 +82,18 @@ export default async function Home() {
       <Suspense fallback={<HeroSkeleton />}>
         <HeroCarousel banners={banners} />
       </Suspense>
-
-      <section className="py-16 md:py-24">
-        <FeaturedCategories />
-      </section>
       
-      <section className="container mx-auto px-4 pb-16 md:pb-24">
+      <section className="container mx-auto px-4 pt-8 md:pt-16">
         <Suspense fallback={<ProductsGridSkeleton />}>
           <BestSellersSection 
             products={popularProducts} 
             categories={filterCategories} 
           />
         </Suspense>
+      </section>
+
+      <section className="py-8 md:py-16">
+        <FeaturedCategories />
       </section>
 
       <Suspense fallback={<Skeleton className="h-72 w-full" />}>
@@ -114,8 +113,6 @@ export default async function Home() {
        <Suspense fallback={<Skeleton className="h-72 w-full" />}>
         <ShopByBrandSection />
       </Suspense>
-
-      <TestimonialsSection />
 
     </div>
   );

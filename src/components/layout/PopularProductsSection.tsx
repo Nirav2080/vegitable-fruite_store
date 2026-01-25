@@ -20,7 +20,7 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
   }
 
   return (
-    <section className="container mx-auto px-4 py-16 md:py-24">
+    <section className="container mx-auto px-4 py-8 md:py-16">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold font-headline">{title}</h2>
          <Button variant="link" asChild>

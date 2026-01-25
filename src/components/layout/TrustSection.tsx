@@ -10,7 +10,7 @@ const trustFeatures = [
 
 export function TrustSection() {
     return (
-        <section className="bg-background py-16 md:py-24">
+        <section className="bg-background py-8 md:py-16">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     {trustFeatures.map(feature => (

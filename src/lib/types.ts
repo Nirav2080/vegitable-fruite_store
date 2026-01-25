@@ -1,4 +1,3 @@
-
 import { ObjectId } from 'mongodb';
 
 export interface Review {
@@ -110,7 +109,7 @@ export interface Offer {
     code?: string;
     discount?: number;
     link: string;
-    bgColor: string;
+    image: string;
     isActive: boolean;
     createdAt: Date;
 }

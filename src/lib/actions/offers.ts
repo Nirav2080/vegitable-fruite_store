@@ -28,7 +28,7 @@ const offerSchema = z.object({
   code: z.string().optional(),
   discount: z.coerce.number().optional(),
   link: z.string().min(1, "A link URL is required"),
-  bgColor: z.string().min(1, "Background color is required"),
+  image: z.string().min(1, "An image is required"),
   isActive: z.boolean().default(true),
 });
 

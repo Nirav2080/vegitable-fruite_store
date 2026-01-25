@@ -20,6 +20,9 @@ import type { Offer } from "@/lib/types"
 import { createOffer, updateOffer } from "@/lib/actions/offers"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Upload, X } from "lucide-react"
+import Image from "next/image"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -27,7 +30,7 @@ const formSchema = z.object({
   code: z.string().optional(),
   discount: z.coerce.number().optional(),
   link: z.string().min(1, "A link URL is required"),
-  bgColor: z.string().min(1, "Background color is required"),
+  image: z.string().min(1, "An image is required"),
   isActive: z.boolean().default(true),
 })
 
@@ -42,13 +45,15 @@ export function OfferForm({ offer }: OfferFormProps) {
   const { toast } = useToast();
   const isEditing = !!offer;
 
+  const [imagePreview, setImagePreview] = useState<string | null>(isEditing && offer ? offer.image : null);
+
   const defaultValues = isEditing && offer ? offer : {
       title: "",
       description: "",
       code: "",
       discount: 0,
       link: "/products",
-      bgColor: "#F3F7E8",
+      image: "",
       isActive: true,
   }
 
@@ -77,6 +82,25 @@ export function OfferForm({ offer }: OfferFormProps) {
       });
     }
   }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const result = event.target?.result as string;
+            setImagePreview(result);
+            form.setValue('image', result, { shouldValidate: true, shouldDirty: true });
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    };
+
+    const removeImage = () => {
+        form.setValue('image', '', { shouldValidate: true, shouldDirty: true });
+        setImagePreview(null);
+    };
 
   return (
     <Form {...form}>
@@ -135,6 +159,54 @@ export function OfferForm({ offer }: OfferFormProps) {
             )}
             />
         </div>
+         <FormField
+            control={form.control}
+            name="image"
+            render={() => (
+                <FormItem>
+                    <FormLabel>Offer Image</FormLabel>
+                    {imagePreview ? (
+                         <div className="relative aspect-video w-full max-w-lg">
+                            <Image
+                            src={imagePreview}
+                            alt="Offer preview"
+                            fill
+                            className="rounded-md object-cover"
+                            />
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-2 right-2 h-7 w-7"
+                                onClick={removeImage}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    ) : (
+                        <FormControl>
+                            <div className="w-full p-8 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                                <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
+                                    <Upload className="w-8 h-8 text-muted-foreground" />
+                                    <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
+                                </label>
+                                <Input 
+                                    id="image-upload" 
+                                    type="file" 
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleImageChange}
+                                />
+                            </div>
+                        </FormControl>
+                    )}
+                    <FormDescription>
+                        The background image for the offer card. Recommended size: 600x300 pixels.
+                    </FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+            />
         <FormField
           control={form.control}
           name="link"
@@ -150,22 +222,6 @@ export function OfferForm({ offer }: OfferFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <FormField
-            control={form.control}
-            name="bgColor"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Background Color</FormLabel>
-                <FormControl>
-                    <div className="flex items-center gap-2">
-                        <Input type="color" {...field} className="w-12 h-10 p-1" />
-                        <Input type="text" {...field} placeholder="#F3F7E8" />
-                    </div>
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
         />
          <FormField
             control={form.control}
