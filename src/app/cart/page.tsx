@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useCart } from '@/hooks/use-cart'
@@ -11,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount } = useCart()
+  const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount, totalSavings } = useCart()
   const [couponInput, setCouponInput] = useState('');
   const [isApplying, setIsApplying] = useState(false);
 
@@ -128,6 +127,17 @@ export default function CartPage() {
                         <span className="font-semibold">Free</span>
                     </div>
                 </div>
+                
+                {totalSavings > 0 && (
+                  <>
+                    <Separator className="my-4" />
+                    <div className="flex justify-between text-green-600 font-semibold p-3 bg-green-100/50 rounded-md">
+                        <span>Total Savings</span>
+                        <span>- ${totalSavings.toFixed(2)}</span>
+                    </div>
+                  </>
+                )}
+
                 <Separator className="my-4" />
                 <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>

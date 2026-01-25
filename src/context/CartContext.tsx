@@ -1,4 +1,3 @@
-
 'use client'
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -15,6 +14,7 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   subtotal: number;
+  totalSavings: number;
   applyDiscount: (code: string) => Promise<void>;
   discountAmount: number;
   couponCode: string | null;
@@ -66,6 +66,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
     return acc;
   }, 0) : 0;
+
+  const originalSubtotal = isMounted ? cartItems.reduce((acc, item) => {
+    if (item.selectedVariant) {
+      const price = (item.selectedVariant.originalPrice && item.selectedVariant.originalPrice > item.selectedVariant.price)
+        ? item.selectedVariant.originalPrice
+        : item.selectedVariant.price;
+      return acc + price * item.quantity;
+    }
+    return acc;
+  }, 0) : 0;
+
+  const savingsFromSales = originalSubtotal - subtotal;
+  const totalSavings = savingsFromSales + discountAmount;
 
   const cartTotal = subtotal - discountAmount;
 
@@ -234,6 +247,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartCount,
         cartTotal,
         subtotal,
+        totalSavings,
         applyDiscount,
         discountAmount,
         couponCode,

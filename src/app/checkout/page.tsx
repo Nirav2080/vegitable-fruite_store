@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -19,7 +18,7 @@ import { UserDetailsForm } from './_components/UserDetailsForm'
 
 
 export default function CheckoutPage() {
-    const { cartItems, subtotal, cartTotal, cartCount, couponCode, discountAmount } = useCart()
+    const { cartItems, subtotal, cartTotal, cartCount, couponCode, discountAmount, totalSavings } = useCart()
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -196,6 +195,15 @@ export default function CheckoutPage() {
                           <p className="text-muted-foreground">Shipping</p>
                           <p className="font-semibold">Free</p>
                       </div>
+                       {totalSavings > 0 && (
+                        <>
+                           <Separator className="my-2" />
+                           <div className="flex justify-between text-green-600 font-semibold p-2 bg-green-100/50 rounded-md">
+                               <span>Total Savings</span>
+                               <span>-${totalSavings.toFixed(2)}</span>
+                           </div>
+                        </>
+                       )}
                        <Separator className="my-2" />
                        <div className="flex justify-between font-bold text-base">
                           <p>Total</p>
