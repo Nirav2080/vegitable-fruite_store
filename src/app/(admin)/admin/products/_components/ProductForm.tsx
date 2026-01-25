@@ -55,7 +55,6 @@ const formSchema = z.object({
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
   isDeal: z.boolean().default(false),
-  isPopular: z.boolean().default(false),
   images: z.array(z.string()).min(1, { message: "Please add at least one image."}),
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 })
@@ -97,7 +96,6 @@ export function ProductForm({ product }: ProductFormProps) {
       isOrganic: false,
       isFeatured: false,
       isDeal: false,
-      isPopular: false,
       images: [],
       variants: [{ weight: '', price: 0, originalPrice: 0, stock: 0 }],
   }
@@ -492,23 +490,6 @@ export function ProductForm({ product }: ProductFormProps) {
                             <FormLabel>Deal of the Day</FormLabel>
                             <FormDescription>
                             Show this product in the deals section on the homepage.
-                            </FormDescription>
-                        </div>
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="isPopular"
-                    render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                            <FormLabel>Popular Product</FormLabel>
-                            <FormDescription>
-                            Show this product in the popular items section on the homepage.
                             </FormDescription>
                         </div>
                     </FormItem>

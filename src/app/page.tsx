@@ -16,8 +16,8 @@ async function getPageData() {
     const products = await getProducts();
     const categories = await getCategories();
     const offers = await getActiveOffers();
-    const bestSellingProducts = products.filter(p => p.isPopular).slice(0, 8);
-    const popularProducts = products.filter(p => p.isPopular).slice(0, 8);
+    const bestSellingProducts = products.filter(p => p.isFeatured).slice(0, 8);
+    const popularProducts = products.filter(p => p.isFeatured).slice(0, 8);
     const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
     const dealProducts = products.filter(p => p.isDeal).slice(0,4);
 

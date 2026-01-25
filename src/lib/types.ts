@@ -43,7 +43,6 @@ export interface Product {
   isOrganic: boolean;
   isFeatured: boolean;
   isDeal: boolean;
-  isPopular: boolean;
   createdAt: Date;
   reviews: Review[];
   rating: number;

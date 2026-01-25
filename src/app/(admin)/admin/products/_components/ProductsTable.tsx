@@ -72,6 +72,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
               Image
             </TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Display</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Stock</TableHead>
@@ -98,6 +99,13 @@ export function ProductsTable({ data }: { data: Product[] }) {
                 />
               </TableCell>
               <TableCell className="font-medium">{product.name}</TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {product.isFeatured && <Badge variant="outline">Featured</Badge>}
+                  {product.isDeal && <Badge variant="outline">Deal</Badge>}
+                  {product.isOrganic && <Badge variant="outline">Organic</Badge>}
+                </div>
+              </TableCell>
               <TableCell>
                 <Badge variant={inStock ? "secondary" : "destructive"} className={inStock ? 'bg-green-100 text-green-800' : ''}>
                   {inStock ? "In Stock" : "Out of Stock"}
