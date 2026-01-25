@@ -29,7 +29,8 @@ if (!process.env.MONGODB_URI || process.env.MONGODB_URI.includes('<')) {
         console.error(
             '----------------------------------------------------------------\n' +
             `ERROR: Failed to connect to MongoDB: ${err.message}\n` +
-            'Please check your MONGODB_URI credentials in the .env file.\n' +
+            'This usually means your MONGODB_URI in the .env file is incorrect.\n' +
+            'Please double-check your username, password, and database name.\n' +
             'The application will run in a demo mode.\n' +
             '----------------------------------------------------------------'
         );
