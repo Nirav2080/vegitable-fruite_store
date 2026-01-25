@@ -18,7 +18,7 @@ import { UserDetailsForm } from './_components/UserDetailsForm'
 
 
 export default function CheckoutPage() {
-    const { cartItems, subtotal, cartTotal, cartCount, couponCode, discountAmount, totalSavings } = useCart()
+    const { cartItems, originalSubtotal, savingsFromSales, cartTotal, cartCount, couponCode, discountAmount } = useCart()
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -181,10 +181,16 @@ export default function CheckoutPage() {
                   <Separator className="my-4" />
 
                   <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                          <p className="text-muted-foreground">Subtotal</p>
-                          <p className="font-semibold">${subtotal.toFixed(2)}</p>
-                      </div>
+                        <div className="flex justify-between">
+                            <p className="text-muted-foreground">Subtotal</p>
+                            <p className="font-semibold">${originalSubtotal.toFixed(2)}</p>
+                        </div>
+                         {savingsFromSales > 0 && (
+                            <div className="flex justify-between text-green-600">
+                                <span>Product Discounts</span>
+                                <span>- ${savingsFromSales.toFixed(2)}</span>
+                            </div>
+                        )}
                        {discountAmount > 0 && (
                           <div className="flex justify-between text-green-600">
                               <span>Discount ({couponCode})</span>
@@ -195,15 +201,7 @@ export default function CheckoutPage() {
                           <p className="text-muted-foreground">Shipping</p>
                           <p className="font-semibold">Free</p>
                       </div>
-                       {totalSavings > 0 && (
-                        <>
-                           <Separator className="my-2" />
-                           <div className="flex justify-between text-green-600 font-semibold p-2 bg-green-100/50 rounded-md">
-                               <span>Total Savings</span>
-                               <span>-${totalSavings.toFixed(2)}</span>
-                           </div>
-                        </>
-                       )}
+
                        <Separator className="my-2" />
                        <div className="flex justify-between font-bold text-base">
                           <p>Total</p>

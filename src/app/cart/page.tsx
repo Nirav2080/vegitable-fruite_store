@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount, totalSavings } = useCart()
+  const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount, totalSavings, originalSubtotal, savingsFromSales } = useCart()
   const [couponInput, setCouponInput] = useState('');
   const [isApplying, setIsApplying] = useState(false);
 
@@ -113,12 +113,18 @@ export default function CartPage() {
 
                 <div className="space-y-2">
                     <div className="flex justify-between">
-                        <span className="text-muted-foreground">Subtotal ({cartCount} items)</span>
-                        <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="font-semibold">${originalSubtotal.toFixed(2)}</span>
                     </div>
+                    {savingsFromSales > 0 && (
+                        <div className="flex justify-between text-green-600">
+                            <span>Product Discounts</span>
+                            <span>- ${savingsFromSales.toFixed(2)}</span>
+                        </div>
+                    )}
                      {discountAmount > 0 && (
                         <div className="flex justify-between text-green-600">
-                            <span>Discount ({couponCode})</span>
+                            <span>Coupon ({couponCode})</span>
                             <span>- ${discountAmount.toFixed(2)}</span>
                         </div>
                     )}
@@ -127,16 +133,6 @@ export default function CartPage() {
                         <span className="font-semibold">Free</span>
                     </div>
                 </div>
-                
-                {totalSavings > 0 && (
-                  <>
-                    <Separator className="my-4" />
-                    <div className="flex justify-between text-green-600 font-semibold p-3 bg-green-100/50 rounded-md">
-                        <span>Total Savings</span>
-                        <span>- ${totalSavings.toFixed(2)}</span>
-                    </div>
-                  </>
-                )}
 
                 <Separator className="my-4" />
                 <div className="flex justify-between font-bold text-lg">

@@ -1,3 +1,4 @@
+
 'use client'
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -14,6 +15,8 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   subtotal: number;
+  originalSubtotal: number;
+  savingsFromSales: number;
   totalSavings: number;
   applyDiscount: (code: string) => Promise<void>;
   discountAmount: number;
@@ -247,6 +250,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartCount,
         cartTotal,
         subtotal,
+        originalSubtotal,
+        savingsFromSales,
         totalSavings,
         applyDiscount,
         discountAmount,
