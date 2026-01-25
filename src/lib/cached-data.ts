@@ -9,6 +9,7 @@ import { getOrders as dbGetOrders } from '@/lib/actions/orders';
 import { getUsers as dbGetUsers, getUserById as dbGetUserById } from '@/lib/actions/users';
 import { getAttributes as dbGetAttributes, getAttributeById as dbGetAttributeById } from '@/lib/actions/attributes';
 import { getOffers as dbGetOffers, getOfferById as dbGetOfferById, getActiveOffers as dbGetActiveOffers } from '@/lib/actions/offers';
+import { getBrands as dbGetBrands, getBrandById as dbGetBrandById } from '@/lib/actions/brands';
 
 
 // == CACHING CONFIG ==
@@ -91,3 +92,13 @@ export const getActiveOffers = cache(async () => {
 export const getOfferById = cache(async (id: string) => {
     return dbGetOfferById(id);
 }, ['offer'], { revalidate: REVALIDATE_TIME });
+
+
+// Brands
+export const getBrands = cache(async () => {
+    return dbGetBrands();
+}, ['brands'], { revalidate: REVALIDATE_TIME });
+
+export const getBrandById = cache(async (id: string) => {
+    return dbGetBrandById(id);
+}, ['brand'], { revalidate: REVALIDATE_TIME });

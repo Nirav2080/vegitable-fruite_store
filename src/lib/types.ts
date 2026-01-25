@@ -128,3 +128,11 @@ export interface Attribute {
   values: string[];
   createdAt: Date;
 }
+
+export interface Brand {
+  _id?: ObjectId;
+  id: string;
+  name: string;
+  logo: string;
+  createdAt: Date;
+}

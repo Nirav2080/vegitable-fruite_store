@@ -10,6 +10,7 @@ import { TrustSection } from "@/components/layout/TrustSection";
 import { TestimonialsSection } from "@/components/layout/TestimonialsSection";
 import { BestSellersSection } from "@/components/layout/BestSellersSection";
 import { OffersSection } from "@/components/layout/OffersSection";
+import { ShopByBrandSection } from "@/components/layout/ShopByBrandSection";
 
 async function getPageData() {
   try {
@@ -103,6 +104,10 @@ export default async function Home() {
 
        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
         <PopularProductsSlider products={organicProducts} title="Fresh Fruits & Vegetables" link="/products?filter=isOrganic" />
+      </Suspense>
+
+       <Suspense fallback={<Skeleton className="h-72 w-full" />}>
+        <ShopByBrandSection />
       </Suspense>
 
       <TestimonialsSection />

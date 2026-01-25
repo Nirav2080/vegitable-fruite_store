@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from "react";
-import { getProducts, getCategories, getAttributes } from "@/lib/cached-data";
+import { getProducts, getCategories, getAttributes, getBrands } from "@/lib/cached-data";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductListCard } from "@/components/products/ProductListCard";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import type { Product, Category, Attribute } from "@/lib/types";
+import type { Product, Category, Attribute, Brand } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LayoutGrid, List, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,11 +38,12 @@ function ProductsSkeleton() {
 interface FilterSidebarContentProps {
     categories: Category[];
     attributes: Attribute[];
+    brands: Brand[];
     selectedFilters: Record<string, string[]>;
     handleFilterChange: (filterName: string, value: string) => void;
 }
 
-function FilterSidebarContent({ categories, attributes, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
+function FilterSidebarContent({ categories, attributes, brands, selectedFilters, handleFilterChange }: FilterSidebarContentProps) {
     const isOrganicChecked = selectedFilters['isOrganic']?.includes('true') || false;
     const isDealChecked = selectedFilters['isDeal']?.includes('true') || false;
 
@@ -53,7 +54,7 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
                     <CardTitle>Filter By</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <Accordion type="multiple" defaultValue={['category', 'attributes']} className="w-full">
+                    <Accordion type="multiple" defaultValue={['category', 'attributes', 'brand']} className="w-full">
                         <AccordionItem value="category">
                             <AccordionTrigger className="font-semibold px-6">Category</AccordionTrigger>
                             <AccordionContent className="px-6">
@@ -91,6 +92,27 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
+                        {brands.length > 0 && (
+                            <AccordionItem value="brand">
+                                <AccordionTrigger className="font-semibold px-6">Brand</AccordionTrigger>
+                                <AccordionContent className="px-6">
+                                    <div className="grid gap-2">
+                                        {brands.map((brand) => (
+                                            <div key={brand.id} className="flex items-center justify-between">
+                                                <Label htmlFor={`brand-${brand.id}`} className="flex items-center gap-2 font-normal cursor-pointer">
+                                                    <Checkbox 
+                                                        id={`brand-${brand.id}`}
+                                                        checked={selectedFilters['brand']?.includes(brand.name)}
+                                                        onCheckedChange={() => handleFilterChange('brand', brand.name)}
+                                                    />
+                                                    {brand.name}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        )}
                         <AccordionItem value="attributes">
                              <AccordionTrigger className="font-semibold px-6">Attributes</AccordionTrigger>
                              <AccordionContent className="px-6">
@@ -149,6 +171,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -157,14 +180,16 @@ export default function ProductsPage() {
     async function loadData() {
         setIsLoading(true);
         try {
-            const [fetchedProducts, fetchedCategories, fetchedAttributes] = await Promise.all([
+            const [fetchedProducts, fetchedCategories, fetchedAttributes, fetchedBrands] = await Promise.all([
                 getProducts(),
                 getCategories(true),
                 getAttributes(),
+                getBrands(),
             ]);
             setProducts(fetchedProducts);
             setCategories(fetchedCategories);
             setAttributes(fetchedAttributes);
+            setBrands(fetchedBrands);
         } catch (error) {
             console.error("Failed to load products page data:", error);
             toast({
@@ -176,12 +201,18 @@ export default function ProductsPage() {
             setProducts([]);
             setCategories([]);
             setAttributes([]);
+            setBrands([]);
         }
         
         const initialFilters: Record<string, string[]> = {};
         const categoryId = searchParams.get('categoryId');
         if (categoryId) {
             initialFilters['categoryId'] = [categoryId];
+        }
+
+        const brandName = searchParams.get('brand');
+        if (brandName) {
+            initialFilters['brand'] = [brandName];
         }
         
         const filter = searchParams.get('filter');
@@ -234,6 +265,9 @@ export default function ProductsPage() {
             if (filterName === 'isDeal') {
                 return product.isDeal;
             }
+            if (filterName === 'brand') {
+                return product.brand ? selectedValues.includes(product.brand) : false;
+            }
             // For other attributes, just return true for now to avoid crashing.
             // A more complex logic would be needed if products had these attributes.
             const attribute = attributes.find(attr => attr.name === filterName);
@@ -253,6 +287,7 @@ export default function ProductsPage() {
             <FilterSidebarContent 
                 categories={categories}
                 attributes={attributes}
+                brands={brands}
                 selectedFilters={selectedFilters}
                 handleFilterChange={handleFilterChange}
             />
@@ -303,6 +338,7 @@ export default function ProductsPage() {
                         <FilterSidebarContent 
                            categories={categories}
                            attributes={attributes}
+                           brands={brands}
                            selectedFilters={selectedFilters}
                            handleFilterChange={handleFilterChange}
                         />
