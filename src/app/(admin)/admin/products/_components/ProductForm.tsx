@@ -472,7 +472,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         <div className="space-y-1 leading-none">
                             <FormLabel>Featured Product</FormLabel>
                             <FormDescription>
-                            Show this product in the featured section on the homepage.
+                            Show this product in the "Popular Products" section on the homepage.
                             </FormDescription>
                         </div>
                     </FormItem>

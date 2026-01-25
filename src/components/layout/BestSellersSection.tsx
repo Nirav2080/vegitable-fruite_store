@@ -27,7 +27,7 @@ export function BestSellersSection({ products, categories }: BestSellersSectionP
     <>
       <div className="text-left mb-10">
         <h2 className="text-3xl font-bold font-headline">
-          Best Sellers
+          Popular Products
         </h2>
       </div>
        <div className="flex flex-wrap gap-2 mb-8">
