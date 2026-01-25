@@ -111,6 +111,7 @@ export function ProductForm({ product }: ProductFormProps) {
   });
   
   const unitType = form.watch('unitType');
+  const watchedVariants = form.watch("variants");
 
   useEffect(() => {
     let placeholder = "e.g. 1kg or Each";
@@ -321,7 +322,16 @@ export function ProductForm({ product }: ProductFormProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {variantFields.map((field, index) => (
+                  {variantFields.map((field, index) => {
+                     const price = watchedVariants[index]?.price;
+                     const originalPrice = watchedVariants[index]?.originalPrice;
+                     let discountText = null;
+                     if (originalPrice && price && originalPrice > price) {
+                         const discount = Math.round(((originalPrice - price) / originalPrice) * 100);
+                         discountText = `(Save ${discount}%)`;
+                     }
+
+                    return (
                     <div key={field.id} className="p-4 border rounded-md relative space-y-4">
                       <Button 
                         type="button" 
@@ -348,19 +358,6 @@ export function ProductForm({ product }: ProductFormProps) {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <FormField
                           control={form.control}
-                          name={`variants.${index}.price`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Sale Price</FormLabel>
-                              <FormControl>
-                                <Input type="number" step="0.01" placeholder="6.99" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                         <FormField
-                          control={form.control}
                           name={`variants.${index}.originalPrice`}
                           render={({ field }) => (
                             <FormItem>
@@ -368,6 +365,20 @@ export function ProductForm({ product }: ProductFormProps) {
                               <FormControl>
                                 <Input type="number" step="0.01" placeholder="8.99" {...field} />
                               </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                         <FormField
+                          control={form.control}
+                          name={`variants.${index}.price`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Sale Price</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" placeholder="6.99" {...field} />
+                              </FormControl>
+                               {discountText && <FormDescription className="text-primary font-semibold">{discountText}</FormDescription>}
                               <FormMessage />
                             </FormItem>
                           )}
@@ -387,7 +398,7 @@ export function ProductForm({ product }: ProductFormProps) {
                         />
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
                 <Button
                   type="button"
