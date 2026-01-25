@@ -67,6 +67,19 @@ export async function getOfferById(id: string): Promise<Offer | null> {
     return serializeOffer(offer);
 }
 
+export async function getOfferByCode(code: string): Promise<Offer | null> {
+    const offersCollection = await getOffersCollection();
+    if (!offersCollection) return null;
+
+    const offer = await offersCollection.findOne({ code: code, isActive: true });
+    
+    if (!offer) {
+        return null;
+    }
+
+    return serializeOffer(offer);
+}
+
 export async function createOffer(data: unknown) {
     const parsedData = offerSchema.parse(data);
     const offersCollection = await getOffersCollection();

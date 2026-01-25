@@ -1,3 +1,4 @@
+
 import { ObjectId } from 'mongodb';
 
 export interface Review {
@@ -73,6 +74,8 @@ export interface Order {
   status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   total: number;
   items: OrderItem[];
+  discountAmount?: number;
+  couponCode?: string;
 }
 
 export interface User {

@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { retrieveCheckoutSession } from '@/lib/actions/stripe';
 import { createOrder } from '@/lib/actions/orders';
 import { Loader2 } from 'lucide-react';
+import type Stripe from 'stripe';
 
 function SuccessContent() {
   const { clearCart } = useCart();
@@ -27,12 +28,19 @@ function SuccessContent() {
           const session = await retrieveCheckoutSession(sessionId);
           
           if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cartItems && session.customer_details?.email) {
+            
+            const discountInfo = {
+                amount: session.total_details?.amount_discount || 0,
+                code: session.metadata?.couponCode || undefined,
+            };
+
             const newOrder = await createOrder(
               session.id,
               session.client_reference_id,
               JSON.parse(session.metadata.cartItems),
               session.amount_total!,
-              session.customer_details.email
+              session.customer_details.email,
+              discountInfo
             );
 
             clearCart();

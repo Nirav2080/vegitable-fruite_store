@@ -50,7 +50,14 @@ export async function getOrderById(id: string): Promise<Order | null> {
     return serializeOrder(order);
 }
 
-export async function createOrder(stripeSessionId: string, clientReferenceId: string, cartItems: any[], totalAmount: number, customerEmail: string): Promise<Order> {
+export async function createOrder(
+    stripeSessionId: string, 
+    clientReferenceId: string, 
+    cartItems: any[], 
+    totalAmount: number, 
+    customerEmail: string,
+    discountInfo: { amount: number; code?: string | null }
+): Promise<Order> {
     const db = await getDb();
     if (!db) throw new Error("Database not connected.");
     const ordersCollection = db.collection<Order>('orders');
@@ -83,6 +90,8 @@ export async function createOrder(stripeSessionId: string, clientReferenceId: st
         status: 'Pending',
         total: totalAmount / 100, // Convert from cents
         items: orderItems,
+        discountAmount: discountInfo.amount / 100,
+        couponCode: discountInfo.code ?? undefined,
     };
 
     const result = await ordersCollection.insertOne(newOrder as any);

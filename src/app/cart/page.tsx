@@ -8,9 +8,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { useState } from 'react'
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart()
+  const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount } = useCart()
+  const [couponInput, setCouponInput] = useState('');
+  const [isApplying, setIsApplying] = useState(false);
+
+  const handleApplyCoupon = async () => {
+      if (!couponInput) return;
+      setIsApplying(true);
+      await applyDiscount(couponInput);
+      setIsApplying(false);
+  }
 
   if (cartCount === 0) {
     return (
@@ -82,11 +92,37 @@ export default function CartPage() {
         <aside className="lg:col-span-1">
             <div className="sticky top-24 border rounded-lg p-6">
                 <h2 className="text-xl font-bold font-headline mb-4">Order Summary</h2>
+
+                 {!couponCode ? (
+                    <div className="flex gap-2 mb-4">
+                        <Input 
+                            placeholder="Discount code" 
+                            value={couponInput}
+                            onChange={(e) => setCouponInput(e.target.value)}
+                        />
+                        <Button onClick={handleApplyCoupon} disabled={!couponInput || isApplying}>
+                            {isApplying ? 'Applying...' : 'Apply'}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="flex justify-between items-center p-2 bg-muted rounded-md mb-4">
+                        <p className="text-sm font-semibold">Code Applied: <span className="font-bold text-primary">{couponCode}</span></p>
+                        <Button variant="ghost" size="sm" onClick={() => applyDiscount('')}>Remove</Button>
+                    </div>
+                )}
+                <Separator className="my-4" />
+
                 <div className="space-y-2">
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">Subtotal ({cartCount} items)</span>
-                        <span className="font-semibold">${cartTotal.toFixed(2)}</span>
+                        <span className="font-semibold">${subtotal.toFixed(2)}</span>
                     </div>
+                     {discountAmount > 0 && (
+                        <div className="flex justify-between text-green-600">
+                            <span>Discount ({couponCode})</span>
+                            <span>- ${discountAmount.toFixed(2)}</span>
+                        </div>
+                    )}
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">Shipping</span>
                         <span className="font-semibold">Free</span>

@@ -34,6 +34,8 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
         notFound();
     }
 
+    const subtotal = order.total + (order.discountAmount || 0);
+
     return (
         <div className="container mx-auto px-4 py-12">
             <Card className="max-w-2xl mx-auto">
@@ -79,8 +81,14 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                      <div className="space-y-2 mt-6">
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>${order.total.toFixed(2)}</span>
+                            <span>${subtotal.toFixed(2)}</span>
                         </div>
+                        {order.discountAmount && order.discountAmount > 0 ? (
+                            <div className="flex justify-between text-green-600">
+                                <span>Discount ({order.couponCode})</span>
+                                <span>-${order.discountAmount.toFixed(2)}</span>
+                            </div>
+                        ) : null}
                          <div className="flex justify-between">
                             <span>Shipping</span>
                             <span>Free</span>

@@ -3,7 +3,7 @@
 
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import type { CartItem, User } from '@/lib/types';
+import type { CartItem, User, Offer } from '@/lib/types';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
@@ -29,10 +29,35 @@ async function getCurrentUser(): Promise<User | null> {
     return { ...user, id: user._id.toString() } as User;
 }
 
-export async function createCheckoutSession(cartItems: CartItem[]) {
+export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null) {
     const host = headers().get('origin') || 'http://localhost:9002';
 
     const user = await getCurrentUser();
+
+    let stripeCouponId: string | undefined = undefined;
+
+    if (couponCode) {
+        const db = await getDb();
+        if (!db) throw new Error("Database not connected for coupon validation");
+        const offersCollection = db.collection<Offer>('offers');
+        const offer = await offersCollection.findOne({ code: couponCode, isActive: true });
+
+        if (offer && offer.discount) {
+            // Check if coupon exists in Stripe by name (for simplicity)
+            // In a production app, you might store stripe coupon IDs in your DB
+            const existingCoupons = await stripe.coupons.list({ limit: 100 });
+            let coupon = existingCoupons.data.find(c => c.name === couponCode);
+
+            if (!coupon) {
+                 coupon = await stripe.coupons.create({
+                    percent_off: offer.discount,
+                    duration: 'once',
+                    name: couponCode,
+                });
+            }
+            stripeCouponId = coupon.id;
+        }
+    }
 
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
@@ -51,7 +76,7 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
     });
 
     try {
-        const session = await stripe.checkout.sessions.create({
+        const sessionParams: Stripe.Checkout.SessionCreateParams = {
             payment_method_types: ['card'],
             line_items,
             mode: 'payment',
@@ -64,9 +89,16 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
                     quantity: item.quantity,
                     price: item.selectedVariant.price,
                     weight: item.selectedVariant.weight
-                })))
+                }))),
+                couponCode: couponCode || ''
             }
-        });
+        };
+
+        if (stripeCouponId) {
+            sessionParams.discounts = [{ coupon: stripeCouponId }];
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionParams);
 
         if (session.id) {
             return { sessionId: session.id };
@@ -81,7 +113,7 @@ export async function createCheckoutSession(cartItems: CartItem[]) {
 
 export async function retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session | null> {
     try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['discounts'] });
         return session;
     } catch (error) {
         console.error("Error retrieving session: ", error);

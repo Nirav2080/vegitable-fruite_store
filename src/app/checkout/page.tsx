@@ -19,7 +19,7 @@ import { UserDetailsForm } from './_components/UserDetailsForm'
 
 
 export default function CheckoutPage() {
-    const { cartItems, cartTotal, cartCount } = useCart()
+    const { cartItems, subtotal, cartTotal, cartCount, couponCode, discountAmount } = useCart()
     const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User | null>(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -85,7 +85,7 @@ export default function CheckoutPage() {
                 throw new Error("Stripe.js has not loaded yet.");
             }
 
-            const { sessionId } = await createCheckoutSession(cartItems);
+            const { sessionId } = await createCheckoutSession(cartItems, couponCode);
 
             const { error } = await stripe.redirectToCheckout({ sessionId });
 
@@ -184,8 +184,14 @@ export default function CheckoutPage() {
                   <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                           <p className="text-muted-foreground">Subtotal</p>
-                          <p className="font-semibold">${cartTotal.toFixed(2)}</p>
+                          <p className="font-semibold">${subtotal.toFixed(2)}</p>
                       </div>
+                       {discountAmount > 0 && (
+                          <div className="flex justify-between text-green-600">
+                              <span>Discount ({couponCode})</span>
+                              <span>- ${discountAmount.toFixed(2)}</span>
+                          </div>
+                      )}
                       <div className="flex justify-between">
                           <p className="text-muted-foreground">Shipping</p>
                           <p className="font-semibold">Free</p>

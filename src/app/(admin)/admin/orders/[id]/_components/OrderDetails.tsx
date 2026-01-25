@@ -36,6 +36,8 @@ export function OrderDetails({ order }: OrderDetailsProps) {
     const [isUpdating, setIsUpdating] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
+    
+    const subtotal = order.total + (order.discountAmount || 0);
 
     const handleStatusUpdate = async () => {
         setIsUpdating(true);
@@ -111,7 +113,17 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                         <p><span className="font-medium text-foreground">Date:</span> {format(new Date(order.date), 'dd MMM yyyy, h:mm a')}</p>
                         <p><span className="font-medium text-foreground">Current Status:</span> <Badge className={getStatusClass(order.status)}>{order.status}</Badge></p>
                         <Separator className="my-2" />
-                        <div className="flex justify-between font-bold text-base text-foreground">
+                        <div className="flex justify-between text-sm">
+                            <span>Subtotal</span>
+                            <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        {order.discountAmount ? (
+                            <div className="flex justify-between text-sm text-green-600">
+                                <span>Discount ({order.couponCode})</span>
+                                <span>-${order.discountAmount.toFixed(2)}</span>
+                            </div>
+                        ) : null}
+                        <div className="flex justify-between font-bold text-base text-foreground mt-2">
                             <span>Total</span>
                             <span>${order.total.toFixed(2)}</span>
                         </div>
