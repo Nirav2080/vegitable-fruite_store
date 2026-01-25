@@ -103,7 +103,7 @@ export function ProductsTable({ data }: { data: Product[] }) {
                 <div className="flex flex-wrap gap-1">
                   {product.isFeatured && <Badge variant="outline">Featured</Badge>}
                   {product.isDeal && <Badge variant="outline">Deal</Badge>}
-                  {product.isOrganic && <Badge variant="outline">Organic</Badge>}
+                  {product.isOrganic && <Badge variant="outline">Fresh</Badge>}
                 </div>
               </TableCell>
               <TableCell>

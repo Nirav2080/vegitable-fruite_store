@@ -453,9 +453,9 @@ export function ProductForm({ product }: ProductFormProps) {
                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                            <FormLabel>Organic</FormLabel>
+                            <FormLabel>Fresh</FormLabel>
                             <FormDescription>
-                                Is this product certified organic?
+                                Show this in the "Fresh Fruits & Vegetables" section.
                             </FormDescription>
                         </div>
                     </FormItem>

@@ -102,7 +102,7 @@ function FilterSidebarContent({ categories, attributes, selectedFilters, handleF
                                                 checked={isOrganicChecked}
                                                 onCheckedChange={() => handleFilterChange('isOrganic', 'true')}
                                             />
-                                            Organic
+                                            Fresh
                                         </Label>
                                     </div>
                                     <div className="flex items-center justify-between">
