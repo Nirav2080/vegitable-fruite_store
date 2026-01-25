@@ -4,28 +4,18 @@
 import React from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
-import { getActiveBanners } from '@/lib/cached-data'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import type { Banner } from '@/lib/types'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 
-export function HeroCarousel() {
-    const [banners, setBanners] = React.useState<Banner[]>([])
-    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })])
+interface HeroCarouselProps {
+    banners: Banner[];
+}
 
-    React.useEffect(() => {
-        const fetchBanners = async () => {
-            try {
-                const activeBanners = await getActiveBanners();
-                setBanners(activeBanners);
-            } catch (error) {
-                console.error("Failed to fetch banners", error);
-            }
-        };
-        fetchBanners();
-    }, []);
+export function HeroCarousel({ banners }: HeroCarouselProps) {
+    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: banners.length > 1 }, [Autoplay({ delay: 5000, stopOnInteraction: false })])
 
     const scrollPrev = React.useCallback(() => {
         if (emblaApi) emblaApi.scrollPrev()
@@ -35,7 +25,7 @@ export function HeroCarousel() {
         if (emblaApi) emblaApi.scrollNext()
     }, [emblaApi])
 
-    if (banners.length === 0) {
+    if (!banners || banners.length === 0) {
         return (
             <section className="bg-accent">
                 <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
@@ -69,14 +59,14 @@ export function HeroCarousel() {
     return (
         <div className="relative" ref={emblaRef}>
             <div className="flex">
-                {banners.map((banner) => (
+                {banners.map((banner, index) => (
                     <div key={banner.id} className="flex-[0_0_100%] relative h-[400px] md:h-[500px] lg:h-[600px]">
                         <Image
                             src={banner.image}
                             alt={banner.title}
                             fill
                             className="object-cover"
-                            priority
+                            priority={index === 0}
                         />
                         <div className="absolute inset-0 bg-black/40" />
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -95,22 +85,26 @@ export function HeroCarousel() {
                     </div>
                 ))}
             </div>
-             <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/50 text-black hover:bg-white"
-                onClick={scrollPrev}
-            >
-                <ChevronLeft />
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/50 text-black hover:bg-white"
-                onClick={scrollNext}
-            >
-                <ChevronRight />
-            </Button>
+            {banners.length > 1 && (
+                <>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/50 text-black hover:bg-white"
+                        onClick={scrollPrev}
+                    >
+                        <ChevronLeft />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/50 text-black hover:bg-white"
+                        onClick={scrollNext}
+                    >
+                        <ChevronRight />
+                    </Button>
+                </>
+            )}
         </div>
     )
 }

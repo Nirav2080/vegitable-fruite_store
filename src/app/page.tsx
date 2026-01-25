@@ -1,6 +1,6 @@
 
 import React, { Suspense } from "react";
-import { getProducts, getCategories, getActiveOffers } from "@/lib/cached-data";
+import { getProducts, getCategories, getActiveOffers, getActiveBanners } from "@/lib/cached-data";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
 import { DealsSection } from "@/components/layout/DealsSection";
 import { PopularProductsSection as PopularProductsSlider } from "@/components/layout/PopularProductsSection";
@@ -14,14 +14,18 @@ import { ShopByBrandSection } from "@/components/layout/ShopByBrandSection";
 
 async function getPageData() {
   try {
-    const products = await getProducts();
-    const categories = await getCategories();
-    const offers = await getActiveOffers();
+    const [products, categories, offers, banners] = await Promise.all([
+      getProducts(),
+      getCategories(),
+      getActiveOffers(),
+      getActiveBanners(),
+    ]);
+    
     const popularProducts = products.filter(p => p.isFeatured).slice(0, 8);
     const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
     const dealProducts = products.filter(p => p.isDeal).slice(0,4);
 
-    return { categories, popularProducts, organicProducts, dealProducts, offers };
+    return { categories, popularProducts, organicProducts, dealProducts, offers, banners };
   } catch (error) {
     console.error("Failed to fetch page data, returning default values:", error);
     // Return default empty values if there's an error (e.g., DB connection issue)
@@ -31,6 +35,7 @@ async function getPageData() {
       organicProducts: [],
       dealProducts: [],
       offers: [],
+      banners: [],
     };
   }
 }
@@ -70,13 +75,13 @@ function ProductsGridSkeleton() {
 
 
 export default async function Home() {
-  const { categories, popularProducts, organicProducts, dealProducts, offers } = await getPageData();
+  const { categories, popularProducts, organicProducts, dealProducts, offers, banners } = await getPageData();
   const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
   
   return (
     <div className="flex flex-col">
       <Suspense fallback={<HeroSkeleton />}>
-        <HeroCarousel />
+        <HeroCarousel banners={banners} />
       </Suspense>
 
       <section className="py-16 md:py-24">
