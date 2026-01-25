@@ -1,4 +1,3 @@
-
 import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -122,7 +121,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-primary-foreground/10 flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm">&copy; {new Date().getFullYear()} Aotearoa Organics. All Rights Reserved.</p>
+          <p className="text-sm">&copy; {new Date().getFullYear()} Richmond Vege Mart. All Rights Reserved.</p>
            <div className="flex items-center gap-2">
                 <p className="text-sm">We accept:</p>
                 <div className="flex items-center gap-2">

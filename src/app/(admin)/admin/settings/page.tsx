@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,7 @@ export default function AdminSettingsPage() {
             <form className="space-y-6">
                  <div className="space-y-2">
                     <Label htmlFor="store-name">Store Name</Label>
-                    <Input id="store-name" defaultValue="Aotearoa Organics" />
+                    <Input id="store-name" defaultValue="Richmond Vege Mart" />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="store-email">Store Email</Label>

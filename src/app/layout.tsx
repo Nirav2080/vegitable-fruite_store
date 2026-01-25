@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -9,8 +8,8 @@ import clientPromise from '@/lib/db';
 const ptSans = PT_Sans({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-pt-sans' });
 
 export const metadata: Metadata = {
-  title: 'Aotearoa Organics | Fresh & Local New Zealand Produce',
-  description: 'Discover the freshest fruits, vegetables, and organic boxes from local New Zealand farms. Quality produce delivered to your door.',
+  title: 'RICHMOND VEGE MART | A Symphony of Flavours',
+  description: 'Discover a symphony of flavours at Richmond Vege Mart. Your source for fresh, quality produce, delivering a delightful experience with every bite.',
 };
 
 async function DatabaseWarningBanner() {
