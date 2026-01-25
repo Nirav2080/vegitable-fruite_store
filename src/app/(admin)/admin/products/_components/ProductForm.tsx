@@ -146,9 +146,10 @@ export function ProductForm({ product }: ProductFormProps) {
       router.push("/admin/products");
       router.refresh();
     } catch (error: any) {
+       console.error("Failed to save product:", error);
        toast({
         title: "Error",
-        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} product.`,
+        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} product.`,
         variant: "destructive",
       });
     }

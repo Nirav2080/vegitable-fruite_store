@@ -72,9 +72,10 @@ export function BannerForm({ banner }: BannerFormProps) {
       router.push("/admin/banners");
       router.refresh();
     } catch (error: any) {
+       console.error("Failed to save banner:", error);
        toast({
         title: "Error",
-        description: error.message || `Failed to ${isEditing ? 'update' : 'create'} banner.`,
+        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} banner.`,
         variant: "destructive",
       });
     }
