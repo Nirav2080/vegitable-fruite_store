@@ -1,10 +1,10 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImportForm } from "../_components/ImportForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Info } from "lucide-react";
 
 export default function ImportProductsPage() {
+  const exampleJson = `[{"weight":"500g","price":12.99,"stock":50}]`;
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Import Products</h1>
@@ -30,7 +30,7 @@ export default function ImportProductsPage() {
                     <li><strong>isOrganic</strong> (TRUE/FALSE, Optional): Show in "Fresh" sections.</li>
                     <li><strong>isDeal</strong> (TRUE/FALSE, Optional): Show in "Deals" sections.</li>
                     <li><strong>Images</strong> (Text, Optional): Comma-separated list of public image URLs.</li>
-                    <li><strong>Variants</strong> (Text, JSON): A JSON string of the variants array. E.g., <code>[{"weight":"500g","price":12.99,"stock":50}]</code></li>
+                    <li><strong>Variants</strong> (Text, JSON): A JSON string of the variants array. E.g., <code>{exampleJson}</code></li>
                 </ul>
             </AlertDescription>
           </Alert>
