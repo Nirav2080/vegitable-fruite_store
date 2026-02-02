@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Upload } from "lucide-react";
 import Link from "next/link";
 import { getProducts } from "@/lib/cached-data";
 import { ProductsTable } from "./_components/ProductsTable";
@@ -13,12 +13,20 @@ export default async function AdminProductsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Products</h1>
-        <Button asChild>
-          <Link href="/admin/products/new">
-            <PlusCircle className="mr-2 h-5 w-5" />
-            Add New Product
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+            <Button asChild variant="outline">
+                <Link href="/admin/products/import">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Import Products
+                </Link>
+            </Button>
+            <Button asChild>
+                <Link href="/admin/products/new">
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Add New Product
+                </Link>
+            </Button>
+        </div>
       </div>
       <Card>
         <CardHeader>

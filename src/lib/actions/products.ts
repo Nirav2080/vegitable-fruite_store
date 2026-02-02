@@ -7,6 +7,7 @@ import type { Product, ProductVariant, Category, ProductSearchResult, Brand } fr
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
+import * as XLSX from 'xlsx';
 
 async function getDb() {
     const client = await clientPromise;
@@ -288,4 +289,18 @@ export async function getDashboardData() {
             amount: t.total,
         })),
     }
+}
+
+export async function importProducts(formData: FormData): Promise<{message: string}> {
+    throw new Error('The Excel import feature is currently under development and not yet available. Please use the "Add New Product" form for now.');
+    
+    // The following is placeholder logic for future implementation
+    const file = formData.get('file') as File;
+    if (!file) {
+        throw new Error('No file uploaded.');
+    }
+
+    // ... complex logic to parse file and create products ...
+
+    return { message: "This is a placeholder response." };
 }
