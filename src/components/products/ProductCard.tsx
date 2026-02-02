@@ -11,13 +11,6 @@ import { useCart } from "@/hooks/use-cart";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useWishlist } from "@/hooks/use-wishlist";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 
 interface ProductCardProps {
@@ -133,22 +126,29 @@ export function ProductCard({ product }: ProductCardProps) {
             {renderStars(product.rating || 0)}
             <span className='text-xs text-muted-foreground'>({product.reviews?.length || 0})</span>
         </div>
-        {product.variants.length > 1 ? (
-             <Select defaultValue={selectedVariant.weight} onValueChange={handleVariantChange}>
-                <SelectTrigger className="mt-2 h-9">
-                    <SelectValue placeholder="Select unit" />
-                </SelectTrigger>
-                <SelectContent>
+        <div className="mt-2 min-h-[36px]">
+            {product.variants.length > 1 ? (
+                <div className="flex flex-wrap items-center gap-1">
                     {product.variants.map((variant) => (
-                        <SelectItem key={variant.weight} value={variant.weight}>
-                            {variant.weight} - ${variant.price.toFixed(2)}
-                        </SelectItem>
+                        <Button
+                            key={variant.weight}
+                            size="sm"
+                            variant={selectedVariant?.weight === variant.weight ? 'default' : 'outline'}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleVariantChange(variant.weight);
+                            }}
+                            className="h-auto px-2 py-1 text-xs rounded-full"
+                        >
+                            {variant.weight}
+                        </Button>
                     ))}
-                </SelectContent>
-            </Select>
-        ) : (
-             <p className="text-sm text-muted-foreground mt-2">{selectedVariant.weight}</p>
-        )}
+                </div>
+            ) : (
+                 <p className="text-sm text-muted-foreground pt-2">{selectedVariant.weight}</p>
+            )}
+        </div>
         
          <Button variant="outline" size="sm" className="w-full mt-4 rounded-full" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
             {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
