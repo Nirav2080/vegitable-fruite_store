@@ -65,7 +65,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
   
   const breadcrumbLinks = [
       { label: 'Home', href: '/' },
-      { label: product.category, href: `/products?category=${product.category}`},
+      { label: product.category, href: `/products?category=${encodeURIComponent(product.category)}`},
       { label: product.name }
   ]
   

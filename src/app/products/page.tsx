@@ -190,6 +190,45 @@ export default function ProductsPage() {
             setCategories(fetchedCategories);
             setAttributes(fetchedAttributes);
             setBrands(fetchedBrands);
+            
+            const initialFilters: Record<string, string[]> = {};
+            
+            const categoryName = searchParams.get('category');
+            if (categoryName) {
+                // This recursive function finds a category by name from a nested structure
+                const findCategoryByName = (categories: Category[], name: string): Category | undefined => {
+                    for (const category of categories) {
+                        if (category.name === name) {
+                            return category;
+                        }
+                        if (category.subcategories) {
+                            const found = findCategoryByName(category.subcategories, name);
+                            if (found) return found;
+                        }
+                    }
+                    return undefined;
+                };
+                
+                const category = findCategoryByName(fetchedCategories, categoryName);
+                if (category) {
+                    initialFilters['categoryId'] = [category.id];
+                }
+            }
+
+            const brandName = searchParams.get('brand');
+            if (brandName) {
+                initialFilters['brand'] = [brandName];
+            }
+            
+            const filter = searchParams.get('filter');
+            if (filter === 'isOrganic') {
+                initialFilters['isOrganic'] = ['true'];
+            }
+            if (filter === 'isDeal') {
+                initialFilters['isDeal'] = ['true'];
+            }
+            
+            setSelectedFilters(initialFilters);
         } catch (error) {
             console.error("Failed to load products page data:", error);
             toast({
@@ -203,27 +242,6 @@ export default function ProductsPage() {
             setAttributes([]);
             setBrands([]);
         }
-        
-        const initialFilters: Record<string, string[]> = {};
-        const categoryId = searchParams.get('categoryId');
-        if (categoryId) {
-            initialFilters['categoryId'] = [categoryId];
-        }
-
-        const brandName = searchParams.get('brand');
-        if (brandName) {
-            initialFilters['brand'] = [brandName];
-        }
-        
-        const filter = searchParams.get('filter');
-        if (filter === 'isOrganic') {
-            initialFilters['isOrganic'] = ['true'];
-        }
-        if (filter === 'isDeal') {
-            initialFilters['isDeal'] = ['true'];
-        }
-        
-        setSelectedFilters(initialFilters);
         setIsLoading(false);
     }
     loadData();

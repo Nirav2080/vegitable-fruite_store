@@ -8,7 +8,7 @@ import type { Category } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 function CategorySkeleton() {
@@ -63,7 +63,7 @@ export function FeaturedCategories() {
                 <CarouselContent className="-ml-4">
                     {categories.map((category) => (
                         <CarouselItem key={category.id} className="basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-1/8 pl-4">
-                            <Link href={`/products?categoryId=${category.id}`} className="group block">
+                            <Link href={`/products?category=${encodeURIComponent(category.name)}`} className="group block">
                                 <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                                     <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
                                         {category.icon ? (
