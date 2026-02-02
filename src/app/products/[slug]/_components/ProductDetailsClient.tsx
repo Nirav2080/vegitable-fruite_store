@@ -15,13 +15,6 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Breadcrumbs } from '@/app/(customer)/_components/Breadcrumbs';
 import { useWishlist } from '@/hooks/use-wishlist';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Label } from '@/components/ui/label';
 
 interface ProductDetailsClientProps {
@@ -131,24 +124,18 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
             {product.variants && product.variants.length > 1 && (
               <div className="mb-6">
                 <Label className="text-sm font-medium mb-2 block">Select Weight:</Label>
-                <Select
-                  defaultValue={selectedVariant.weight}
-                  onValueChange={(weight) => {
-                    const newVariant = product.variants.find(v => v.weight === weight);
-                    setSelectedVariant(newVariant);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a variant" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.variants.map((variant) => (
-                      <SelectItem key={variant.weight} value={variant.weight}>
-                        {variant.weight}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((variant) => (
+                    <Button
+                      key={variant.weight}
+                      variant={selectedVariant?.weight === variant.weight ? 'default' : 'outline'}
+                      onClick={() => setSelectedVariant(variant)}
+                      className="rounded-full"
+                    >
+                      {variant.weight}
+                    </Button>
+                  ))}
+                </div>
               </div>
             )}
 
