@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 function CategorySkeleton() {
     return (
@@ -41,9 +42,7 @@ export function FeaturedCategories() {
         fetchCategories();
     }, []);
 
-    const displayedCategories = categories.slice(0, 8);
     const skeletonCount = 8;
-
 
     return (
         <div className="container mx-auto px-4">
@@ -57,31 +56,43 @@ export function FeaturedCategories() {
                     </Link>
                 </Button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-                {isLoading ? (
-                    Array.from({ length: skeletonCount }).map((_, i) => <CategorySkeleton key={i} />)
-                ) : (
-                    displayedCategories.map((category) => (
-                        <Link key={category.id} href={`/products?categoryId=${category.id}`} className="group block">
-                             <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
-                                <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
-                                    {category.icon ? (
-                                        <Image 
-                                            src={category.icon}
-                                            alt={category.name}
-                                            fill
-                                            className="object-contain transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                    ) : (
-                                        <div className="h-full w-full bg-gray-200 rounded-md" />
-                                    )}
-                                </div>
-                                <h3 className="font-semibold text-sm mt-3 text-center text-foreground truncate w-full">{category.name}</h3>
-                            </div>
-                        </Link>
-                    ))
-                )}
-            </div>
+            
+            {isLoading ? (
+                 <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4">
+                    {Array.from({ length: skeletonCount }).map((_, i) => <CategorySkeleton key={i} />)}
+                </div>
+            ) : (
+                <Carousel 
+                    opts={{ align: "start", loop: categories.length > 8 }} 
+                    className="w-full"
+                >
+                    <CarouselContent className="-ml-4">
+                        {categories.map((category) => (
+                             <CarouselItem key={category.id} className="basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-1/8 pl-4">
+                                <Link href={`/products?categoryId=${category.id}`} className="group block">
+                                    <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
+                                        <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
+                                            {category.icon ? (
+                                                <Image 
+                                                    src={category.icon}
+                                                    alt={category.name}
+                                                    fill
+                                                    className="object-contain transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <div className="h-full w-full bg-gray-200 rounded-md" />
+                                            )}
+                                        </div>
+                                        <h3 className="font-semibold text-sm mt-3 text-center text-foreground truncate w-full">{category.name}</h3>
+                                    </div>
+                                </Link>
+                             </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden lg:flex" />
+                    <CarouselNext className="hidden lg:flex" />
+                </Carousel>
+            )}
         </div>
     );
 }
