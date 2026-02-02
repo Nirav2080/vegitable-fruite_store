@@ -292,15 +292,141 @@ export async function getDashboardData() {
 }
 
 export async function importProducts(formData: FormData): Promise<{message: string}> {
-    throw new Error('The Excel import feature is currently under development and not yet available. Please use the "Add New Product" form for now.');
-    
-    // The following is placeholder logic for future implementation
     const file = formData.get('file') as File;
     if (!file) {
         throw new Error('No file uploaded.');
     }
 
-    // ... complex logic to parse file and create products ...
+    const db = await getDb();
+    if (!db) {
+        throw new Error("Database not connected.");
+    }
 
-    return { message: "This is a placeholder response." };
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(worksheet);
+
+    if (data.length === 0) {
+        return { message: "The uploaded file is empty or in the wrong format." };
+    }
+
+    const categoriesCollection = db.collection<Category>('categories');
+    const brandsCollection = db.collection<Brand>('brands');
+    const productsCollection = db.collection<Product>('products');
+
+    const existingCategories = await categoriesCollection.find({}).toArray();
+    const categoryMap = new Map(existingCategories.map(c => [c.name.toLowerCase(), c._id]));
+
+    const existingBrands = await brandsCollection.find({}).toArray();
+    const brandMap = new Map(existingBrands.map(b => [b.name.toLowerCase(), b._id]));
+    
+    let productsToInsert = [];
+    let productsToUpdate = [];
+    let processedCount = 0;
+    let errorCount = 0;
+
+    for (const row of data as any[]) {
+        try {
+            if (!row.Name || !row.Description || !row.Category || !row.Variants) {
+                console.warn("Skipping row due to missing required fields:", row);
+                errorCount++;
+                continue;
+            }
+
+            let categoryId;
+            const categoryName = row.Category.trim();
+            const lowerCategoryName = categoryName.toLowerCase();
+            if (categoryMap.has(lowerCategoryName)) {
+                categoryId = categoryMap.get(lowerCategoryName);
+            } else {
+                const newCategory: Omit<Category, 'id'> = { name: categoryName, createdAt: new Date() };
+                const result = await categoriesCollection.insertOne(newCategory as any);
+                categoryId = result.insertedId;
+                categoryMap.set(lowerCategoryName, categoryId);
+            }
+
+            let brandId;
+            const brandName = row.Brand?.trim();
+            if (brandName) {
+                const lowerBrandName = brandName.toLowerCase();
+                if (brandMap.has(lowerBrandName)) {
+                    brandId = brandMap.get(lowerBrandName);
+                } else {
+                    const newBrand: Omit<Brand, 'id'> = { 
+                        name: brandName, 
+                        logo: `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(brandName)}`,
+                        createdAt: new Date()
+                    };
+                    const result = await brandsCollection.insertOne(newBrand as any);
+                    brandId = result.insertedId;
+                    brandMap.set(lowerBrandName, brandId);
+                }
+            }
+
+            let variants;
+            try {
+                variants = JSON.parse(row.Variants);
+                if (!Array.isArray(variants) || variants.length === 0) throw new Error();
+            } catch {
+                console.warn(`Skipping product "${row.Name}" due to invalid Variants JSON.`);
+                errorCount++;
+                continue;
+            }
+
+            const slug = row.Name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+            const productData = {
+                name: row.Name,
+                slug,
+                description: row.Description,
+                categoryId: categoryId,
+                brandId: brandId,
+                isFeatured: row.isFeatured === true || String(row.isFeatured).toUpperCase() === 'TRUE',
+                isOrganic: row.isOrganic === true || String(row.isOrganic).toUpperCase() === 'TRUE',
+                isDeal: row.isDeal === true || String(row.isDeal).toUpperCase() === 'TRUE',
+                images: row.Images ? String(row.Images).split(',').map((url: string) => url.trim()) : [],
+                variants: variants,
+                createdAt: new Date(),
+                reviews: [],
+                rating: 0,
+            };
+
+            const existingProduct = await productsCollection.findOne({ name: productData.name });
+            if (existingProduct) {
+                productsToUpdate.push({ 
+                    updateOne: { 
+                        filter: { _id: existingProduct._id }, 
+                        update: { $set: { ...productData, createdAt: existingProduct.createdAt } } 
+                    }
+                });
+            } else {
+                productsToInsert.push(productData);
+            }
+            processedCount++;
+
+        } catch (e: any) {
+            console.error("Error processing row:", row, e.message);
+            errorCount++;
+        }
+    }
+
+    if (productsToInsert.length > 0) {
+        await productsCollection.insertMany(productsToInsert as any[]);
+    }
+    if (productsToUpdate.length > 0) {
+        await productsCollection.bulkWrite(productsToUpdate);
+    }
+    
+    revalidatePath('/admin/products');
+    revalidatePath('/products');
+    revalidatePath('/');
+
+    let message = `${processedCount} products processed.`;
+    if (productsToInsert.length > 0) message += ` ${productsToInsert.length} created.`
+    if (productsToUpdate.length > 0) message += ` ${productsToUpdate.length} updated.`
+    if (errorCount > 0) message += ` ${errorCount} rows had errors and were skipped.`
+    
+    return { message };
 }
