@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import type { Product, ProductVariant, Category, ProductSearchResult } from '@/lib/types';
+import type { Product, ProductVariant, Category, ProductSearchResult, Brand } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
@@ -37,7 +37,7 @@ const productSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
-  brand: z.string().optional(),
+  brandId: z.string().optional(),
   unitType: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
@@ -46,7 +46,7 @@ const productSchema = z.object({
   variants: z.array(variantSchema).min(1, { message: 'At least one product variant is required.'}),
 });
 
-function serializeProduct(product: any, categoryMap: Map<string, string>): Product | null {
+function serializeProduct(product: any, categoryMap: Map<string, string>, brandMap: Map<string, string>): Product | null {
     if (!product || !product.categoryId) return null;
 
     const { _id, ...rest } = product;
@@ -63,12 +63,15 @@ function serializeProduct(product: any, categoryMap: Map<string, string>): Produ
         : [];
 
     const categoryIdString = product.categoryId.toString();
+    const brandIdString = product.brandId ? product.brandId.toString() : undefined;
 
     return {
         ...rest,
         id: _id.toString(),
         categoryId: categoryIdString,
         category: categoryMap.get(categoryIdString) || 'Uncategorized',
+        brandId: brandIdString,
+        brand: brandIdString ? brandMap.get(brandIdString) : undefined,
         reviews: serializedReviews,
         rating: typeof product.rating === 'number' ? product.rating : 0,
     } as Product;
@@ -79,10 +82,12 @@ export async function getProducts(): Promise<Product[]> {
     if (!db) return [];
     const productsCollection = db.collection('products');
     const categoriesCollection = db.collection('categories');
+    const brandsCollection = db.collection('brands');
 
-    const [productsData, categoriesData] = await Promise.all([
+    const [productsData, categoriesData, brandsData] = await Promise.all([
         productsCollection.find({}).sort({ createdAt: -1 }).toArray(),
-        categoriesCollection.find({}).toArray()
+        categoriesCollection.find({}).toArray(),
+        brandsCollection.find({}).toArray()
     ]);
 
     const categoryMap = new Map<string, string>();
@@ -90,7 +95,12 @@ export async function getProducts(): Promise<Product[]> {
         categoryMap.set(cat._id.toString(), cat.name);
     });
 
-    const serializedProducts = productsData.map(product => serializeProduct(product, categoryMap));
+    const brandMap = new Map<string, string>();
+    brandsData.forEach(brand => {
+        brandMap.set(brand._id.toString(), brand.name);
+    });
+
+    const serializedProducts = productsData.map(product => serializeProduct(product, categoryMap, brandMap));
     return serializedProducts.filter((p): p is Product => p !== null);
 }
 
@@ -119,19 +129,29 @@ export async function getProductById(id: string): Promise<Product | null> {
     if (!db) return null;
     const productsCollection = db.collection('products');
     const categoriesCollection = db.collection('categories');
+    const brandsCollection = db.collection('brands');
     
     const productData = await productsCollection.findOne({ _id: new ObjectId(id) });
     if (!productData) {
         return null;
     }
 
-    const categoriesData = await categoriesCollection.find({}).toArray();
+    const [categoriesData, brandsData] = await Promise.all([
+        categoriesCollection.find({}).toArray(),
+        brandsCollection.find({}).toArray()
+    ]);
+
     const categoryMap = new Map<string, string>();
     categoriesData.forEach(cat => {
         categoryMap.set(cat._id.toString(), cat.name);
     });
 
-    return serializeProduct(productData, categoryMap);
+    const brandMap = new Map<string, string>();
+    brandsData.forEach(brand => {
+        brandMap.set(brand._id.toString(), brand.name);
+    });
+
+    return serializeProduct(productData, categoryMap, brandMap);
 }
 
 export async function createProduct(data: unknown) {
@@ -141,14 +161,16 @@ export async function createProduct(data: unknown) {
     
     const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-    const newProduct: Omit<Product, 'id' | 'category' | 'rating' | 'reviews'> & { categoryId: ObjectId, createdAt: Date, reviews: [], rating: number } = {
-      ...parsedData,
-      categoryId: new ObjectId(parsedData.categoryId),
-      images: parsedData.images.length > 0 ? parsedData.images : ['https://placehold.co/400x400/EEE/31343C?text=No+Image'],
+    const { brandId, ...restOfParsedData } = parsedData;
+
+    const newProduct = {
+      ...restOfParsedData,
       slug,
+      categoryId: new ObjectId(parsedData.categoryId),
       createdAt: new Date(),
       reviews: [],
       rating: 0,
+      ...(brandId && { brandId: new ObjectId(brandId) })
     };
 
     await productsCollection.insertOne(newProduct as any);
@@ -172,15 +194,25 @@ export async function updateProduct(id: string, data: unknown) {
   const parsedData = productSchema.parse(data);
   const slug = parsedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+  const { brandId, ...restOfParsedData } = parsedData;
+
   const updateData = {
-      ...parsedData,
-      categoryId: new ObjectId(parsedData.categoryId),
+      ...restOfParsedData,
       slug,
+      categoryId: new ObjectId(parsedData.categoryId),
       reviews: existingProduct.reviews || [],
       rating: existingProduct.rating || 0,
   };
+  
+  const updateOperation: any = { $set: updateData };
 
-  const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+  if (brandId) {
+    updateOperation.$set.brandId = new ObjectId(brandId);
+  } else {
+    updateOperation.$unset = { brandId: "" };
+  }
+
+  const result = await productsCollection.updateOne({ _id: new ObjectId(id) }, updateOperation);
 
   if (result.matchedCount === 0) {
       notFound();

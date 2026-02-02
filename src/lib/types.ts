@@ -38,6 +38,7 @@ export interface Product {
   images: string[];
   categoryId: string | ObjectId;
   category: string;
+  brandId?: string;
   brand?: string;
   unitType?: string;
   isOrganic: boolean;

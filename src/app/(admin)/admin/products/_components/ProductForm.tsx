@@ -24,9 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Product, Category } from "@/lib/types"
+import type { Product, Category, Brand } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
-import { getCategories } from "@/lib/actions/categories"
+import { getCategories, getBrands } from "@/lib/cached-data"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
@@ -50,7 +50,7 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   description: z.string().min(10, { message: "Description must be at least 10 characters." }),
   categoryId: z.string().min(1, { message: "Please select a category." }),
-  brand: z.string().optional(),
+  brandId: z.string().optional(),
   unitType: z.string().optional(),
   isOrganic: z.boolean().default(false),
   isFeatured: z.boolean().default(false),
@@ -71,27 +71,33 @@ export function ProductForm({ product }: ProductFormProps) {
   const isEditing = !!product;
   
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>(isEditing && Array.isArray(product.images) ? product.images : []);
   const [variantPlaceholder, setVariantPlaceholder] = useState("e.g. 1kg or Each");
 
   useEffect(() => {
-    async function fetchCategories() {
-        const fetchedCategories = await getCategories();
+    async function fetchData() {
+        const [fetchedCategories, fetchedBrands] = await Promise.all([
+            getCategories(),
+            getBrands()
+        ]);
         setCategories(fetchedCategories);
+        setBrands(fetchedBrands);
     }
-    fetchCategories();
+    fetchData();
   }, [])
 
   const defaultValues = isEditing && product ? {
       ...product,
       categoryId: String(product.categoryId),
+      brandId: product.brandId || "",
       images: Array.isArray(product.images) ? product.images : [],
       unitType: product.unitType || '',
   } : {
       name: "",
       description: "",
       categoryId: "",
-      brand: "",
+      brandId: "",
       unitType: '',
       isOrganic: false,
       isFeatured: false,
@@ -135,11 +141,15 @@ export function ProductForm({ product }: ProductFormProps) {
 
   async function onSubmit(values: ProductFormValues) {
     try {
+      const dataToSubmit: any = { ...values };
+       if (dataToSubmit.brandId === 'none' || dataToSubmit.brandId === '') {
+          delete dataToSubmit.brandId;
+      }
       if (isEditing && product) {
-        await updateProduct(product.id, values);
+        await updateProduct(product.id, dataToSubmit);
         toast({ title: "Success", description: "Product updated successfully." });
       } else {
-        await createProduct(values);
+        await createProduct(dataToSubmit);
         toast({ title: "Success", description: "Product created successfully." });
       }
       router.push("/admin/products");
@@ -416,15 +426,27 @@ export function ProductForm({ product }: ProductFormProps) {
            
              <FormField
                 control={form.control}
-                name="brand"
+                name="brandId"
                 render={({ field }) => (
                     <FormItem>
                     <FormLabel>Brand</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g. Woodsman" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a brand (optional)" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {brands.map((brand) => (
+                                <SelectItem key={brand.id} value={brand.id}>
+                                    {brand.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     <FormDescription>
-                        The brand of the product.
+                        The brand of the product. Manage brands in the 'Brands' section.
                     </FormDescription>
                     <FormMessage />
                     </FormItem>
