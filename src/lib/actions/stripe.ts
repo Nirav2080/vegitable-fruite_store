@@ -23,9 +23,6 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
     
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
-        
-        const images = Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
-        const filteredImages = images.filter(img => !img.includes('picsum.photos') && !img.includes('placehold.co'));
 
         return {
             price_data: {
@@ -33,7 +30,6 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
-                    images: filteredImages.length > 0 ? [filteredImages[0]] : [],
                 },
                 unit_amount: priceInCents,
             },
