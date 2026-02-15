@@ -20,73 +20,9 @@ async function getDb() {
 
 export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null, userId: string) {
     const host = headers().get('origin') || 'http://localhost:9002';
-    let stripeCouponId: string | undefined = undefined;
-
-    if (couponCode) {
-        const db = await getDb();
-        if (!db) throw new Error("Database not connected for coupon validation");
-        const offersCollection = db.collection<Offer>('offers');
-        const offer = await offersCollection.findOne({ code: couponCode, isActive: true });
-
-        if (offer && offer.discountValue > 0) {
-            const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
-            let calculatedDiscount = 0;
-            let couponName = couponCode;
-
-            if (offer.scope === 'cart') {
-                if (offer.discountType === 'percentage') {
-                    const existingCoupons = await stripe.coupons.list({ limit: 100 });
-                    let coupon = existingCoupons.data.find(c => c.name === couponCode && c.percent_off === offer.discountValue);
-                    if (!coupon) {
-                        coupon = await stripe.coupons.create({
-                            percent_off: offer.discountValue,
-                            duration: 'once',
-                            name: couponCode,
-                        });
-                    }
-                    stripeCouponId = coupon.id;
-                } else { // fixed cart discount
-                    calculatedDiscount = Math.min(offer.discountValue, subtotal);
-                }
-            } else if (offer.scope === 'product' && offer.applicableProductIds) {
-                const productDiscount = cartItems.reduce((acc, item) => {
-                    const productId = item.id.split('_')[0];
-                    if (offer.applicableProductIds?.includes(productId)) {
-                        if (offer.discountType === 'percentage') {
-                            return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
-                        } else {
-                            return acc + (offer.discountValue * item.quantity);
-                        }
-                    }
-                    return acc;
-                }, 0);
-                calculatedDiscount = Math.min(productDiscount, subtotal);
-            }
-
-            // For any locally calculated fixed discount, create a temporary Stripe coupon
-            if (calculatedDiscount > 0 && !stripeCouponId) {
-                const amountOffCents = Math.round(calculatedDiscount * 100);
-                if (amountOffCents > 0) {
-                    couponName = `${couponCode}-${calculatedDiscount.toFixed(2)}`;
-                    const existingCoupons = await stripe.coupons.list({ limit: 100 });
-                    let coupon = existingCoupons.data.find(c => c.name === couponName);
-                    if (!coupon) {
-                        coupon = await stripe.coupons.create({
-                            amount_off: amountOffCents,
-                            currency: 'nzd',
-                            duration: 'once',
-                            name: couponName,
-                        });
-                    }
-                    stripeCouponId = coupon.id;
-                }
-            }
-        }
-    }
-
+    
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
-        
         return {
             price_data: {
                 currency: 'nzd',
@@ -99,6 +35,64 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             quantity: item.quantity,
         };
     });
+
+    let totalDiscountAmount = 0;
+    let stripePercentageCouponId: string | undefined = undefined;
+
+    if (couponCode) {
+        const db = await getDb();
+        if (!db) throw new Error("Database not connected for coupon validation");
+        const offersCollection = db.collection<Offer>('offers');
+        const offer = await offersCollection.findOne({ code: couponCode, isActive: true });
+
+        if (offer && offer.discountValue > 0) {
+            const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
+
+            if (offer.scope === 'cart' && offer.discountType === 'percentage') {
+                const existingCoupons = await stripe.coupons.list({ limit: 100 });
+                let coupon = existingCoupons.data.find(c => c.name === couponCode && c.percent_off === offer.discountValue);
+                if (!coupon) {
+                    coupon = await stripe.coupons.create({
+                        percent_off: offer.discountValue,
+                        duration: 'once',
+                        name: couponCode,
+                    });
+                }
+                stripePercentageCouponId = coupon.id;
+            } else {
+                let calculatedDiscount = 0;
+                if (offer.scope === 'cart' && offer.discountType === 'fixed') {
+                    calculatedDiscount = offer.discountValue;
+                } else if (offer.scope === 'product' && offer.applicableProductIds) {
+                     calculatedDiscount = cartItems.reduce((acc, item) => {
+                        const productId = item.id.split('_')[0];
+                        if (offer.applicableProductIds?.includes(productId)) {
+                            if (offer.discountType === 'percentage') {
+                                return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
+                            } else {
+                                return acc + (offer.discountValue * item.quantity);
+                            }
+                        }
+                        return acc;
+                    }, 0);
+                }
+                totalDiscountAmount = Math.min(calculatedDiscount, subtotal);
+            }
+        }
+    }
+
+    if (totalDiscountAmount > 0) {
+        line_items.push({
+            price_data: {
+                currency: 'nzd',
+                product_data: {
+                    name: `Discount (${couponCode})`,
+                },
+                unit_amount: -Math.round(totalDiscountAmount * 100),
+            },
+            quantity: 1,
+        });
+    }
 
     try {
         const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -115,12 +109,13 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
                     price: item.selectedVariant.price,
                     weight: item.selectedVariant.weight
                 }))),
-                couponCode: couponCode || ''
+                couponCode: couponCode || '',
+                discountAmount: String(totalDiscountAmount)
             }
         };
 
-        if (stripeCouponId) {
-            sessionParams.discounts = [{ coupon: stripeCouponId }];
+        if (stripePercentageCouponId) {
+            sessionParams.discounts = [{ coupon: stripePercentageCouponId }];
         }
 
         const session = await stripe.checkout.sessions.create(sessionParams);
