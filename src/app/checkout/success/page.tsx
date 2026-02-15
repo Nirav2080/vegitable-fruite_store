@@ -27,7 +27,7 @@ function SuccessContent() {
         try {
           const session = await retrieveCheckoutSession(sessionId);
           
-          if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cartItems && session.customer_details?.email) {
+          if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cart && session.customer_details?.email) {
             
             const totalDiscountInCents = session.total_details?.amount_discount || 0;
 
@@ -39,7 +39,7 @@ function SuccessContent() {
             const newOrder = await createOrder(
               session.id,
               session.client_reference_id,
-              JSON.parse(session.metadata.cartItems),
+              JSON.parse(session.metadata.cart),
               session.amount_total!,
               session.customer_details.email,
               discountInfo

@@ -44,13 +44,12 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
         cancel_url: `${host}/checkout/cancel`,
         client_reference_id: userId,
         metadata: {
-            cartItems: JSON.stringify(cartItems.map(item => ({
-                productId: item.id.split('_')[0],
-                quantity: item.quantity,
-                price: item.selectedVariant.price,
-                weight: item.selectedVariant.weight
+            cart: JSON.stringify(cartItems.map(item => ({
+                p: item.id.split('_')[0],
+                q: item.quantity,
+                pr: item.selectedVariant.price,
+                w: item.selectedVariant.weight
             }))),
-            couponCode: couponCode || '',
         }
     };
 
@@ -91,9 +90,12 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
                     amount_off: Math.round(calculatedDiscount * 100),
                     currency: 'nzd',
                     duration: 'once',
-                    name: `Discount coupon for ${couponCode}`
+                    name: `Discount: ${couponCode}`
                 });
                 sessionParams.discounts = [{ coupon: coupon.id }];
+                if (sessionParams.metadata) {
+                    sessionParams.metadata.couponCode = couponCode;
+                }
             }
         }
     }
@@ -108,7 +110,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             throw new Error('Failed to create Stripe checkout session');
         }
     } catch (error: any) {
-        console.error("Stripe session creation failed:", error);
+        console.error("Stripe session creation failed:", error.message);
         throw new Error('Could not create checkout session.');
     }
 }

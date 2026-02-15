@@ -50,10 +50,17 @@ export async function getOrderById(id: string): Promise<Order | null> {
     return serializeOrder(order);
 }
 
+type ShortCartItem = {
+    p: string; // productId
+    q: number; // quantity
+    pr: number; // price
+    w: string; // weight
+}
+
 export async function createOrder(
     stripeSessionId: string, 
     clientReferenceId: string, 
-    cartItems: any[], 
+    cartData: ShortCartItem[], 
     totalAmount: number, 
     customerEmail: string,
     discountInfo: { amount: number; code?: string | null }
@@ -75,11 +82,11 @@ export async function createOrder(
         throw new Error('User not found');
     }
 
-    const orderItems: OrderItem[] = cartItems.map(item => ({
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-        weight: item.weight,
+    const orderItems: OrderItem[] = cartData.map(item => ({
+        productId: item.p,
+        quantity: item.q,
+        price: item.pr,
+        weight: item.w,
     }));
 
     const newOrder: Omit<Order, 'id'> = {
