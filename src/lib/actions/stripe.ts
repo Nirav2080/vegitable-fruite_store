@@ -29,30 +29,15 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
+                    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : [],
                 },
                 unit_amount: priceInCents,
             },
             quantity: item.quantity,
         };
     });
-
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        payment_method_types: ['card'],
-        line_items,
-        mode: 'payment',
-        success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${host}/checkout/cancel`,
-        client_reference_id: userId,
-        metadata: {
-            cart: JSON.stringify(cartItems.map(item => ({
-                p: item.id.split('_')[0],
-                q: item.quantity,
-                pr: item.selectedVariant.price,
-                w: item.selectedVariant.weight
-            }))),
-        }
-    };
-
+    
+    let calculatedDiscount = 0;
     if (couponCode) {
         const db = await getDb();
         if (!db) throw new Error("Database not connected for coupon validation");
@@ -61,8 +46,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
 
         if (offer && offer.discountValue > 0) {
             const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
-            let calculatedDiscount = 0;
-
+            
             if (offer.scope === 'cart') {
                 if (offer.discountType === 'percentage') {
                     calculatedDiscount = (subtotal * offer.discountValue) / 100;
@@ -84,19 +68,40 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             }
             
             calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+        }
+    }
 
-            if (calculatedDiscount > 0.01) {
-                const coupon = await stripe.coupons.create({
-                    amount_off: Math.round(calculatedDiscount * 100),
-                    currency: 'nzd',
-                    duration: 'once',
-                    name: `Discount: ${couponCode}`
-                });
-                sessionParams.discounts = [{ coupon: coupon.id }];
-                if (sessionParams.metadata) {
-                    sessionParams.metadata.couponCode = couponCode;
-                }
-            }
+
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${host}/checkout/cancel`,
+        client_reference_id: userId,
+        metadata: {
+             cart: JSON.stringify(cartItems.map(item => ({
+                p: item.id.split('_')[0],
+                q: item.quantity,
+                pr: item.selectedVariant.price,
+                w: item.selectedVariant.weight
+            }))),
+            ...(couponCode && { couponCode: couponCode })
+        }
+    };
+    
+    if (calculatedDiscount > 0.01) {
+        try {
+            const coupon = await stripe.coupons.create({
+                amount_off: Math.round(calculatedDiscount * 100),
+                currency: 'nzd',
+                duration: 'once',
+                name: `Discount`
+            });
+            sessionParams.discounts = [{ coupon: coupon.id }];
+        } catch (error: any) {
+            console.error("Stripe coupon creation failed:", error.message);
+            throw new Error('Could not create a discount coupon for the checkout session.');
         }
     }
 
@@ -112,15 +117,5 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
     } catch (error: any) {
         console.error("Stripe session creation failed:", error.message);
         throw new Error('Could not create checkout session.');
-    }
-}
-
-export async function retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session | null> {
-    try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['total_details.discounts.coupon'] });
-        return session;
-    } catch (error) {
-        console.error("Error retrieving session: ", error);
-        return null;
     }
 }
