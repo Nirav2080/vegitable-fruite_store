@@ -3,9 +3,8 @@
 
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import type { CartItem, User, Offer } from '@/lib/types';
+import type { CartItem, Offer } from '@/lib/types';
 import clientPromise from '@/lib/db';
-import { ObjectId } from 'mongodb';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
     apiVersion: '2024-06-20',
@@ -19,19 +18,8 @@ async function getDb() {
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
-async function getCurrentUser(): Promise<User | null> {
-    const db = await getDb();
-    if (!db) return null;
-    const usersCollection = db.collection<User>('users');
-    // In a real app, you would get this from a session
-    const user = await usersCollection.findOne({});
-    if (!user) return null;
-    return { ...user, id: user._id.toString() } as User;
-}
-
-export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null) {
+export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null, userId: string) {
     const host = headers().get('origin') || 'http://localhost:9002';
-    const user = await getCurrentUser();
     let stripeCouponId: string | undefined = undefined;
 
     if (couponCode) {
@@ -119,7 +107,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             mode: 'payment',
             success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${host}/checkout/cancel`,
-            client_reference_id: user?.id,
+            client_reference_id: userId,
             metadata: {
                 cartItems: JSON.stringify(cartItems.map(item => ({
                     productId: item.id.split('_')[0],

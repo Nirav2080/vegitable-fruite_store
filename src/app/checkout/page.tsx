@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
                 throw new Error("Stripe.js has not loaded yet.");
             }
 
-            const { sessionId } = await createCheckoutSession(cartItems, couponCode);
+            const { sessionId } = await createCheckoutSession(cartItems, couponCode, user.id);
 
             const { error } = await stripe.redirectToCheckout({ sessionId });
 
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
                           <div key={item.id} className="flex items-start gap-4">
                               <div className="relative h-16 w-16 rounded-md overflow-hidden border">
                                   <Image
-                                      src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/100x100/EEE/31343C'}
+                                      src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : ''}
                                       alt={item.name}
                                       fill
                                       className="object-contain"
