@@ -23,13 +23,18 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
     
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
+        
+        // Filter out placeholder images which can cause issues with Stripe
+        const images = Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
+        const filteredImages = images.filter(img => !img.includes('picsum.photos') && !img.includes('placehold.co'));
+
         return {
             price_data: {
                 currency: 'nzd',
                 product_data: {
                     name: item.name,
                     description: item.selectedVariant.weight,
-                    images: Array.isArray(item.images) && item.images.length > 0 ? [item.images[0]] : [],
+                    images: filteredImages.length > 0 ? [filteredImages[0]] : [],
                 },
                 unit_amount: priceInCents,
             },
@@ -101,6 +106,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
             sessionParams.discounts = [{ coupon: coupon.id }];
         } catch (error: any) {
             console.error("Stripe coupon creation failed:", error.message);
+            // This will stop the checkout if coupon creation fails
             throw new Error('Could not create a discount coupon for the checkout session.');
         }
     }
