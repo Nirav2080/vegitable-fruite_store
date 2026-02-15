@@ -29,12 +29,10 @@ function SuccessContent() {
           
           if (session && session.status === 'complete' && session.client_reference_id && session.metadata?.cartItems && session.customer_details?.email) {
             
-            const discountAmountFromMeta = session.metadata?.discountAmount ? parseFloat(session.metadata.discountAmount) * 100 : 0;
-            const discountAmountFromStripe = session.total_details?.amount_discount || 0;
-            const totalDiscount = discountAmountFromMeta + discountAmountFromStripe;
+            const totalDiscountInCents = session.total_details?.amount_discount || 0;
 
             const discountInfo = {
-                amount: totalDiscount,
+                amount: totalDiscountInCents,
                 code: session.metadata?.couponCode || undefined,
             };
 

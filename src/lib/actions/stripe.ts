@@ -36,8 +36,23 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
         };
     });
 
-    let totalDiscountAmount = 0;
-    let stripePercentageCouponId: string | undefined = undefined;
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${host}/checkout/cancel`,
+        client_reference_id: userId,
+        metadata: {
+            cartItems: JSON.stringify(cartItems.map(item => ({
+                productId: item.id.split('_')[0],
+                quantity: item.quantity,
+                price: item.selectedVariant.price,
+                weight: item.selectedVariant.weight
+            }))),
+            couponCode: couponCode || '',
+        }
+    };
 
     if (couponCode) {
         const db = await getDb();
@@ -47,77 +62,44 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
 
         if (offer && offer.discountValue > 0) {
             const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
+            let calculatedDiscount = 0;
 
-            if (offer.scope === 'cart' && offer.discountType === 'percentage') {
-                const existingCoupons = await stripe.coupons.list({ limit: 100 });
-                let coupon = existingCoupons.data.find(c => c.name === couponCode && c.percent_off === offer.discountValue);
-                if (!coupon) {
-                    coupon = await stripe.coupons.create({
-                        percent_off: offer.discountValue,
-                        duration: 'once',
-                        name: couponCode,
-                    });
-                }
-                stripePercentageCouponId = coupon.id;
-            } else {
-                let calculatedDiscount = 0;
-                if (offer.scope === 'cart' && offer.discountType === 'fixed') {
+            if (offer.scope === 'cart') {
+                if (offer.discountType === 'percentage') {
+                    calculatedDiscount = (subtotal * offer.discountValue) / 100;
+                } else { // fixed
                     calculatedDiscount = offer.discountValue;
-                } else if (offer.scope === 'product' && offer.applicableProductIds) {
-                     calculatedDiscount = cartItems.reduce((acc, item) => {
-                        const productId = item.id.split('_')[0];
-                        if (offer.applicableProductIds?.includes(productId)) {
-                            if (offer.discountType === 'percentage') {
-                                return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
-                            } else {
-                                return acc + (offer.discountValue * item.quantity);
-                            }
-                        }
-                        return acc;
-                    }, 0);
                 }
-                totalDiscountAmount = Math.min(calculatedDiscount, subtotal);
+            } else if (offer.scope === 'product' && offer.applicableProductIds) {
+                 calculatedDiscount = cartItems.reduce((acc, item) => {
+                    const productId = item.id.split('_')[0];
+                    if (offer.applicableProductIds?.includes(productId)) {
+                        if (offer.discountType === 'percentage') {
+                            return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
+                        } else {
+                            return acc + (offer.discountValue * item.quantity);
+                        }
+                    }
+                    return acc;
+                }, 0);
+            }
+            
+            calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+
+            if (calculatedDiscount > 0.01) {
+                const coupon = await stripe.coupons.create({
+                    amount_off: Math.round(calculatedDiscount * 100),
+                    currency: 'nzd',
+                    duration: 'once',
+                    name: `Discount coupon for ${couponCode}`
+                });
+                sessionParams.discounts = [{ coupon: coupon.id }];
             }
         }
     }
 
-    if (totalDiscountAmount > 0) {
-        line_items.push({
-            price_data: {
-                currency: 'nzd',
-                product_data: {
-                    name: `Discount (${couponCode})`,
-                },
-                unit_amount: -Math.round(totalDiscountAmount * 100),
-            },
-            quantity: 1,
-        });
-    }
 
     try {
-        const sessionParams: Stripe.Checkout.SessionCreateParams = {
-            payment_method_types: ['card'],
-            line_items,
-            mode: 'payment',
-            success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${host}/checkout/cancel`,
-            client_reference_id: userId,
-            metadata: {
-                cartItems: JSON.stringify(cartItems.map(item => ({
-                    productId: item.id.split('_')[0],
-                    quantity: item.quantity,
-                    price: item.selectedVariant.price,
-                    weight: item.selectedVariant.weight
-                }))),
-                couponCode: couponCode || '',
-                discountAmount: String(totalDiscountAmount)
-            }
-        };
-
-        if (stripePercentageCouponId) {
-            sessionParams.discounts = [{ coupon: stripePercentageCouponId }];
-        }
-
         const session = await stripe.checkout.sessions.create(sessionParams);
 
         if (session.id) {
@@ -133,7 +115,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
 
 export async function retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session | null> {
     try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['discounts'] });
+        const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['total_details.discounts.coupon'] });
         return session;
     } catch (error) {
         console.error("Error retrieving session: ", error);
