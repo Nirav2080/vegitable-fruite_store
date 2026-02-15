@@ -18,19 +18,41 @@ async function getDb() {
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
+const isPlaceholderUrl = (url: string) => {
+    try {
+        const hostname = new URL(url).hostname;
+        // This list can be expanded with other placeholder services if needed.
+        return ['picsum.photos', 'placehold.co'].includes(hostname);
+    } catch (e) {
+        // If the URL is invalid (e.g., a data URI), treat it as a placeholder.
+        return true; 
+    }
+};
+
+
 export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null, userId: string) {
     const host = headers().get('origin') || 'http://localhost:9002';
     
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
 
+        const product_data: Stripe.Checkout.SessionCreateParams.LineItem.PriceData.ProductData = {
+            name: item.name,
+            description: item.selectedVariant.weight,
+        };
+
+        const primaryImage = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
+
+        // Add image only if it's a valid, non-placeholder URL. Stripe's API can be
+        // sensitive to redirecting URLs or data URIs, which can cause session creation to fail.
+        if (primaryImage && !isPlaceholderUrl(primaryImage)) {
+            product_data.images = [primaryImage];
+        }
+
         return {
             price_data: {
                 currency: 'nzd',
-                product_data: {
-                    name: item.name,
-                    description: item.selectedVariant.weight,
-                },
+                product_data,
                 unit_amount: priceInCents,
             },
             quantity: item.quantity,
@@ -96,7 +118,7 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
                 amount_off: Math.round(calculatedDiscount * 100),
                 currency: 'nzd',
                 duration: 'once',
-                name: `Discount`
+                name: `Discount: ${couponCode || 'General'}`
             });
             sessionParams.discounts = [{ coupon: coupon.id }];
         } catch (error: any) {
