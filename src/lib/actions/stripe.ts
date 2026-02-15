@@ -24,7 +24,6 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
     const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
         const priceInCents = Math.round(item.selectedVariant.price * 100);
         
-        // Filter out placeholder images which can cause issues with Stripe
         const images = Array.isArray(item.images) && item.images.length > 0 ? item.images : [];
         const filteredImages = images.filter(img => !img.includes('picsum.photos') && !img.includes('placehold.co'));
 
@@ -123,5 +122,18 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
     } catch (error: any) {
         console.error("Stripe session creation failed:", error.message);
         throw new Error('Could not create checkout session.');
+    }
+}
+
+export async function retrieveCheckoutSession(sessionId: string) {
+    if (!sessionId) {
+        return null;
+    }
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        return session;
+    } catch (error: any) {
+        console.error(`Failed to retrieve Stripe session ${sessionId}:`, error.message);
+        return null;
     }
 }

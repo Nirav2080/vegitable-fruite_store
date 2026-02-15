@@ -28,8 +28,8 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
     if (!banners || banners.length === 0) {
         return (
             <section className="bg-accent">
-                <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
-                    <div className="py-12 md:py-24 text-center md:text-left">
+                <div className="container mx-auto px-4 grid md:grid-cols-1 items-center gap-8">
+                    <div className="py-12 md:py-24 text-center">
                         <h1 className="text-4xl md:text-6xl font-bold font-headline mt-2">
                            Farm Fresh Fruits & Vegetables Delivered Fast
                         </h1>
@@ -41,15 +41,6 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
                             Shop Now
                           </Link>
                         </Button>
-                    </div>
-                     <div className="relative h-[300px] md:h-[500px]">
-                         <Image
-                            src="https://picsum.photos/seed/groceries/600/600"
-                            alt="Woman holding a bag of fresh groceries"
-                            data-ai-hint="fresh groceries"
-                            fill
-                            className="relative z-10 w-full h-full object-contain"
-                        />
                     </div>
                 </div>
             </section>

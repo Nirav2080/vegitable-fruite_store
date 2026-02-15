@@ -51,13 +51,19 @@ export default function CartPage() {
                   }
                   return (
                     <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border rounded-lg">
-                        <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden">
-                            <Image
-                                src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/100x100/EEE/31343C'}
-                                alt={item.name}
-                                fill
-                                className="object-contain"
-                            />
+                        <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden bg-muted">
+                            {Array.isArray(item.images) && item.images.length > 0 ? (
+                                <Image
+                                    src={item.images[0]}
+                                    alt={item.name}
+                                    fill
+                                    className="object-contain"
+                                />
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center">
+                                    <ShoppingCart className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                            )}
                         </div>
                         <div className="flex-1">
                             <h3 className="font-semibold text-sm md:text-base">{item.name}</h3>

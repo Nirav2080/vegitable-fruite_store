@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Star, Heart, ZoomIn, GitCompareArrows } from "lucide-react";
+import { ShoppingCart, Star, Heart, ZoomIn, GitCompareArrows, ImageIcon } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -48,8 +48,8 @@ export function ProductListCard({ product }: ProductListCardProps) {
     return null; 
   }
 
-  const images = Array.isArray(product.images) ? product.images : [product.images];
-  const primaryImage = images[0] || 'https://placehold.co/400x400/EEE/31343C?text=No+Image';
+  const images = Array.isArray(product.images) ? product.images : [];
+  const primaryImage = images[0];
   
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -88,13 +88,19 @@ export function ProductListCard({ product }: ProductListCardProps) {
         <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative aspect-square sm:w-48 sm:flex-shrink-0">
                 <Link href={`/products/${product.slug}`} className="block h-full w-full">
-                    <Image
-                        src={primaryImage}
-                        alt={product.name}
-                        data-ai-hint="product image"
-                        fill
-                        className="rounded-md object-cover"
-                    />
+                    {primaryImage ? (
+                        <Image
+                            src={primaryImage}
+                            alt={product.name}
+                            data-ai-hint="product image"
+                            fill
+                            className="rounded-md object-cover"
+                        />
+                    ) : (
+                        <div className="h-full w-full bg-muted rounded-md flex items-center justify-center">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                    )}
                 </Link>
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {discountPercentage > 0 && <Badge variant="destructive" className="rounded-md">-{discountPercentage}%</Badge>}

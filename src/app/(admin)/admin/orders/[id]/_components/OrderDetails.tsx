@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { Order } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { ImageIcon } from 'lucide-react';
 
 interface OrderDetailsProps {
     order: Order & { items: (Order['items'][0] & { name: string; image: string; })[] };
@@ -67,8 +68,14 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                     <div className="space-y-4">
                         {order.items.map((item, index) => (
                              <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
-                                <div className="relative h-16 w-16 rounded-md overflow-hidden">
-                                    <Image src={item.image} alt={item.name} fill className="object-contain" />
+                                <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted">
+                                    {item.image ? (
+                                        <Image src={item.image} alt={item.name} fill className="object-contain" />
+                                     ) : (
+                                        <div className="h-full w-full flex items-center justify-center">
+                                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex-grow">
                                     <p className="font-semibold">{item.name}</p>

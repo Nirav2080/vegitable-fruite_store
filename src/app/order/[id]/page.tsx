@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ImageIcon } from "lucide-react";
 
 async function getOrderDetails(orderId: string) {
     const order = await getOrderById(orderId);
@@ -19,7 +19,7 @@ async function getOrderDetails(orderId: string) {
         return {
             ...item,
             name: product?.name || 'Unknown Product',
-            image: (product?.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/100x100'
+            image: (product?.images && product.images.length > 0) ? product.images[0] : ''
         };
     }));
 
@@ -64,7 +64,13 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                         {order.items.map((item, index) => (
                              <div key={index} className="flex items-center gap-4">
                                 <div className="relative h-16 w-16 rounded-md overflow-hidden border">
-                                    <Image src={item.image} alt={item.name} fill className="object-contain" />
+                                    {item.image ? (
+                                        <Image src={item.image} alt={item.name} fill className="object-contain" />
+                                    ) : (
+                                        <div className="h-full w-full bg-muted flex items-center justify-center">
+                                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex-grow">
                                     <p className="font-semibold">{item.name}</p>

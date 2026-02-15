@@ -5,7 +5,7 @@ import { useWishlist } from '@/hooks/use-wishlist'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Heart, Trash2 } from 'lucide-react'
+import { Heart, Trash2, ImageIcon } from 'lucide-react'
 import { useCart } from '@/hooks/use-cart'
 import type { Product } from '@/lib/types'
 import { useToast } from '@/hooks/use-toast'
@@ -59,13 +59,19 @@ export default function WishlistPage() {
           return (
             <div key={item.id} className="border rounded-lg p-4 flex flex-col justify-between">
               <div>
-                <div className="relative h-40 w-full rounded-md overflow-hidden mb-4">
-                  <Image
-                    src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : 'https://placehold.co/150x150/EEE/31343C'}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative h-40 w-full rounded-md overflow-hidden mb-4 bg-muted">
+                    {Array.isArray(item.images) && item.images.length > 0 ? (
+                        <Image
+                            src={item.images[0]}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                        />
+                    ) : (
+                        <div className="h-full w-full flex items-center justify-center">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                        </div>
+                    )}
                 </div>
                 <h3 className="font-semibold">{item.name}</h3>
                 <p className="font-bold text-primary mt-1">${defaultVariant.price.toFixed(2)}</p>

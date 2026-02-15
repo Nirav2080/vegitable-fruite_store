@@ -18,26 +18,6 @@ export function CallToActionSection() {
                             </Link>
                         </Button>
                     </div>
-                    <div className="absolute -left-48 -bottom-32 z-0 opacity-20 md:opacity-100">
-                         <Image
-                            src="https://placehold.co/500x500/E9F5DB/34495E?text=Vegetables"
-                            alt="Groceries in a bag"
-                            data-ai-hint="vegetables"
-                            width={500}
-                            height={500}
-                            className="object-contain"
-                        />
-                    </div>
-                    <div className="absolute -right-48 -bottom-32 z-0 opacity-20 md:opacity-100">
-                         <Image
-                            src="https://placehold.co/500x500/FADBD8/34495E?text=Fruits"
-                            alt="Fresh vegetables in a bag"
-                            data-ai-hint="fruits"
-                            width={500}
-                            height={500}
-                            className="object-contain"
-                        />
-                    </div>
                 </div>
             </div>
         </section>

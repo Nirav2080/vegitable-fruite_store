@@ -14,7 +14,7 @@ async function getOrderDetailsWithProductInfo(orderId: string) {
         return {
             ...item,
             name: product?.name || 'Unknown Product',
-            image: (product?.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/100x100'
+            image: (product?.images && product.images.length > 0) ? product.images[0] : ''
         };
     }));
 

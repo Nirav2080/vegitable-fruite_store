@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from '@/lib/types';
@@ -90,13 +90,19 @@ export function ProductsTable({ data }: { data: Product[] }) {
             return (
             <TableRow key={product.id}>
               <TableCell className="hidden sm:table-cell">
-                 <Image
-                  alt={product.name}
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://placehold.co/64x64/EEE/31343C'}
-                  width="64"
-                />
+                {Array.isArray(product.images) && product.images.length > 0 ? (
+                    <Image
+                    alt={product.name}
+                    className="aspect-square rounded-md object-cover"
+                    height="64"
+                    src={product.images[0]}
+                    width="64"
+                    />
+                ) : (
+                    <div className="h-16 w-16 rounded-md bg-muted flex items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                )}
               </TableCell>
               <TableCell className="font-medium">{product.name}</TableCell>
               <TableCell>
