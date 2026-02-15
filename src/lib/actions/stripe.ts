@@ -77,18 +77,21 @@ export async function createCheckoutSession(cartItems: CartItem[], couponCode: s
 
             // For any locally calculated fixed discount, create a temporary Stripe coupon
             if (calculatedDiscount > 0 && !stripeCouponId) {
-                couponName = `${couponCode}-${calculatedDiscount.toFixed(2)}`;
-                const existingCoupons = await stripe.coupons.list({ limit: 100 });
-                let coupon = existingCoupons.data.find(c => c.name === couponName);
-                if (!coupon) {
-                    coupon = await stripe.coupons.create({
-                        amount_off: Math.round(calculatedDiscount * 100),
-                        currency: 'nzd',
-                        duration: 'once',
-                        name: couponName,
-                    });
+                const amountOffCents = Math.round(calculatedDiscount * 100);
+                if (amountOffCents > 0) {
+                    couponName = `${couponCode}-${calculatedDiscount.toFixed(2)}`;
+                    const existingCoupons = await stripe.coupons.list({ limit: 100 });
+                    let coupon = existingCoupons.data.find(c => c.name === couponName);
+                    if (!coupon) {
+                        coupon = await stripe.coupons.create({
+                            amount_off: amountOffCents,
+                            currency: 'nzd',
+                            duration: 'once',
+                            name: couponName,
+                        });
+                    }
+                    stripeCouponId = coupon.id;
                 }
-                stripeCouponId = coupon.id;
             }
         }
     }
