@@ -84,7 +84,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
   }
   
   return (
-    <div className="group/list-card w-full rounded-lg border p-4 transition-shadow duration-300 hover:shadow-md">
+    <div className="group/list-card w-full rounded-2xl border border-border/60 bg-background p-4 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20">
         <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative aspect-square sm:w-48 sm:flex-shrink-0">
                 <Link href={`/products/${product.slug}`} className="block h-full w-full">
@@ -94,24 +94,24 @@ export function ProductListCard({ product }: ProductListCardProps) {
                             alt={product.name}
                             data-ai-hint="product image"
                             fill
-                            className="rounded-md object-cover"
+                            className="rounded-xl object-cover"
                         />
                     ) : (
-                        <div className="h-full w-full bg-muted rounded-md flex items-center justify-center">
+                        <div className="h-full w-full bg-gradient-to-br from-green-50/80 to-emerald-50/40 rounded-xl flex items-center justify-center">
                             <ImageIcon className="h-12 w-12 text-muted-foreground" />
                         </div>
                     )}
                 </Link>
-                <div className="absolute top-2 left-2 flex flex-col gap-1">
-                    {discountPercentage > 0 && <Badge variant="destructive" className="rounded-md">-{discountPercentage}%</Badge>}
-                    {isNew() && <Badge className="bg-white text-black hover:bg-white/90 border border-gray-200 rounded-md">New</Badge>}
-                    {product.isOrganic && <Badge className="bg-primary text-primary-foreground rounded-md">Fresh</Badge>}
+                <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                    {discountPercentage > 0 && <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm">-{discountPercentage}%</Badge>}
+                    {isNew() && <Badge className="bg-white text-black hover:bg-white/90 border border-gray-200 rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm">New</Badge>}
+                    {product.isOrganic && <Badge className="bg-primary text-primary-foreground rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm">Fresh</Badge>}
                 </div>
                 <div className="absolute top-2 right-2 flex flex-col gap-1.5 opacity-0 group-hover/list-card:opacity-100 transition-opacity duration-300">
                      <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm"
+                        className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm border-border/60 shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md"
                         onClick={handleWishlistClick}
                         aria-label="Add to wishlist"
                     >
@@ -120,7 +120,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm"
+                        className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm border-border/60 shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md"
                         aria-label="Quick View"
                     >
                         <ZoomIn className="h-4 w-4" />
@@ -128,7 +128,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
                     <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm"
+                        className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm border-border/60 shadow-sm transition-all duration-200 hover:scale-110 hover:shadow-md"
                         aria-label="Compare"
                     >
                         <GitCompareArrows className="h-4 w-4" />
@@ -178,7 +178,7 @@ export function ProductListCard({ product }: ProductListCardProps) {
                     )}
                 </div>
 
-                 <Button size="sm" className="mt-2 w-full sm:w-auto" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
+                 <Button size="sm" className="mt-2 w-full sm:w-auto rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/30" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to cart'}
                 </Button>

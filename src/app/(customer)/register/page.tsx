@@ -50,10 +50,15 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-400px)] bg-muted/40 py-12">
-      <Card className="mx-auto max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Create an Account</CardTitle>
+    <div className="relative flex items-center justify-center min-h-[calc(100vh-400px)] overflow-hidden py-12 sm:py-16">
+      {/* Decorative background */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-emerald-200/20 blur-3xl" />
+      </div>
+      <Card className="relative mx-auto max-w-sm w-full rounded-2xl border-border/60 shadow-xl shadow-primary/5">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-extrabold tracking-tight">Create an Account</CardTitle>
           <CardDescription>
             Enter your details below to create your account.
           </CardDescription>
@@ -92,7 +97,7 @@ export default function CustomerRegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Create Account'}
             </Button>
             <div className="mt-4 text-center text-sm">

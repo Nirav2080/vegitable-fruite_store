@@ -74,7 +74,7 @@ export function ImportForm() {
                 </FormItem>
             )}
             />
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
                 {form.formState.isSubmitting ? 'Importing...' : 'Start Import'}
             </Button>
         </form>

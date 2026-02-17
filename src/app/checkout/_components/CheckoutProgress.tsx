@@ -27,9 +27,9 @@ export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
               <div className="flex flex-col items-center">
                 <div
                   className={cn(
-                    "step-icon",
-                    isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-                    isCompleted && "bg-green-600 text-white"
+                    "step-icon shadow-sm",
+                    isActive ? "bg-primary text-primary-foreground shadow-primary/25" : "bg-muted text-muted-foreground",
+                    isCompleted && "bg-green-600 text-white shadow-green-600/25"
                   )}
                 >
                   {isCompleted ? <Check className="h-5 w-5" /> : step.step}

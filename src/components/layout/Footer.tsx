@@ -65,29 +65,35 @@ const PaymentMethods = () => (
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground/80">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+    <footer className="relative overflow-hidden bg-primary text-primary-foreground/80">
+      {/* Decorative background blur accent */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
           <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-4">
+            <Link href="/" className="inline-block mb-5">
               <Logo className="h-8 w-auto text-white" />
             </Link>
-            <p className="max-w-sm mt-4">Delivering the freshest, locally-sourced produce from our farms to your family's table.</p>
-             <div className="flex gap-4 mt-6">
+            <p className="max-w-sm mt-4 leading-relaxed text-primary-foreground/70">Delivering the freshest, locally-sourced produce from our farms to your family's table.</p>
+             <div className="flex gap-3 mt-7">
                 {socialLinks.map((social) => (
-                <Link href={social.href} key={social.name} aria-label={social.name} className="hover:text-white transition-colors p-2 bg-primary-foreground/10 rounded-full">
-                    <social.icon className="h-5 w-5" />
+                <Link href={social.href} key={social.name} aria-label={social.name} className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 transition-all duration-300 hover:scale-105 hover:bg-primary-foreground/15 hover:text-white hover:shadow-lg">
+                    <social.icon className="h-4 w-4" />
                 </Link>
                 ))}
             </div>
           </div>
           <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-                <h4 className="font-semibold text-white mb-4">My Account</h4>
+                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">My Account</h4>
                 <ul className="space-y-3">
                   {accountLinks.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className="hover:text-white transition-colors">
+                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
                         {link.label}
                       </Link>
                     </li>
@@ -95,11 +101,11 @@ export function Footer() {
                 </ul>
             </div>
             <div>
-                <h4 className="font-semibold text-white mb-4">Helpful Links</h4>
+                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">Helpful Links</h4>
                 <ul className="space-y-3">
                   {helpfulLinks.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className="hover:text-white transition-colors">
+                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
                         {link.label}
                       </Link>
                     </li>
@@ -107,11 +113,11 @@ export function Footer() {
                 </ul>
             </div>
             <div>
-                <h4 className="font-semibold text-white mb-4">Main Menu</h4>
+                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">Main Menu</h4>
                 <ul className="space-y-3">
                   {mainLinks.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className="hover:text-white transition-colors">
+                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
                         {link.label}
                       </Link>
                     </li>
@@ -120,10 +126,10 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-primary-foreground/10 flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm">&copy; {new Date().getFullYear()} Richmond Vege Mart. All Rights Reserved.</p>
-           <div className="flex items-center gap-2">
-                <p className="text-sm">We accept:</p>
+        <div className="mt-14 pt-8 border-t border-primary-foreground/10 flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-primary-foreground/60">&copy; {new Date().getFullYear()} Richmond Vege Mart. All Rights Reserved.</p>
+           <div className="flex items-center gap-3">
+                <p className="text-sm text-primary-foreground/60">We accept:</p>
                 <div className="flex items-center gap-2">
                     <PaymentMethods />
                 </div>

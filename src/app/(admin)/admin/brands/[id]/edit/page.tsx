@@ -12,8 +12,8 @@ export default async function EditBrandPage({ params }: { params: { id: string }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Edit Brand</h1>
-      <Card>
+      <h1 className="text-3xl font-extrabold tracking-tight font-headline mb-6">Edit Brand</h1>
+      <Card className="rounded-2xl border-border/60">
         <CardHeader>
           <CardTitle>Brand Details</CardTitle>
         </CardHeader>

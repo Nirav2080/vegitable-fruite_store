@@ -27,9 +27,9 @@ export function SalesChart({ data }: SalesChartProps) {
         />
         <Tooltip
             cursor={{fill: 'hsl(var(--muted))'}}
-            contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))'}}
+            contentStyle={{backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '12px'}}
         />
-        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="total" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

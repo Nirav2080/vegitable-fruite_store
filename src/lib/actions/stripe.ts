@@ -36,6 +36,12 @@ const isPlaceholderUrl = (url: string): boolean => {
     }
 };
 
+const isValidImageUrl = (url: string): boolean => {
+    // Stripe has a 2048 character limit for URLs in requests
+    // Image URLs should not exceed 1500 chars to leave room for other parameters
+    return !!url && url.length <= 1500 && (url.startsWith('http://') || url.startsWith('https://'));
+};
+
 // ---------------------------------------------------------------------------
 // Return types – never throw from server actions; return structured results.
 // ---------------------------------------------------------------------------
@@ -74,7 +80,7 @@ export async function createCheckoutSession(
                 description: item.weight,
             };
 
-            if (item.image && !isPlaceholderUrl(item.image)) {
+            if (item.image && !isPlaceholderUrl(item.image) && isValidImageUrl(item.image)) {
                 product_data.images = [item.image];
             }
 

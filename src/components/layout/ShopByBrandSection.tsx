@@ -36,10 +36,10 @@ export function ShopByBrandSection() {
 
     if (isLoading) {
         return (
-             <section className="bg-secondary/50 py-16 md:py-24">
-                <div className="container mx-auto px-4">
+             <section className="bg-gradient-to-br from-green-50/60 via-emerald-50/40 to-teal-50/30 py-16 sm:py-20 md:py-24">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-10">
-                        <h2 className="text-3xl font-bold font-headline">Shop by Brand</h2>
+                        <h2 className="text-3xl font-extrabold tracking-tight font-headline">Shop by Brand</h2>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         {Array.from({ length: 6 }).map((_, i) => <BrandSkeleton key={i} />)}
@@ -54,17 +54,21 @@ export function ShopByBrandSection() {
     }
 
     return (
-        <section className="bg-secondary/50 py-16 md:py-24">
-            <div className="container mx-auto px-4">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold font-headline">
+        <section className="bg-gradient-to-br from-green-50/60 via-emerald-50/40 to-teal-50/30 py-16 sm:py-20 md:py-24">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+                        Brands
+                    </span>
+                    <h2 className="mt-2 text-3xl font-extrabold tracking-tight font-headline md:text-4xl">
                         Shop by Brand
                     </h2>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 items-center">
                     {brands.slice(0, 12).map((brand) => (
                         <Link key={brand.id} href={`/products?brand=${encodeURIComponent(brand.name)}`} className="group block">
-                            <div className="bg-background p-4 rounded-lg flex items-center justify-center h-24 transition-all duration-300 group-hover:shadow-lg group-hover:scale-105">
+                            <div className="bg-background p-5 rounded-2xl border border-border/60 flex items-center justify-center h-24 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/5 group-hover:scale-105 group-hover:border-primary/20">
                                 <div className="relative w-full h-full">
                                     <Image 
                                         src={brand.logo}

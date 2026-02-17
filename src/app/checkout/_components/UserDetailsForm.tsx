@@ -69,11 +69,11 @@ export function UserDetailsForm({ user, onFormValidityChange }: UserDetailsFormP
     }
     
     return (
-        <div className="rounded-lg border bg-background p-6">
+        <div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
             <div className="flex justify-between items-center mb-4">
-                 <h2 className="text-xl font-semibold">Shipping Information</h2>
+                 <h2 className="text-xl font-extrabold tracking-tight">Shipping Information</h2>
                  {!isEditing && (
-                     <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)}>
+                     <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setIsEditing(true)}>
                          <Pencil className="mr-2 h-4 w-4" /> Edit
                      </Button>
                  )}

@@ -75,8 +75,8 @@ export default function AccountPage() {
     if (!user) {
         return (
             <div>
-                 <h2 className="text-2xl font-bold font-headline">Account Dashboard</h2>
-                 <p className="text-muted-foreground">Please log in to view your account details.</p>
+                 <h2 className="text-2xl font-extrabold tracking-tight font-headline">Account Dashboard</h2>
+                 <p className="text-muted-foreground leading-relaxed">Please log in to view your account details.</p>
             </div>
         )
     }
@@ -86,14 +86,16 @@ export default function AccountPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-bold font-headline">Account Dashboard</h2>
-                <p className="text-muted-foreground">From your account dashboard you can view your recent orders and edit your password and account details.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight font-headline">Account Dashboard</h2>
+                <p className="text-muted-foreground leading-relaxed">From your account dashboard you can view your recent orders and edit your password and account details.</p>
             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Card>
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-primary/20">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <User className="w-5 h-5" />
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                                <User className="w-4 h-4 text-primary" />
+                            </div>
                             <span>My Profile</span>
                         </CardTitle>
                     </CardHeader>
@@ -102,22 +104,24 @@ export default function AccountPage() {
                         <p className="text-sm text-muted-foreground">{user.email}</p>
                         {user.mobile && <p className="text-sm text-muted-foreground">{user.mobile}</p>}
                         {user.address && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{user.address}</p>}
-                        <Button asChild variant="link" className="px-0 pt-2">
+                        <Button asChild variant="link" className="px-0 pt-2 text-primary">
                             <Link href="/account/profile">Edit Profile</Link>
                         </Button>
                     </CardContent>
                 </Card>
-                 <Card>
+                 <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-primary/20">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                           <Package className="w-5 h-5" />
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                                <Package className="w-4 h-4 text-primary" />
+                            </div>
                            <span>My Orders</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p>You have made {orderCount} {orderCount === 1 ? 'order' : 'orders'}.</p>
                         <p className="text-sm text-muted-foreground">View your order history</p>
-                         <Button asChild variant="link" className="px-0">
+                         <Button asChild variant="link" className="px-0 text-primary">
                             <Link href="/account/orders">View All Orders</Link>
                         </Button>
                     </CardContent>

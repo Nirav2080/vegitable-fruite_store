@@ -77,17 +77,17 @@ export function DynamicSearch() {
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] mt-2" 
+        className="w-[var(--radix-popover-trigger-width)] mt-2 rounded-2xl border-border/60 shadow-lg shadow-primary/5" 
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
         >
         {results.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-1">
             {results.map((product) => (
               <Link
                 key={product.id}
                 href={`/products/${product.slug}`}
-                className="flex items-center gap-4 hover:bg-accent p-2 rounded-md"
+                className="flex items-center gap-4 hover:bg-primary/5 p-2.5 rounded-xl transition-colors duration-200"
                 onClick={handleLinkClick}
               >
                 <Image
@@ -95,7 +95,7 @@ export function DynamicSearch() {
                   alt={product.name}
                   width={40}
                   height={40}
-                  className="rounded-md object-cover"
+                  className="rounded-lg object-cover"
                 />
                 <div className="flex-1">
                   <p className="font-semibold text-sm">{product.name}</p>

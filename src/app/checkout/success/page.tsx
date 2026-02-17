@@ -81,14 +81,16 @@ function SuccessContent() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-[400px]">
-        <AlertTriangle className="mx-auto h-16 w-16 text-destructive" />
-        <h1 className="mt-6 text-3xl font-bold font-headline text-destructive">Order Processing Failed</h1>
-        <p className="mt-2 text-muted-foreground max-w-md">{error}</p>
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center flex flex-col items-center justify-center min-h-[400px] sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
+          <AlertTriangle className="h-10 w-10 text-destructive" />
+        </div>
+        <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline text-destructive">Order Processing Failed</h1>
+        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">{error}</p>
         {sessionId && (
           <p className="mt-4 text-xs text-muted-foreground">Session ID: {sessionId}</p>
         )}
-        <Button asChild className="mt-6">
+        <Button asChild className="mt-8 rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
           <Link href="/products">Continue Shopping</Link>
         </Button>
       </div>
@@ -96,10 +98,10 @@ function SuccessContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+    <div className="mx-auto max-w-7xl px-4 py-16 text-center flex flex-col items-center justify-center min-h-[400px] sm:px-6 lg:px-8">
       <Loader2 className="mx-auto h-16 w-16 animate-spin text-primary" />
-      <h1 className="mt-6 text-3xl font-bold font-headline">Processing your order...</h1>
-      <p className="mt-2 text-muted-foreground">
+      <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline">Processing your order...</h1>
+      <p className="mt-3 text-muted-foreground leading-relaxed">
         Please wait while we confirm your payment and create your order. Do not close this page.
       </p>
     </div>
@@ -109,7 +111,7 @@ function SuccessContent() {
 
 export default function CheckoutSuccessPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto px-4 py-12 text-center"><Loader2 className="mx-auto h-16 w-16 animate-spin text-primary" /></div>}>
+    <Suspense fallback={<div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8"><Loader2 className="mx-auto h-16 w-16 animate-spin text-primary" /></div>}>
       <SuccessContent />
     </Suspense>
   );

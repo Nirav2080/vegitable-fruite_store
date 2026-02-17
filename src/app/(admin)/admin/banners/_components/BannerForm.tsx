@@ -155,7 +155,7 @@ export function BannerForm({ banner }: BannerFormProps) {
                             src={imagePreview}
                             alt="Banner preview"
                             fill
-                            className="rounded-md object-cover"
+                            className="rounded-xl object-cover"
                             />
                             <Button
                                 type="button"
@@ -169,7 +169,7 @@ export function BannerForm({ banner }: BannerFormProps) {
                         </div>
                     ) : (
                         <FormControl>
-                            <div className="w-full p-8 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                            <div className="w-full p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
                                 <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                     <Upload className="w-8 h-8 text-muted-foreground" />
                                     <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
@@ -211,7 +211,7 @@ export function BannerForm({ banner }: BannerFormProps) {
             control={form.control}
             name="isActive"
             render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4">
                 <div className="space-y-0.5">
                 <FormLabel className="text-base">
                     Active
@@ -229,7 +229,7 @@ export function BannerForm({ banner }: BannerFormProps) {
             </FormItem>
             )}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Banner')}
         </Button>
       </form>

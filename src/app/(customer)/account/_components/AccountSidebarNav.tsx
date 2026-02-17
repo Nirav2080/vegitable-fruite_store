@@ -25,15 +25,15 @@ export function AccountSidebarNav() {
     };
 
     return (
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
                  <Link key={item.href} href={item.href} legacyBehavior passHref>
                     <Button 
                         as="a"
                         variant="ghost" 
                         className={cn(
-                            "w-full justify-start",
-                            pathname === item.href && "bg-accent text-accent-foreground"
+                            "w-full justify-start rounded-xl transition-all duration-200",
+                            pathname === item.href && "bg-primary/10 text-primary font-semibold"
                         )}
                     >
                        <item.icon className="mr-2 h-4 w-4" />
@@ -43,7 +43,7 @@ export function AccountSidebarNav() {
             ))}
              <Button 
                 variant="ghost" 
-                className="w-full justify-start text-destructive hover:text-destructive"
+                className="w-full justify-start rounded-xl text-destructive hover:text-destructive transition-all duration-200"
                 onClick={handleLogout}
             >
                <LogOut className="mr-2 h-4 w-4" />

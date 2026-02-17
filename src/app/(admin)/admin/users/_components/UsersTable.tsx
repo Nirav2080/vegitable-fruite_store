@@ -56,7 +56,7 @@ export function UsersTable({ data }: { data: User[] }) {
                     <span className="sr-only">Toggle menu</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="rounded-xl border-border/60 shadow-lg">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuItem>
                      <Eye className="mr-2 h-4 w-4" /> View Details

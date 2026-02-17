@@ -1,9 +1,12 @@
 
 import { getOrderById } from "@/lib/actions/orders";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { OrderDetails } from "./_components/OrderDetails";
 import { getProductById } from "@/lib/cached-data";
+import { format } from "date-fns";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 async function getOrderDetailsWithProductInfo(orderId: string) {
     const order = await getOrderById(orderId);
@@ -30,21 +33,23 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
     }
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold">Order Details</h1>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Button asChild variant="outline" size="icon" className="rounded-full border-border/60 h-9 w-9">
+                        <Link href="/admin/orders"><ArrowLeft className="h-4 w-4" /></Link>
+                    </Button>
+                    <div>
+                        <h1 className="text-3xl font-extrabold tracking-tight font-headline">
+                            Order #{order.id.slice(-6).toUpperCase()}
+                        </h1>
+                        <p className="text-sm text-muted-foreground mt-0.5">
+                            Placed on {format(new Date(order.date), 'dd MMM yyyy, h:mm a')} · {order.customerName}
+                        </p>
+                    </div>
+                </div>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Order #{order.id.slice(-6).toUpperCase()}</CardTitle>
-                    <CardDescription>
-                        Manage this order and view its details.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <OrderDetails order={order} />
-                </CardContent>
-            </Card>
+            <OrderDetails order={order} />
         </div>
     );
 }

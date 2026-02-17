@@ -170,7 +170,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     <FormLabel>Category Image</FormLabel>
                      <div className="flex gap-4 items-start">
                         {iconPreview && (
-                            <div className="relative w-24 h-24 p-2 border rounded-md flex items-center justify-center">
+                            <div className="relative w-24 h-24 p-2 border border-border/60 rounded-xl flex items-center justify-center">
                                 <Image src={iconPreview} alt="Category image preview" fill className="object-contain" />
                                 <Button
                                     type="button"
@@ -185,7 +185,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                         )}
                         <div className="flex-1">
                              <FormControl>
-                                <div className="w-full p-4 border-2 border-dashed rounded-lg text-center cursor-pointer hover:bg-muted">
+                                <div className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
                                     <label htmlFor="icon-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
                                         <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
@@ -209,7 +209,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
             )}
             />
         
-        <Button type="submit" disabled={form.formState.isSubmitting}>
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Category')}
         </Button>
       </form>

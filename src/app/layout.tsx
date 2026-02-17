@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { PT_Sans } from 'next/font/google';
 import clientPromise from '@/lib/db';
 
@@ -45,8 +46,15 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable)}>
-        <DatabaseWarningBanner />
-        <MainLayout>{children}</MainLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <DatabaseWarningBanner />
+          <MainLayout>{children}</MainLayout>
+        </ThemeProvider>
       </body>
     </html>
   );

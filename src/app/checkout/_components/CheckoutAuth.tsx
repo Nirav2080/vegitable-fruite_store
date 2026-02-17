@@ -50,11 +50,11 @@ export function CheckoutAuth() {
     }
 
     return (
-        <div className="rounded-lg border bg-background p-6">
+        <div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Login</TabsTrigger>
-                    <TabsTrigger value="register">Create Account</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 rounded-xl">
+                    <TabsTrigger value="login" className="rounded-lg">Login</TabsTrigger>
+                    <TabsTrigger value="register" className="rounded-lg">Create Account</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
                      <form onSubmit={handleLogin} className="grid gap-4 mt-4">
@@ -66,7 +66,7 @@ export function CheckoutAuth() {
                             <Label htmlFor="login-password">Password</Label>
                             <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
                         </div>
-                        <Button type="submit" className="w-full" disabled={isLoading}>
+                        <Button type="submit" className="w-full rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02]" disabled={isLoading}>
                             {isLoading ? 'Logging in...' : 'Login'}
                         </Button>
                     </form>
@@ -85,7 +85,7 @@ export function CheckoutAuth() {
                             <Label htmlFor="register-password">Password</Label>
                             <Input id="register-password" type="password" required value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} />
                         </div>
-                        <Button type="submit" className="w-full" disabled={isLoading}>
+                        <Button type="submit" className="w-full rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02]" disabled={isLoading}>
                             {isLoading ? 'Creating...' : 'Create Account'}
                         </Button>
                     </form>

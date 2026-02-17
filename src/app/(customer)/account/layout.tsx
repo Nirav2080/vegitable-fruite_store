@@ -7,20 +7,20 @@ import { CustomerAuthGuard } from "@/components/auth/CustomerAuthGuard";
 export default function AccountLayout({ children }: { children: ReactNode }) {
   return (
     <CustomerAuthGuard>
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold font-headline">My Account</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight font-headline">My Account</h1>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <aside className="md:col-span-1">
-              <Card>
+              <Card className="rounded-2xl border-border/60">
                   <CardContent className="p-4">
                       <AccountSidebarNav />
                   </CardContent>
               </Card>
           </aside>
           <main className="md:col-span-3">
-              <Card>
+              <Card className="rounded-2xl border-border/60">
                   <CardContent className="p-6">
                       {children}
                   </CardContent>

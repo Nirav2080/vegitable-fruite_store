@@ -83,7 +83,7 @@ export default async function Home() {
         <HeroCarousel banners={banners} />
       </Suspense>
       
-      <section className="container mx-auto px-4 pt-8 md:pt-16">
+      <section className="mx-auto max-w-7xl w-full px-4 pt-12 sm:px-6 sm:pt-16 md:pt-20 lg:px-8 overflow-hidden">
         <Suspense fallback={<ProductsGridSkeleton />}>
           <BestSellersSection 
             products={popularProducts} 
@@ -92,7 +92,7 @@ export default async function Home() {
         </Suspense>
       </section>
 
-      <section className="py-8 md:py-16">
+      <section className="py-12 sm:py-16 md:py-20">
         <FeaturedCategories />
       </section>
 

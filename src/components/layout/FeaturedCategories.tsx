@@ -45,12 +45,18 @@ export function FeaturedCategories() {
     const skeletonCount = 8;
 
     return (
-        <div className="container mx-auto px-4">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold font-headline">
-                    Shop by Categories
-                </h2>
-                <Button asChild variant="link" className="hidden md:flex">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+                        Categories
+                    </span>
+                    <h2 className="mt-2 text-2xl font-extrabold tracking-tight font-headline md:text-3xl">
+                        Shop by Categories
+                    </h2>
+                </div>
+                <Button asChild variant="outline" className="hidden md:flex rounded-full border-primary/20 text-primary transition-all duration-200 hover:bg-primary/5 hover:shadow-sm">
                     <Link href="/products">
                         View All <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -64,8 +70,8 @@ export function FeaturedCategories() {
                     {categories.map((category) => (
                         <CarouselItem key={category.id} className="basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-1/8 pl-4">
                             <Link href={`/products?category=${encodeURIComponent(category.name)}`} className="group block">
-                                <div className="bg-background border rounded-lg p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
-                                    <div className="relative w-full h-2/3 bg-muted rounded-md overflow-hidden">
+                                <div className="bg-background border border-border/60 rounded-2xl p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/5 group-hover:-translate-y-1 group-hover:border-primary/20">
+                                    <div className="relative w-full h-2/3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl overflow-hidden">
                                         {category.icon ? (
                                             <Image
                                                 src={category.icon}
@@ -83,8 +89,8 @@ export function FeaturedCategories() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
-                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-md" />
+                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-md" />
             </Carousel>
         </div>
     );

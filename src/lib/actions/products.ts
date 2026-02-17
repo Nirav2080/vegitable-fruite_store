@@ -245,49 +245,162 @@ export async function deleteProduct(id: string) {
 
 export async function getDashboardData() {
     const db = await getDb();
-    if (!db) return { totalRevenue: 0, totalSales: 0, totalProducts: 0, salesData: [], recentTransactions: [] };
+    if (!db) return {
+        totalRevenue: 0, totalSales: 0, totalProducts: 0, totalCustomers: 0,
+        pendingOrders: 0, lowStockProducts: 0, totalCategories: 0, totalBrands: 0,
+        ordersByStatus: { Pending: 0, Processing: 0, Shipped: 0, Delivered: 0, Cancelled: 0 },
+        salesData: [], recentOrders: [], topProducts: [],
+        revenueGrowth: 0, salesGrowth: 0, customerGrowth: 0,
+    };
 
     const productsCollection = db.collection('products');
     const ordersCollection = db.collection('orders');
+    const usersCollection = db.collection('users');
+    const categoriesCollection = db.collection('categories');
+    const brandsCollection = db.collection('brands');
 
-    const totalProducts = await productsCollection.countDocuments();
-    
-    const revenueResult = await ordersCollection.aggregate([
-        { $match: { status: 'Delivered' } },
-        { $group: { _id: null, totalRevenue: { $sum: '$total' } } }
-    ]).toArray();
+    // Get current and previous month boundaries
+    const now = new Date();
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    // Run all queries in parallel for performance
+    const [
+        totalProducts,
+        totalCustomers,
+        totalCategories,
+        totalBrands,
+        revenueResult,
+        totalSales,
+        pendingOrders,
+        orderStatusCounts,
+        salesByMonth,
+        recentOrdersDocs,
+        lowStockResult,
+        topProductsResult,
+        currentMonthRevenue,
+        previousMonthRevenue,
+        currentMonthSales,
+        previousMonthSales,
+        currentMonthCustomers,
+        previousMonthCustomers,
+    ] = await Promise.all([
+        productsCollection.countDocuments(),
+        usersCollection.countDocuments(),
+        categoriesCollection.countDocuments(),
+        brandsCollection.countDocuments(),
+        ordersCollection.aggregate([
+            { $match: { status: { $in: ['Delivered', 'Shipped', 'Processing'] } } },
+            { $group: { _id: null, totalRevenue: { $sum: '$total' } } }
+        ]).toArray(),
+        ordersCollection.countDocuments({ status: { $in: ['Delivered', 'Shipped', 'Processing'] } }),
+        ordersCollection.countDocuments({ status: 'Pending' }),
+        ordersCollection.aggregate([
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+        ]).toArray(),
+        ordersCollection.aggregate([
+            { $project: { month: { $month: "$date" }, year: { $year: "$date" }, total: "$total" } },
+            { $group: { _id: { month: "$month", year: "$year" }, total: { $sum: "$total" } } },
+            { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]).toArray(),
+        ordersCollection.find({}).sort({ date: -1 }).limit(7).toArray(),
+        productsCollection.aggregate([
+            { $unwind: '$variants' },
+            { $match: { 'variants.stock': { $lte: 5 } } },
+            { $group: { _id: '$_id' } },
+            { $count: 'count' }
+        ]).toArray(),
+        ordersCollection.aggregate([
+            { $match: { status: { $in: ['Delivered', 'Shipped', 'Processing'] } } },
+            { $unwind: '$items' },
+            { $group: { _id: '$items.productId', totalSold: { $sum: '$items.quantity' }, totalRevenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } },
+            { $sort: { totalSold: -1 } },
+            { $limit: 5 }
+        ]).toArray(),
+        // Current month revenue
+        ordersCollection.aggregate([
+            { $match: { date: { $gte: startOfCurrentMonth }, status: { $in: ['Delivered', 'Shipped', 'Processing'] } } },
+            { $group: { _id: null, total: { $sum: '$total' } } }
+        ]).toArray(),
+        // Previous month revenue
+        ordersCollection.aggregate([
+            { $match: { date: { $gte: startOfPreviousMonth, $lt: startOfCurrentMonth }, status: { $in: ['Delivered', 'Shipped', 'Processing'] } } },
+            { $group: { _id: null, total: { $sum: '$total' } } }
+        ]).toArray(),
+        // Current month sales count
+        ordersCollection.countDocuments({ date: { $gte: startOfCurrentMonth }, status: { $in: ['Delivered', 'Shipped', 'Processing'] } }),
+        // Previous month sales count
+        ordersCollection.countDocuments({ date: { $gte: startOfPreviousMonth, $lt: startOfCurrentMonth }, status: { $in: ['Delivered', 'Shipped', 'Processing'] } }),
+        // Current month new customers
+        usersCollection.countDocuments({ registeredAt: { $gte: startOfCurrentMonth } }),
+        // Previous month new customers
+        usersCollection.countDocuments({ registeredAt: { $gte: startOfPreviousMonth, $lt: startOfCurrentMonth } }),
+    ]);
+
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].totalRevenue : 0;
+    const lowStockProducts = lowStockResult.length > 0 ? lowStockResult[0].count : 0;
 
-    const totalSales = await ordersCollection.countDocuments({ status: { $in: ['Delivered', 'Shipped', 'Processing'] }});
+    // Build order status breakdown
+    const ordersByStatus = { Pending: 0, Processing: 0, Shipped: 0, Delivered: 0, Cancelled: 0 };
+    orderStatusCounts.forEach((s: any) => {
+        if (s._id in ordersByStatus) {
+            (ordersByStatus as any)[s._id] = s.count;
+        }
+    });
 
-    const salesByMonth = await ordersCollection.aggregate([
-        { $project: { month: { $month: "$date" }, total: "$total" } },
-        { $group: { _id: "$month", total: { $sum: "$total" } } },
-        { $sort: { _id: 1 } }
-    ]).toArray();
-    
+    // Build monthly sales data
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const currentYear = now.getFullYear();
     const salesData = monthNames.map((name, index) => {
-        const monthData = salesByMonth.find(d => d._id === index + 1);
+        const monthData = salesByMonth.find((d: any) => d._id.month === index + 1 && d._id.year === currentYear);
         return { name, total: monthData ? monthData.total : 0 };
     });
 
-    const recentTransactions = await ordersCollection.find({})
-        .sort({ date: -1 })
-        .limit(5)
-        .toArray();
+    // Enrich top products with names
+    let topProducts: { name: string; sold: number; revenue: number }[] = [];
+    if (topProductsResult.length > 0) {
+        const productIds = topProductsResult.map((p: any) => {
+            try { return new ObjectId(p._id); } catch { return null; }
+        }).filter((id): id is ObjectId => id !== null);
+        const productDocs = await productsCollection.find({ _id: { $in: productIds } }).toArray();
+        const productNameMap = new Map(productDocs.map(p => [p._id.toString(), p.name]));
+        topProducts = topProductsResult.map((p: any) => ({
+            name: productNameMap.get(p._id) || 'Unknown Product',
+            sold: p.totalSold,
+            revenue: p.totalRevenue,
+        }));
+    }
+
+    // Calculate growth percentages
+    const curRevenue = currentMonthRevenue.length > 0 ? currentMonthRevenue[0].total : 0;
+    const prevRevenue = previousMonthRevenue.length > 0 ? previousMonthRevenue[0].total : 0;
+    const revenueGrowth = prevRevenue > 0 ? ((curRevenue - prevRevenue) / prevRevenue) * 100 : (curRevenue > 0 ? 100 : 0);
+    const salesGrowth = previousMonthSales > 0 ? ((currentMonthSales - previousMonthSales) / previousMonthSales) * 100 : (currentMonthSales > 0 ? 100 : 0);
+    const customerGrowth = previousMonthCustomers > 0 ? ((currentMonthCustomers - previousMonthCustomers) / previousMonthCustomers) * 100 : (currentMonthCustomers > 0 ? 100 : 0);
 
     return {
         totalRevenue,
         totalSales,
         totalProducts,
+        totalCustomers,
+        pendingOrders,
+        lowStockProducts,
+        totalCategories,
+        totalBrands,
+        ordersByStatus,
         salesData,
-        recentTransactions: recentTransactions.map(t => ({
+        recentOrders: recentOrdersDocs.map(t => ({
             id: t._id.toString(),
             name: t.customerName,
             email: t.email,
             amount: t.total,
+            status: t.status as string,
+            date: t.date ? new Date(t.date).toISOString() : new Date().toISOString(),
         })),
+        topProducts,
+        revenueGrowth: Math.round(revenueGrowth * 10) / 10,
+        salesGrowth: Math.round(salesGrowth * 10) / 10,
+        customerGrowth: Math.round(customerGrowth * 10) / 10,
     }
 }
 

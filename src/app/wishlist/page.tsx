@@ -32,21 +32,29 @@ export default function WishlistPage() {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        <Heart className="mx-auto h-24 w-24 text-muted-foreground" />
-        <h1 className="mt-6 text-3xl font-bold font-headline">Your Wishlist is Empty</h1>
-        <p className="mt-2 text-muted-foreground">Looks like you haven't added anything to your wishlist yet.</p>
-        <Button asChild className="mt-6">
-          <Link href="/products">Explore Products</Link>
-        </Button>
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-md">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-50 to-emerald-50">
+            <Heart className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline">Your Wishlist is Empty</h1>
+          <p className="mt-3 text-muted-foreground leading-relaxed">Looks like you haven&apos;t added anything to your wishlist yet.</p>
+          <Button asChild className="mt-8 rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+            <Link href="/products">Explore Products</Link>
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <header className="text-center mb-8">
-        <h1 className="text-4xl font-bold font-headline">Your Wishlist</h1>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:py-12 lg:px-8">
+      <header className="text-center mb-10">
+        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Saved Items
+        </span>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight font-headline sm:text-4xl">Your Wishlist</h1>
         <p className="mt-2 text-muted-foreground">Your favorite items, all in one place.</p>
       </header>
 
@@ -57,9 +65,9 @@ export default function WishlistPage() {
           const defaultVariant = item.variants[0];
           
           return (
-            <div key={item.id} className="border rounded-lg p-4 flex flex-col justify-between">
+            <div key={item.id} className="border border-border/60 rounded-2xl p-4 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/20">
               <div>
-                <div className="relative h-40 w-full rounded-md overflow-hidden mb-4 bg-muted">
+                <div className="relative h-40 w-full rounded-xl overflow-hidden mb-4 bg-gradient-to-br from-green-50/80 to-emerald-50/40">
                     {Array.isArray(item.images) && item.images.length > 0 ? (
                         <Image
                             src={item.images[0]}
@@ -77,8 +85,8 @@ export default function WishlistPage() {
                 <p className="font-bold text-primary mt-1">${defaultVariant.price.toFixed(2)}</p>
               </div>
               <div className="mt-4 flex flex-col gap-2">
-                  <Button onClick={() => handleMoveToCart(item)}>Move to Cart</Button>
-                  <Button variant="outline" size="icon" className="self-end" onClick={() => removeFromWishlist(item.id)}>
+                  <Button onClick={() => handleMoveToCart(item)} className="rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/30">Move to Cart</Button>
+                  <Button variant="outline" size="icon" className="self-end rounded-full" onClick={() => removeFromWishlist(item.id)}>
                       <Trash2 className="h-4 w-4" />
                   </Button>
               </div>

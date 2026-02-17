@@ -133,18 +133,18 @@ export default function AccountProfilePage() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-bold font-headline">My Profile</h2>
-                <p className="text-muted-foreground">Update your personal information and email address.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight font-headline">My Profile</h2>
+                <p className="text-muted-foreground leading-relaxed">Update your personal information and email address.</p>
             </div>
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div className="flex items-center gap-4">
-                        <Avatar className="h-20 w-20">
+                        <Avatar className="h-20 w-20 ring-2 ring-primary/20 ring-offset-2">
                             <AvatarImage src={user.avatar} alt="User avatar" />
-                            <AvatarFallback>{userInitials}</AvatarFallback>
+                            <AvatarFallback className="bg-primary/10 text-primary font-semibold">{userInitials}</AvatarFallback>
                         </Avatar>
-                        <Button type="button" variant="outline">Change Photo</Button>
+                        <Button type="button" variant="outline" className="rounded-full border-border/60 transition-all duration-300 hover:shadow-sm">Change Photo</Button>
                     </div>
 
                     <FormField
@@ -195,7 +195,7 @@ export default function AccountProfilePage() {
                     />
 
                     <div className="pt-2">
-                        <Button type="submit" disabled={form.formState.isSubmitting}>
+                        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
                             {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>

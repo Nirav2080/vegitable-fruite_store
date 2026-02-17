@@ -8,17 +8,21 @@ import Link from "next/link";
 
 export default async function AdminUsersPage() {
   const users = await getUsers();
+  const totalSpent = users.reduce((acc, u) => acc + u.totalSpent, 0);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Customers</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight font-headline">Customers</h1>
+          <p className="text-sm text-muted-foreground mt-1">{users.length} customers · ${totalSpent.toFixed(2)} total spent</p>
+        </div>
          <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" className="rounded-full border-border/60 transition-all duration-300 hover:shadow-sm">
                 <File className="mr-2 h-4 w-4" />
                 Export
             </Button>
-            <Button asChild>
+            <Button asChild className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
                 <Link href="/admin/users/new">
                     <UserPlus className="mr-2 h-4 w-4" />
                     Add Customer
@@ -26,12 +30,10 @@ export default async function AdminUsersPage() {
             </Button>
         </div>
       </div>
-      <Card>
+      <Card className="rounded-2xl border-border/60">
         <CardHeader>
           <CardTitle>All Customers</CardTitle>
-          <CardDescription>
-            View and manage your customers.
-          </CardDescription>
+          <CardDescription>View and manage your customer base.</CardDescription>
         </CardHeader>
         <CardContent>
           <UsersTable data={users} />

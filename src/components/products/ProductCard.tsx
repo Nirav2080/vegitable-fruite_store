@@ -78,9 +78,9 @@ export function ProductCard({ product }: ProductCardProps) {
   
   return (
     <div 
-        className="flex flex-col h-full overflow-hidden group transition-all duration-300"
+        className="flex flex-col h-full overflow-hidden group rounded-2xl border border-border/60 bg-background transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-primary/20"
     >
-      <div className="relative overflow-hidden p-4 bg-secondary rounded-lg">
+      <div className="relative overflow-hidden p-4 bg-gradient-to-br from-green-50/80 to-emerald-50/40 rounded-t-2xl">
         <Link href={`/products/${product.slug}`} className="block aspect-square relative">
             {primaryImage ? (
                 <Image
@@ -91,30 +91,30 @@ export function ProductCard({ product }: ProductCardProps) {
                     className="object-contain transition-transform duration-500 group-hover:scale-105"
                 />
             ) : (
-                <div className="h-full w-full bg-muted flex items-center justify-center">
+                <div className="h-full w-full bg-muted rounded-xl flex items-center justify-center">
                     <ImageIcon className="h-12 w-12 text-muted-foreground" />
                 </div>
             )}
         </Link>
-        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
             {discountPercentage > 0 && (
-                <Badge variant="destructive">-{discountPercentage}%</Badge>
+                <Badge variant="destructive" className="rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm">-{discountPercentage}%</Badge>
             )}
             {product.isOrganic && (
-                <Badge className="bg-primary text-primary-foreground">Fresh</Badge>
+                <Badge className="bg-primary text-primary-foreground rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm">Fresh</Badge>
             )}
         </div>
         <Button
             variant="ghost"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md"
+            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg"
             onClick={handleWishlistClick}
             aria-label="Add to wishlist"
         >
             <Heart className={cn("h-4 w-4", onWishlist && "text-red-500 fill-red-500")} />
         </Button>
       </div>
-      <div className="pt-4 flex-grow flex flex-col">
+      <div className="p-4 flex-grow flex flex-col">
         <div className="flex justify-between items-start gap-2">
             <h3 className="text-base font-medium leading-tight flex-grow pr-2">
                 <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
@@ -156,7 +156,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
         </div>
         
-         <Button variant="outline" size="sm" className="w-full mt-4 rounded-full" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
+         <Button variant="outline" size="sm" className="w-full mt-4 rounded-full border-primary/20 text-primary font-semibold transition-all duration-300 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:shadow-primary/25" onClick={handleAddToCart} disabled={selectedVariant.stock === 0}>
             {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </div>
