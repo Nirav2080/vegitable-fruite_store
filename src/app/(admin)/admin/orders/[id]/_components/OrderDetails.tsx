@@ -10,12 +10,12 @@ import { updateOrderStatus } from '@/lib/actions/orders';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import type { Order } from '@/lib/types';
+import type { Order, EnrichedOrderItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { ImageIcon } from 'lucide-react';
 
 interface OrderDetailsProps {
-    order: Order & { items: (Order['items'][0] & { name: string; image: string; })[] };
+    order: Order & { items: EnrichedOrderItem[] };
 }
 
 const orderStatuses: Order['status'][] = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
@@ -66,7 +66,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                 <div>
                     <h3 className="text-lg font-semibold mb-2">Order Items</h3>
                     <div className="space-y-4">
-                        {order.items.map((item, index) => (
+                        {order.items.map((item: EnrichedOrderItem, index) => (
                              <div key={index} className="flex items-center gap-4 p-4 border rounded-lg">
                                 <div className="relative h-16 w-16 rounded-md overflow-hidden bg-muted">
                                     {item.image ? (

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { getProducts, getCategories, getAttributes, getBrands } from "@/lib/cached-data";
 import { ProductCard } from "@/components/products/ProductCard";
 import { ProductListCard } from "@/components/products/ProductListCard";
@@ -165,7 +165,7 @@ function FilterSidebarContent({ categories, attributes, brands, selectedFilters,
 }
 
 
-export default function ProductsPage() {
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
@@ -399,5 +399,13 @@ export default function ProductsPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsSkeleton />}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

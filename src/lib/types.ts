@@ -65,6 +65,11 @@ export interface OrderItem {
   weight?: string; // To store which variant was purchased
 }
 
+export interface EnrichedOrderItem extends OrderItem {
+  name: string;
+  image: string;
+}
+
 export interface Order {
   _id?: ObjectId;
   id: string;
@@ -125,6 +130,19 @@ export interface CartItem extends Omit<Product, 'variants'> {
   quantity: number;
   selectedVariant: ProductVariant;
   // variants are not needed in cart item, selectedVariant holds the choice
+}
+
+/**
+ * Lightweight item sent to the server action for Stripe checkout.
+ * Only includes the fields actually needed — avoids sending entire Product objects.
+ */
+export interface CheckoutItem {
+  productId: string;   // original product ID (before the _variant suffix)
+  name: string;
+  image: string | null;
+  weight: string;
+  price: number;       // unit price in dollars
+  quantity: number;
 }
 
 export interface Attribute {

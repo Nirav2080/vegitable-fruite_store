@@ -1,7 +1,7 @@
 
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ProductForm } from "../_components/ProductForm";
+import { ProductForm } from "../../_components/ProductForm";
 import { getProductById } from "@/lib/actions/products";
 import { notFound } from "next/navigation";
 

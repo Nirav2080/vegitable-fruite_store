@@ -567,18 +567,34 @@ const SidebarMenuButton = React.forwardRef<
   ) => {
     const { isMobile, state } = useSidebar()
     
-    const Comp = props.href ? (asChild ? Slot : 'a') : (asChild ? Slot : "button")
-
-    const button = (
-      <Comp
-        ref={ref as any}
-        data-sidebar="menu-button"
-        data-size={size}
-        data-active={isActive}
-        className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-        {...props}
-      />
-    )
+    const isLink = 'href' in props && props.href;
+    
+    let button;
+    if (isLink) {
+      const Comp = asChild ? Slot : Link;
+      button = (
+        <Comp
+          ref={ref as any}
+          data-sidebar="menu-button"
+          data-size={size}
+          data-active={isActive}
+          className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+          {...(props as React.ComponentProps<typeof Link>)}
+        />
+      );
+    } else {
+      const Comp = asChild ? Slot : "button";
+      button = (
+        <Comp
+          ref={ref as any}
+          data-sidebar="menu-button"
+          data-size={size}
+          data-active={isActive}
+          className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+          {...(props as React.ComponentProps<"button">)}
+        />
+      );
+    }
 
     if (!tooltip) {
       return button

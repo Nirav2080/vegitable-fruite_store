@@ -3,153 +3,189 @@
 
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import type { CartItem, Offer } from '@/lib/types';
+import type { CheckoutItem, Offer } from '@/lib/types';
 import clientPromise from '@/lib/db';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-    apiVersion: '2024-06-20',
-});
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getStripeInstance(): Stripe {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key || key.startsWith('your_') || key.length < 20) {
+        throw new Error(
+            'Stripe secret key is missing or still set to the placeholder value. ' +
+            'Please update STRIPE_SECRET_KEY in your .env file with a real key from https://dashboard.stripe.com/apikeys'
+        );
+    }
+    return new Stripe(key, { apiVersion: '2024-06-20' });
+}
 
 async function getDb() {
     const client = await clientPromise;
-    if (!client) {
-      return null;
-    }
+    if (!client) return null;
     return client.db(process.env.DB_NAME || 'aotearoa-organics');
 }
 
-const isPlaceholderUrl = (url: string) => {
+const isPlaceholderUrl = (url: string): boolean => {
     try {
         const hostname = new URL(url).hostname;
-        // This list can be expanded with other placeholder services if needed.
         return ['picsum.photos', 'placehold.co'].includes(hostname);
-    } catch (e) {
-        // If the URL is invalid (e.g., a data URI), treat it as a placeholder.
-        return true; 
+    } catch {
+        return true;
     }
 };
 
+// ---------------------------------------------------------------------------
+// Return types – never throw from server actions; return structured results.
+// ---------------------------------------------------------------------------
 
-export async function createCheckoutSession(cartItems: CartItem[], couponCode: string | null, userId: string) {
-    const host = headers().get('origin') || 'http://localhost:9002';
-    
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = cartItems.map((item) => {
-        const priceInCents = Math.round(item.selectedVariant.price * 100);
+type CheckoutResult =
+    | { success: true; sessionId: string }
+    | { success: false; error: string };
 
-        const product_data: Stripe.Checkout.SessionCreateParams.LineItem.PriceData.ProductData = {
-            name: item.name,
-            description: item.selectedVariant.weight,
-        };
+// ---------------------------------------------------------------------------
+// createCheckoutSession
+// ---------------------------------------------------------------------------
 
-        const primaryImage = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null;
-
-        // Add image only if it's a valid, non-placeholder URL. Stripe's API can be
-        // sensitive to redirecting URLs or data URIs, which can cause session creation to fail.
-        if (primaryImage && !isPlaceholderUrl(primaryImage)) {
-            product_data.images = [primaryImage];
-        }
-
-        return {
-            price_data: {
-                currency: 'nzd',
-                product_data,
-                unit_amount: priceInCents,
-            },
-            quantity: item.quantity,
-        };
-    });
-    
-    let calculatedDiscount = 0;
-    if (couponCode) {
-        const db = await getDb();
-        if (!db) throw new Error("Database not connected for coupon validation");
-        const offersCollection = db.collection<Offer>('offers');
-        const offer = await offersCollection.findOne({ code: couponCode, isActive: true });
-
-        if (offer && offer.discountValue > 0) {
-            const subtotal = cartItems.reduce((acc, item) => acc + item.selectedVariant.price * item.quantity, 0);
-            
-            if (offer.scope === 'cart') {
-                if (offer.discountType === 'percentage') {
-                    calculatedDiscount = (subtotal * offer.discountValue) / 100;
-                } else { // fixed
-                    calculatedDiscount = offer.discountValue;
-                }
-            } else if (offer.scope === 'product' && offer.applicableProductIds) {
-                 calculatedDiscount = cartItems.reduce((acc, item) => {
-                    const productId = item.id.split('_')[0];
-                    if (offer.applicableProductIds?.includes(productId)) {
-                        if (offer.discountType === 'percentage') {
-                            return acc + (item.selectedVariant.price * item.quantity * offer.discountValue) / 100;
-                        } else {
-                            return acc + (offer.discountValue * item.quantity);
-                        }
-                    }
-                    return acc;
-                }, 0);
-            }
-            
-            calculatedDiscount = Math.min(calculatedDiscount, subtotal);
-        }
-    }
-
-
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-        payment_method_types: ['card'],
-        line_items,
-        mode: 'payment',
-        success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${host}/checkout/cancel`,
-        client_reference_id: userId,
-        metadata: {
-             cart: JSON.stringify(cartItems.map(item => ({
-                p: item.id.split('_')[0],
-                q: item.quantity,
-                pr: item.selectedVariant.price,
-                w: item.selectedVariant.weight
-            }))),
-            ...(couponCode && { couponCode: couponCode })
-        }
-    };
-    
-    if (calculatedDiscount > 0.01) {
-        try {
-            const coupon = await stripe.coupons.create({
-                amount_off: Math.round(calculatedDiscount * 100),
-                currency: 'nzd',
-                duration: 'once',
-                name: `Discount: ${couponCode || 'General'}`
-            });
-            sessionParams.discounts = [{ coupon: coupon.id }];
-        } catch (error: any) {
-            console.error("Stripe coupon creation failed:", error.message);
-            // This will stop the checkout if coupon creation fails
-            throw new Error('Could not create a discount coupon for the checkout session.');
-        }
-    }
-
-
+export async function createCheckoutSession(
+    items: CheckoutItem[],
+    couponCode: string | null,
+    userId: string,
+): Promise<CheckoutResult> {
     try {
+        // ---- Validation ----
+        if (!items || items.length === 0) {
+            return { success: false, error: 'Your cart is empty.' };
+        }
+        if (!userId) {
+            return { success: false, error: 'You must be logged in to checkout.' };
+        }
+
+        const stripe = getStripeInstance();
+        const host = headers().get('origin') || headers().get('referer')?.replace(/\/checkout.*/, '') || 'http://localhost:9002';
+
+        // ---- Build Stripe line‑items from the lightweight CheckoutItem[] ----
+        const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => {
+            const priceInCents = Math.round(item.price * 100);
+
+            const product_data: Stripe.Checkout.SessionCreateParams.LineItem.PriceData.ProductData = {
+                name: item.name,
+                description: item.weight,
+            };
+
+            if (item.image && !isPlaceholderUrl(item.image)) {
+                product_data.images = [item.image];
+            }
+
+            return {
+                price_data: {
+                    currency: 'nzd',
+                    product_data,
+                    unit_amount: priceInCents,
+                },
+                quantity: item.quantity,
+            };
+        });
+
+        // ---- Coupon / Discount calculation ----
+        let calculatedDiscount = 0;
+
+        if (couponCode) {
+            const db = await getDb();
+            if (db) {
+                const offer = await db.collection<Offer>('offers').findOne({ code: couponCode, isActive: true });
+
+                if (offer && offer.discountValue > 0) {
+                    const subtotal = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+
+                    if (offer.scope === 'cart') {
+                        calculatedDiscount =
+                            offer.discountType === 'percentage'
+                                ? (subtotal * offer.discountValue) / 100
+                                : offer.discountValue;
+                    } else if (offer.scope === 'product' && offer.applicableProductIds) {
+                        calculatedDiscount = items.reduce((acc, i) => {
+                            if (offer.applicableProductIds?.includes(i.productId)) {
+                                return acc +
+                                    (offer.discountType === 'percentage'
+                                        ? (i.price * i.quantity * offer.discountValue) / 100
+                                        : offer.discountValue * i.quantity);
+                            }
+                            return acc;
+                        }, 0);
+                    }
+
+                    calculatedDiscount = Math.min(calculatedDiscount, subtotal);
+                }
+            }
+        }
+
+        // ---- Session metadata (compact cart snapshot for order creation later) ----
+        const cartMeta = JSON.stringify(
+            items.map((i) => ({
+                p: i.productId,
+                q: i.quantity,
+                pr: i.price,
+                w: i.weight,
+            })),
+        );
+
+        const sessionParams: Stripe.Checkout.SessionCreateParams = {
+            payment_method_types: ['card'],
+            line_items,
+            mode: 'payment',
+            success_url: `${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${host}/checkout/cancel`,
+            client_reference_id: userId,
+            metadata: {
+                cart: cartMeta,
+                ...(couponCode ? { couponCode } : {}),
+            },
+        };
+
+        // Attach a one‑off Stripe coupon when there's a discount
+        if (calculatedDiscount > 0.01) {
+            try {
+                const coupon = await stripe.coupons.create({
+                    amount_off: Math.round(calculatedDiscount * 100),
+                    currency: 'nzd',
+                    duration: 'once',
+                    name: `Discount: ${couponCode || 'General'}`,
+                });
+                sessionParams.discounts = [{ coupon: coupon.id }];
+            } catch (err: any) {
+                console.error('Stripe coupon creation failed:', err.message);
+                // Non‑fatal: proceed without the discount
+            }
+        }
+
+        // ---- Create session ----
         const session = await stripe.checkout.sessions.create(sessionParams);
 
-        if (session.id) {
-            return { sessionId: session.id };
-        } else {
-            throw new Error('Failed to create Stripe checkout session');
+        if (!session.id) {
+            return { success: false, error: 'Stripe did not return a session ID.' };
         }
+
+        return { success: true, sessionId: session.id };
     } catch (error: any) {
-        console.error("Stripe session creation failed:", error.message);
-        throw new Error('Could not create checkout session.');
+        console.error('createCheckoutSession error:', error);
+        return {
+            success: false,
+            error: error.message || 'Could not create checkout session. Please try again.',
+        };
     }
 }
 
+// ---------------------------------------------------------------------------
+// retrieveCheckoutSession
+// ---------------------------------------------------------------------------
+
 export async function retrieveCheckoutSession(sessionId: string) {
-    if (!sessionId) {
-        return null;
-    }
+    if (!sessionId) return null;
     try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
-        return session;
+        const stripe = getStripeInstance();
+        return await stripe.checkout.sessions.retrieve(sessionId);
     } catch (error: any) {
         console.error(`Failed to retrieve Stripe session ${sessionId}:`, error.message);
         return null;

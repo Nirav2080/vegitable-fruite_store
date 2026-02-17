@@ -66,20 +66,28 @@ export async function createOrder(
     discountInfo: { amount: number; code?: string | null }
 ): Promise<Order> {
     const db = await getDb();
-    if (!db) throw new Error("Database not connected.");
+    if (!db) throw new Error('Database not connected.');
     const ordersCollection = db.collection<Order>('orders');
     
-    // Check if an order for this session already exists
+    // Idempotency: if an order for this session already exists, return it
     const existingOrder = await ordersCollection.findOne({ stripeSessionId });
     if (existingOrder) {
         return serializeOrder(existingOrder);
     }
+
+    // Validate cartData
+    if (!Array.isArray(cartData) || cartData.length === 0) {
+        throw new Error('Cart data is invalid or empty.');
+    }
     
     const usersCollection = db.collection<User>('users');
     
-    const user = await usersCollection.findOne({ _id: new ObjectId(clientReferenceId) });
+    let user: any = null;
+    if (ObjectId.isValid(clientReferenceId)) {
+        user = await usersCollection.findOne({ _id: new ObjectId(clientReferenceId) });
+    }
     if (!user) {
-        throw new Error('User not found');
+        throw new Error('User not found for the given client reference.');
     }
 
     const orderItems: OrderItem[] = cartData.map(item => ({
@@ -97,7 +105,7 @@ export async function createOrder(
         status: 'Pending',
         total: totalAmount / 100, // Convert from cents
         items: orderItems,
-        discountAmount: discountInfo.amount / 100,
+        discountAmount: (discountInfo.amount || 0) / 100,
         couponCode: discountInfo.code ?? undefined,
     };
 
@@ -106,9 +114,7 @@ export async function createOrder(
     // Update user's order stats
     await usersCollection.updateOne(
         { _id: new ObjectId(clientReferenceId) },
-        { 
-            $inc: { orderCount: 1, totalSpent: newOrder.total }
-        }
+        { $inc: { orderCount: 1, totalSpent: newOrder.total } }
     );
     
     revalidatePath('/admin/orders');

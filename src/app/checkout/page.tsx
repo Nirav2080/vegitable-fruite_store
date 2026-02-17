@@ -11,7 +11,7 @@ import { getStripe } from '@/lib/stripe'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { User } from '@/lib/types'
+import type { User, CheckoutItem } from '@/lib/types'
 import { getCurrentUser } from '@/lib/actions/users'
 import { CheckoutProgress } from './_components/CheckoutProgress'
 import { CheckoutAuth } from './_components/CheckoutAuth'
@@ -32,15 +32,16 @@ export default function CheckoutPage() {
             const loggedIn = localStorage.getItem('isCustomerLoggedIn') === 'true';
             const userDataString = localStorage.getItem('currentUser');
             if (loggedIn && userDataString) {
-                const userData = JSON.parse(userDataString);
                 try {
+                    const userData = JSON.parse(userDataString);
                     const fullUser = await getCurrentUser(userData.id);
                     setUser(fullUser);
                     if (fullUser?.address) {
                         setIsFormValid(true);
                     }
-                } catch(e) {
-                    console.error("failed to fetch user", e);
+                } catch (e) {
+                    console.error('Failed to fetch user', e);
+                    setUser(null);
                 }
             }
             setIsCheckingAuth(false);
@@ -55,55 +56,64 @@ export default function CheckoutPage() {
         return () => {
             window.removeEventListener('loginStateChange', handleLoginStateChange);
         };
-
     }, []);
+
+    /**
+     * Convert full CartItem objects into lightweight CheckoutItem payloads
+     * so only the data Stripe actually needs is sent to the server action.
+     */
+    const buildCheckoutItems = (): CheckoutItem[] =>
+        cartItems.map((item) => ({
+            productId: item.id.split('_')[0],
+            name: item.name,
+            image: Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : null,
+            weight: item.selectedVariant.weight,
+            price: item.selectedVariant.price,
+            quantity: item.quantity,
+        }));
 
     const handleCheckout = async () => {
         if (!user) {
-            toast({
-                title: 'Please log in',
-                description: 'You must be logged in to place an order.',
-                variant: 'destructive',
-            });
+            toast({ title: 'Please log in', description: 'You must be logged in to place an order.', variant: 'destructive' });
             return;
         }
 
         if (!isFormValid) {
-            toast({
-                title: 'Shipping Information Required',
-                description: 'Please fill out and save your shipping details.',
-                variant: 'destructive',
-            });
+            toast({ title: 'Shipping Information Required', description: 'Please fill out and save your shipping details.', variant: 'destructive' });
+            return;
+        }
+
+        if (cartCount === 0) {
+            toast({ title: 'Cart is empty', description: 'Add items to your cart before checking out.', variant: 'destructive' });
             return;
         }
 
         setIsLoading(true);
         try {
-            const stripe = await getStripe();
+            const checkoutItems = buildCheckoutItems();
 
-            if (!stripe) {
-                throw new Error("Stripe.js has not loaded yet.");
+            const result = await createCheckoutSession(checkoutItems, couponCode, user.id);
+
+            if (!result.success) {
+                toast({ title: 'Checkout Error', description: result.error, variant: 'destructive' });
+                return;
             }
 
-            const { sessionId } = await createCheckoutSession(cartItems, couponCode, user.id);
+            const stripe = await getStripe();
+            if (!stripe) {
+                toast({ title: 'Error', description: 'Payment provider could not be loaded. Check your internet connection.', variant: 'destructive' });
+                return;
+            }
 
-            const { error } = await stripe.redirectToCheckout({ sessionId });
+            const { error } = await stripe.redirectToCheckout({ sessionId: result.sessionId });
 
             if (error) {
-                console.error(error.message);
-                toast({
-                    title: 'Error',
-                    description: 'Failed to redirect to Stripe. Please try again.',
-                    variant: 'destructive',
-                });
+                console.error('Stripe redirect error:', error.message);
+                toast({ title: 'Payment Error', description: error.message || 'Failed to redirect to payment page.', variant: 'destructive' });
             }
         } catch (error: any) {
-            console.error("Checkout error:", error);
-            toast({
-                title: 'Error',
-                description: error.message || 'Something went wrong. Please try again.',
-                variant: 'destructive',
-            });
+            console.error('Checkout error:', error);
+            toast({ title: 'Error', description: error.message || 'Something went wrong. Please try again.', variant: 'destructive' });
         } finally {
             setIsLoading(false);
         }
