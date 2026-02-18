@@ -48,8 +48,8 @@ export default async function RootLayout({
       <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <DatabaseWarningBanner />
