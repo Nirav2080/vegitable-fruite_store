@@ -64,10 +64,21 @@ export async function getCurrentUser(userId?: string): Promise<User | null> {
     return serializeUser(user);
 }
 
+const nzAddressSchema = z.object({
+  street: z.string().min(3, 'Street address is required'),
+  suburb: z.string().optional(),
+  city: z.string().min(2, 'City is required'),
+  region: z.string().min(2, 'Region is required'),
+  postcode: z.string().regex(/^\d{4}$/, 'NZ postcode must be 4 digits'),
+  country: z.string().default('New Zealand'),
+});
+
 const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  mobile: z.string().optional(),
-  address: z.string().optional(),
+  firstName: z.string().min(2, "First name must be at least 2 characters."),
+  lastName: z.string().min(2, "Last name must be at least 2 characters."),
+  phone: z.string().optional(),
+  shippingAddress: nzAddressSchema.optional(),
+  billingAddress: nzAddressSchema.optional(),
 })
 
 export async function updateUserProfile(userId: string, data: unknown) {
@@ -80,13 +91,19 @@ export async function updateUserProfile(userId: string, data: unknown) {
     throw new Error(result.error.errors.map(e => e.message).join(', '));
   }
 
-  const { name, mobile, address } = result.data;
+  const { firstName, lastName, phone, shippingAddress, billingAddress } = result.data;
+  const name = `${firstName} ${lastName}`;
+
   const usersCollection = await getUsersCollection();
   if (!usersCollection) throw new Error("Database not connected.");
 
+  const updateData: Record<string, any> = { firstName, lastName, name, phone };
+  if (shippingAddress) updateData.shippingAddress = shippingAddress;
+  if (billingAddress) updateData.billingAddress = billingAddress;
+
   const updateResult = await usersCollection.updateOne(
     { _id: new ObjectId(userId) },
-    { $set: { name, mobile, address } }
+    { $set: updateData }
   );
 
   if (updateResult.matchedCount === 0) {

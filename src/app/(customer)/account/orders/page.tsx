@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { getOrders, cancelOrder } from "@/lib/actions/orders";
+import { getOrdersByUserId, cancelOrder } from "@/lib/actions/orders";
 import {
   Table,
   TableBody,
@@ -53,7 +53,14 @@ export default function AccountOrdersPage() {
         const fetchOrders = async () => {
             setIsLoading(true);
             try {
-                const fetchedOrders = await getOrders();
+                const userDataString = localStorage.getItem('currentUser');
+                if (!userDataString) {
+                    setOrders([]);
+                    setIsLoading(false);
+                    return;
+                }
+                const userData = JSON.parse(userDataString);
+                const fetchedOrders = await getOrdersByUserId(userData.id);
                 setOrders(fetchedOrders);
             } catch (error) {
                 toast({ title: "Error", description: "Could not fetch orders." });
@@ -77,8 +84,12 @@ export default function AccountOrdersPage() {
                 description: "Your order has been successfully cancelled.",
             });
             // Re-fetch orders to update the list
-            const fetchedOrders = await getOrders();
-            setOrders(fetchedOrders);
+            const userDataString = localStorage.getItem('currentUser');
+            if (userDataString) {
+                const userData = JSON.parse(userDataString);
+                const fetchedOrders = await getOrdersByUserId(userData.id);
+                setOrders(fetchedOrders);
+            }
         } catch (error) {
             toast({
                 title: "Error",

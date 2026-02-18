@@ -70,12 +70,25 @@ export interface EnrichedOrderItem extends OrderItem {
   image: string;
 }
 
+export interface NZAddress {
+  street: string;
+  suburb?: string;
+  city: string;
+  region: string;
+  postcode: string;
+  country: string; // Default: New Zealand
+}
+
 export interface Order {
   _id?: ObjectId;
   id: string;
+  userId: string;
   stripeSessionId?: string;
   customerName: string;
   email: string;
+  phone?: string;
+  shippingAddress?: NZAddress;
+  billingAddress?: NZAddress;
   date: Date;
   status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   total: number;
@@ -87,6 +100,8 @@ export interface Order {
 export interface User {
   _id?: ObjectId;
   id: string;
+  firstName: string;
+  lastName: string;
   name: string;
   email: string;
   password?: string;
@@ -94,7 +109,12 @@ export interface User {
   registeredAt: Date;
   orderCount: number;
   totalSpent: number;
+  phone?: string;
+  shippingAddress?: NZAddress;
+  billingAddress?: NZAddress;
+  /** @deprecated Use shippingAddress instead */
   mobile?: string;
+  /** @deprecated Use shippingAddress instead */
   address?: string;
 }
 

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { User, Package } from 'lucide-react';
-import { getOrders } from '@/lib/actions/orders';
+import { getOrdersByUserId } from '@/lib/actions/orders';
 import { getCurrentUser } from '@/lib/actions/users';
 import { useEffect, useState } from 'react';
 import type { User as UserType, Order as OrderType } from '@/lib/types';
@@ -57,7 +57,7 @@ export default function AccountPage() {
                 const userData = JSON.parse(userDataString);
                 const [user, orders] = await Promise.all([
                     getCurrentUser(userData.id),
-                    getOrders() 
+                    getOrdersByUserId(userData.id) 
                 ]);
                 setUser(user);
                 setOrders(orders);
@@ -100,10 +100,14 @@ export default function AccountPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-1">
-                        <p className="font-semibold">{user.name}</p>
+                        <p className="font-semibold">{user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.name}</p>
                         <p className="text-sm text-muted-foreground">{user.email}</p>
-                        {user.mobile && <p className="text-sm text-muted-foreground">{user.mobile}</p>}
-                        {user.address && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{user.address}</p>}
+                        {(user.phone || user.mobile) && <p className="text-sm text-muted-foreground">{user.phone || user.mobile}</p>}
+                        {user.shippingAddress?.street ? (
+                            <p className="text-sm text-muted-foreground">{user.shippingAddress.street}, {user.shippingAddress.city} {user.shippingAddress.postcode}</p>
+                        ) : user.address ? (
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{user.address}</p>
+                        ) : null}
                         <Button asChild variant="link" className="px-0 pt-2 text-primary">
                             <Link href="/account/profile">Edit Profile</Link>
                         </Button>

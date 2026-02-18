@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import type { Order, EnrichedOrderItem } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
-import { ImageIcon, Clock, Package, Truck, CheckCircle2, XCircle, User, Mail, CalendarDays, Save } from 'lucide-react';
+import { ImageIcon, Clock, Package, Truck, CheckCircle2, XCircle, User, Mail, CalendarDays, Save, Phone, MapPin } from 'lucide-react';
 
 interface OrderDetailsProps {
     order: Order & { items: EnrichedOrderItem[] };
@@ -202,7 +202,12 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                                 <div className="rounded-full bg-muted p-2">
                                     <User className="h-4 w-4 text-muted-foreground" />
                                 </div>
-                                <span className="font-medium">{order.customerName}</span>
+                                <div>
+                                    <span className="font-medium">{order.customerName}</span>
+                                    {order.userId && (
+                                        <p className="text-xs text-muted-foreground">ID: {order.userId}</p>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="rounded-full bg-muted p-2">
@@ -210,6 +215,14 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                                 </div>
                                 <span className="text-sm text-muted-foreground">{order.email}</span>
                             </div>
+                            {order.phone && (
+                                <div className="flex items-center gap-3">
+                                    <div className="rounded-full bg-muted p-2">
+                                        <Phone className="h-4 w-4 text-muted-foreground" />
+                                    </div>
+                                    <span className="text-sm text-muted-foreground">{order.phone}</span>
+                                </div>
+                            )}
                             <div className="flex items-center gap-3">
                                 <div className="rounded-full bg-muted p-2">
                                     <CalendarDays className="h-4 w-4 text-muted-foreground" />
@@ -218,6 +231,44 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Shipping Address */}
+                    {order.shippingAddress && (
+                        <Card className="rounded-2xl border-border/60">
+                            <CardHeader>
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                    <MapPin className="h-4 w-4" /> Shipping Address
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-sm space-y-0.5">
+                                    <p>{order.shippingAddress.street}</p>
+                                    {order.shippingAddress.suburb && <p className="text-muted-foreground">{order.shippingAddress.suburb}</p>}
+                                    <p className="text-muted-foreground">{order.shippingAddress.city}, {order.shippingAddress.region} {order.shippingAddress.postcode}</p>
+                                    <p className="text-muted-foreground">{order.shippingAddress.country || 'New Zealand'}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* Billing Address */}
+                    {order.billingAddress && (
+                        <Card className="rounded-2xl border-border/60">
+                            <CardHeader>
+                                <CardTitle className="text-lg flex items-center gap-2">
+                                    <Mail className="h-4 w-4" /> Billing Address
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-sm space-y-0.5">
+                                    <p>{order.billingAddress.street}</p>
+                                    {order.billingAddress.suburb && <p className="text-muted-foreground">{order.billingAddress.suburb}</p>}
+                                    <p className="text-muted-foreground">{order.billingAddress.city}, {order.billingAddress.region} {order.billingAddress.postcode}</p>
+                                    <p className="text-muted-foreground">{order.billingAddress.country || 'New Zealand'}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
         </div>

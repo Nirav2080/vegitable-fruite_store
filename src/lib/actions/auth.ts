@@ -13,9 +13,11 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
     email: z.string().email(),
     password: z.string().min(8, 'Password must be at least 8 characters'),
+    phone: z.string().optional(),
 })
 
 async function getDb() {
@@ -56,19 +58,20 @@ export async function login(data: unknown): Promise<{ success: boolean; message:
   return {
     success: true,
     message: 'Logged in successfully.',
-    user: { id: user._id.toString(), name: user.name, email: user.email },
+    user: { id: (user._id as any).toString(), name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(), email: user.email },
   };
 }
 
 
-export async function register(data: unknown): Promise<{ success: boolean; message: string; }> {
+export async function register(data: unknown): Promise<{ success: boolean; message: string; user?: Partial<User> }> {
     const result = registerSchema.safeParse(data);
     if (!result.success) {
         const errorMessage = result.error.errors.map(e => e.message).join(', ');
         throw new AuthError(errorMessage);
     }
     
-    const { name, email, password } = result.data;
+    const { firstName, lastName, email, password, phone } = result.data;
+    const fullName = `${firstName} ${lastName}`;
 
     const db = await getDb();
     if (!db) throw new Error("Database not connected.");
@@ -82,19 +85,23 @@ export async function register(data: unknown): Promise<{ success: boolean; messa
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const newUser: Omit<User, 'id'> = {
-        name,
+        firstName,
+        lastName,
+        name: fullName,
         email,
         password: hashedPassword,
-        avatar: `https://api.dicebear.com/8.x/initials/svg?seed=${name}`,
+        phone: phone || undefined,
+        avatar: `https://api.dicebear.com/8.x/initials/svg?seed=${fullName}`,
         registeredAt: new Date(),
         orderCount: 0,
         totalSpent: 0,
     };
 
-    await usersCollection.insertOne(newUser as any);
+    const insertResult = await usersCollection.insertOne(newUser as any);
 
     return {
         success: true,
-        message: 'User registered successfully.',
+        message: 'Account created successfully.',
+        user: { id: insertResult.insertedId.toString(), name: fullName, email },
     };
 }

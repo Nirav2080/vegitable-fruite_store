@@ -37,6 +37,14 @@ export async function getOrders(): Promise<Order[]> {
     return orders.map(serializeOrder);
 }
 
+export async function getOrdersByUserId(userId: string): Promise<Order[]> {
+    if (!userId) return [];
+    const ordersCollection = await getOrdersCollection();
+    if (!ordersCollection) return [];
+    const orders = await ordersCollection.find({ userId }).sort({ date: -1 }).toArray();
+    return orders.map(serializeOrder);
+}
+
 export async function getOrderById(id: string): Promise<Order | null> {
     if (!ObjectId.isValid(id)) {
         return null;
@@ -98,9 +106,13 @@ export async function createOrder(
     }));
 
     const newOrder: Omit<Order, 'id'> = {
+        userId: clientReferenceId,
         stripeSessionId,
-        customerName: user.name,
+        customerName: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
         email: customerEmail,
+        phone: user.phone || user.mobile || undefined,
+        shippingAddress: user.shippingAddress || undefined,
+        billingAddress: user.billingAddress || undefined,
         date: new Date(),
         status: 'Pending',
         total: totalAmount / 100, // Convert from cents

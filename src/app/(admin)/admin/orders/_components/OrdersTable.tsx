@@ -46,6 +46,7 @@ export function OrdersTable({ data }: { data: Order[] }) {
         <TableRow>
           <TableHead>Order ID</TableHead>
           <TableHead>Customer</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Date</TableHead>
           <TableHead className="text-right">Total</TableHead>
@@ -59,6 +60,7 @@ export function OrdersTable({ data }: { data: Order[] }) {
           <TableRow key={order.id}>
             <TableCell className="font-medium">#{order.id.slice(-6).toUpperCase()}</TableCell>
             <TableCell>{order.customerName}</TableCell>
+            <TableCell className="text-muted-foreground text-sm">{order.email}</TableCell>
             <TableCell>
               <Badge variant={getStatusVariant(order.status)} className={getStatusClass(order.status)}>
                 {order.status}
