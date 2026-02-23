@@ -94,7 +94,7 @@ export function AttributesTable({ data }: { data: Attribute[] }) {
                       <span className="sr-only">Toggle menu</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-xl border-border/60 shadow-lg">
+                  <DropdownMenuContent align="end" className="rounded-xl border-border/30 shadow-lg">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
                        <Link href={`/admin/attributes/${attribute.id}/edit`}><Pencil className="mr-2 h-4 w-4" /> Edit</Link>
@@ -111,7 +111,7 @@ export function AttributesTable({ data }: { data: Attribute[] }) {
       </Table>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-2xl border-border/60">
+        <AlertDialogContent className="rounded-2xl border-border/30">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -119,8 +119,8 @@ export function AttributesTable({ data }: { data: Attribute[] }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="rounded-full bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="rounded-xl bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

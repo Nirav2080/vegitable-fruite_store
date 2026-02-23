@@ -38,16 +38,16 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-            <Card className="max-w-2xl mx-auto rounded-2xl border-border/60 shadow-lg shadow-primary/5">
+            <Card className="max-w-2xl mx-auto rounded-2xl border-border/30 shadow-md shadow-black/[0.04]">
                 <CardHeader className="text-center">
-                    <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-                        <CheckCircle className="h-10 w-10 text-green-600" />
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
+                        <CheckCircle className="h-7 w-7 text-green-600" />
                     </div>
-                    <CardTitle className="mt-4 text-3xl font-extrabold tracking-tight font-headline">Thank you for your order!</CardTitle>
+                    <CardTitle className="mt-4 text-2xl font-bold tracking-tight">Thank you for your order!</CardTitle>
                     <CardDescription className="mt-2 leading-relaxed">Your order has been placed successfully. A confirmation has been sent to {order.email}.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="bg-gradient-to-r from-green-50/80 via-emerald-50/60 to-teal-50/40 p-5 rounded-xl text-center mb-6">
+                    <div className="bg-secondary/30 p-5 rounded-xl text-center mb-6">
                         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Order ID</p>
                         <p className="mt-1 font-mono font-semibold text-lg">{order.id}</p>
                     </div>
@@ -63,7 +63,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                          <h3 className="font-semibold">Items Ordered</h3>
                         {order.items.map((item, index) => (
                              <div key={index} className="flex items-center gap-4">
-                                <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-border/60">
+                                <div className="relative h-16 w-16 rounded-xl overflow-hidden border border-border/30">
                                     {item.image ? (
                                         <Image src={item.image} alt={item.name} fill className="object-contain" />
                                     ) : (
@@ -106,10 +106,10 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                     </div>
                 </CardContent>
                 <CardFooter className="flex-col gap-3">
-                    <Button asChild className="w-full rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+                    <Button asChild className="w-full rounded-xl shadow-sm">
                         <Link href="/products">Continue Shopping</Link>
                     </Button>
-                     <Button asChild variant="ghost" className="w-full rounded-full transition-all duration-300">
+                     <Button asChild variant="ghost" className="w-full rounded-xl">
                         <Link href="/account/orders">View Order History</Link>
                     </Button>
                 </CardFooter>

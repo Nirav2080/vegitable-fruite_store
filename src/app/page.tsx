@@ -41,16 +41,16 @@ async function getPageData() {
 
 function HeroSkeleton() {
   return (
-     <section className="bg-accent">
+     <section className="bg-secondary/30">
         <div className="container mx-auto px-4 grid md:grid-cols-2 items-center gap-8">
-            <div className="py-12 md:py-24 text-center md:text-left">
-                <Skeleton className="h-6 w-1/2" />
-                <Skeleton className="h-12 w-full mt-4" />
-                <Skeleton className="h-6 w-4/5 mt-4" />
-                <Skeleton className="h-12 w-32 mt-8" />
+            <div className="py-12 md:py-24 text-center md:text-left space-y-4">
+                <Skeleton className="h-5 w-32 rounded-lg" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-5 w-4/5 rounded-lg" />
+                <Skeleton className="h-12 w-36 rounded-xl mt-4" />
             </div>
-             <div className="relative h-[500px]">
-                <Skeleton className="w-full h-full" />
+             <div className="relative h-[400px]">
+                <Skeleton className="w-full h-full rounded-2xl" />
             </div>
         </div>
       </section>
@@ -59,13 +59,16 @@ function HeroSkeleton() {
 
 function ProductsGridSkeleton() {
   return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-                <Skeleton className="h-48 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-8 w-full" />
+            <div key={i} className="space-y-3 rounded-2xl border border-border/30 p-4">
+                <Skeleton className="aspect-[4/3.5] w-full rounded-xl" />
+                <Skeleton className="h-4 w-3/4 rounded-lg" />
+                <Skeleton className="h-3 w-1/2 rounded-lg" />
+                <div className="flex justify-between pt-2">
+                  <Skeleton className="h-5 w-16 rounded-lg" />
+                  <Skeleton className="h-9 w-16 rounded-xl" />
+                </div>
             </div>
         ))}
       </div>
@@ -83,34 +86,43 @@ export default async function Home() {
         <HeroCarousel banners={banners} />
       </Suspense>
       
-      <section className="mx-auto max-w-7xl w-full px-4 pt-12 sm:px-6 sm:pt-16 md:pt-20 lg:px-8 overflow-hidden">
-        <Suspense fallback={<ProductsGridSkeleton />}>
-          <BestSellersSection 
-            products={popularProducts} 
-            categories={filterCategories} 
-          />
-        </Suspense>
+      {/* Section 1 — ODD (white) — BestSellers */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-7xl w-full px-4 py-16 sm:px-6 sm:py-20 md:py-24 lg:px-8 overflow-hidden">
+          <Suspense fallback={<ProductsGridSkeleton />}>
+            <BestSellersSection 
+              products={popularProducts} 
+              categories={filterCategories} 
+            />
+          </Suspense>
+        </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-20">
+      {/* Section 2 — EVEN (tinted) — FeaturedCategories */}
+      <section className="bg-secondary/30 py-16 sm:py-20 md:py-24">
         <FeaturedCategories />
       </section>
 
-      <Suspense fallback={<Skeleton className="h-72 w-full" />}>
+      {/* Section 3 — ODD (white) — DealsSection */}
+      <Suspense fallback={<Skeleton className="h-72 w-full rounded-none" />}>
         <DealsSection products={dealProducts} />
       </Suspense>
-      
-      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+
+      {/* Section 4 — EVEN (tinted) — OffersSection */}
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-none" />}>
         <OffersSection offers={offers} />
       </Suspense>
 
+      {/* Section 5 — ODD (white) — TrustSection */}
       <TrustSection />
 
-       <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      {/* Section 6 — EVEN (tinted) — PopularProducts */}
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
         <PopularProductsSlider products={organicProducts} title="Fresh Fruits & Vegetables" link="/products?filter=isOrganic" />
       </Suspense>
 
-       <Suspense fallback={<Skeleton className="h-72 w-full" />}>
+      {/* Section 7 — ODD (white) — ShopByBrand */}
+      <Suspense fallback={<Skeleton className="h-72 w-full rounded-none" />}>
         <ShopByBrandSection />
       </Suspense>
 

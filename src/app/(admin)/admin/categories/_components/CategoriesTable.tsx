@@ -81,7 +81,7 @@ export function CategoriesTable({ data }: { data: Category[] }) {
           {categoriesWithParents.map((category) => (
             <TableRow key={category.id}>
               <TableCell>
-                  <div className="w-10 h-10 border border-border/60 rounded-xl flex items-center justify-center bg-muted">
+                  <div className="w-10 h-10 border border-border/30 rounded-xl flex items-center justify-center bg-muted">
                     {category.icon ? (
                       <Image 
                         src={category.icon}
@@ -99,10 +99,10 @@ export function CategoriesTable({ data }: { data: Category[] }) {
               <TableCell className="text-muted-foreground">{category.parentName || '—'}</TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
-                    <Button asChild variant="outline" size="icon" className="rounded-full">
+                    <Button asChild variant="outline" size="icon" className="rounded-xl">
                        <Link href={`/admin/categories/${category.id}/edit`}><Pencil className="h-4 w-4" /></Link>
                     </Button>
-                    <Button variant="destructive" size="icon" className="rounded-full" onClick={() => openDeleteDialog(category.id)}>
+                    <Button variant="destructive" size="icon" className="rounded-xl" onClick={() => openDeleteDialog(category.id)}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
@@ -113,7 +113,7 @@ export function CategoriesTable({ data }: { data: Category[] }) {
       </Table>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-2xl border-border/60">
+        <AlertDialogContent className="rounded-2xl border-border/30">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -121,8 +121,8 @@ export function CategoriesTable({ data }: { data: Category[] }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="rounded-full bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="rounded-xl bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

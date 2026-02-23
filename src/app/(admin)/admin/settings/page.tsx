@@ -9,11 +9,11 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight font-headline">Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Configure your store preferences</p>
       </div>
 
-      <Card className="rounded-2xl border-border/60">
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>General Settings</CardTitle>
           <CardDescription>Basic store information and configuration.</CardDescription>
@@ -36,7 +36,7 @@ export default function AdminSettingsPage() {
             </div>
             <Separator />
             <div className="flex justify-end">
-              <Button type="submit" className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+              <Button type="submit" className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
                 <Save className="mr-2 h-4 w-4" /> Save Settings
               </Button>
             </div>

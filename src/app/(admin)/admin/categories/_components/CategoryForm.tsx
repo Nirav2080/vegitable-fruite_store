@@ -170,7 +170,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
                     <FormLabel>Category Image</FormLabel>
                      <div className="flex gap-4 items-start">
                         {iconPreview && (
-                            <div className="relative w-24 h-24 p-2 border border-border/60 rounded-xl flex items-center justify-center">
+                            <div className="relative w-24 h-24 p-2 border border-border/30 rounded-xl flex items-center justify-center">
                                 <Image src={iconPreview} alt="Category image preview" fill className="object-contain" />
                                 <Button
                                     type="button"
@@ -209,7 +209,7 @@ export function CategoryForm({ category }: CategoryFormProps) {
             )}
             />
         
-        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Category')}
         </Button>
       </form>

@@ -14,17 +14,17 @@ export default async function AdminOffersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight font-headline">Offers</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Offers</h1>
           <p className="text-sm text-muted-foreground mt-1">{offers.length} offers · {active} active</p>
         </div>
-        <Button asChild className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button asChild className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           <Link href="/admin/offers/new">
             <PlusCircle className="mr-2 h-5 w-5" />
             Add Offer
           </Link>
         </Button>
       </div>
-      <Card className="rounded-2xl border-border/60">
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>Manage Offers</CardTitle>
           <CardDescription>Create promotional offers and discounts for your customers.</CardDescription>

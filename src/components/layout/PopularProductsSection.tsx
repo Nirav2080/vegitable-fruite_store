@@ -33,16 +33,13 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
   }
 
   return (
-    <section className="w-full overflow-hidden">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 md:py-20 lg:px-8">
+    <section className="w-full bg-secondary/30">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 md:py-24 lg:px-8">
         {/* Header row */}
-        <div className="flex items-end justify-between mb-8 gap-4">
+        <div className="flex items-end justify-between mb-10 gap-4">
           <div className="min-w-0">
-            <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-              Fresh Picks
-            </span>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-tight font-headline sm:text-3xl md:text-4xl truncate">{title}</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Fresh Picks</p>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl truncate">{title}</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <CarouselNavButtons
@@ -51,9 +48,9 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
               canScrollPrev={canScrollPrev}
               canScrollNext={canScrollNext}
             />
-            <Button variant="outline" asChild className="hidden sm:inline-flex rounded-full border-primary/20 text-primary transition-all duration-200 hover:bg-primary/5 hover:shadow-sm">
+            <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex rounded-xl border-border/40 text-muted-foreground transition-all duration-200 hover:text-foreground hover:border-border/60">
               <Link href={link}>
-                See All <ArrowRight className="ml-2 h-4 w-4" />
+                See All <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
@@ -86,7 +83,7 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
                   'rounded-full transition-all duration-300 ease-out',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                   index === selectedIndex
-                    ? 'w-7 h-2.5 bg-primary shadow-sm shadow-primary/30'
+                    ? 'w-7 h-2.5 bg-primary shadow-sm shadow-black/[0.06]'
                     : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                 )}
                 aria-label={`Go to slide group ${index + 1}`}

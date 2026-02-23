@@ -75,8 +75,8 @@ export default function AccountPage() {
     if (!user) {
         return (
             <div>
-                 <h2 className="text-2xl font-extrabold tracking-tight font-headline">Account Dashboard</h2>
-                 <p className="text-muted-foreground leading-relaxed">Please log in to view your account details.</p>
+                 <h2 className="text-2xl font-bold tracking-tight">Account Dashboard</h2>
+                 <p className="text-sm text-muted-foreground leading-relaxed">Please log in to view your account details.</p>
             </div>
         )
     }
@@ -86,14 +86,14 @@ export default function AccountPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-extrabold tracking-tight font-headline">Account Dashboard</h2>
-                <p className="text-muted-foreground leading-relaxed">From your account dashboard you can view your recent orders and edit your password and account details.</p>
+                <h2 className="text-2xl font-bold tracking-tight">Account Dashboard</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">From your account dashboard you can view your recent orders and edit your password and account details.</p>
             </div>
              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-primary/20">
+                <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-md hover:shadow-black/[0.04] hover:-translate-y-0.5 hover:border-border/50">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
                                 <User className="w-4 h-4 text-primary" />
                             </div>
                             <span>My Profile</span>
@@ -113,10 +113,10 @@ export default function AccountPage() {
                         </Button>
                     </CardContent>
                 </Card>
-                 <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 hover:border-primary/20">
+                 <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-md hover:shadow-black/[0.04] hover:-translate-y-0.5 hover:border-border/50">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
                                 <Package className="w-4 h-4 text-primary" />
                             </div>
                            <span>My Orders</span>

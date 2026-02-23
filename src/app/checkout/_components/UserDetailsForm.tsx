@@ -126,23 +126,23 @@ export function UserDetailsForm({ user, onFormValidityChange, onUserUpdate }: Us
     return (
         <div className="space-y-6">
             {/* Customer Info */}
-            <div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
+            <div className="rounded-2xl border border-border/30 bg-background p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold">
-                            {hasShippingAddress && !isEditing ? <Check className="h-4 w-4" /> : '1'}
+                    <h2 className="text-sm font-bold tracking-tight flex items-center gap-2">
+                        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-green-600 text-white text-xs font-bold">
+                            {hasShippingAddress && !isEditing ? <Check className="h-3.5 w-3.5" /> : '1'}
                         </div>
                         Customer Information
                     </h2>
                     {!isEditing && (
-                        <Button variant="ghost" size="sm" className="rounded-full text-xs" onClick={() => setIsEditing(true)}>
+                        <Button variant="ghost" size="sm" className="rounded-xl text-xs" onClick={() => setIsEditing(true)}>
                             <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
                         </Button>
                     )}
                 </div>
 
                 {!isEditing && hasShippingAddress ? (
-                    <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+                    <div className="bg-secondary/20 rounded-xl p-4 space-y-2">
                         <div className="flex items-start gap-3">
                             <UserIcon className="h-4 w-4 text-muted-foreground mt-0.5" />
                             <div>
@@ -201,8 +201,8 @@ export function UserDetailsForm({ user, onFormValidityChange, onUserUpdate }: Us
 
                             {/* Shipping Address Section */}
                             <div className="pt-2">
-                                <h3 className="text-lg font-bold tracking-tight mb-3 flex items-center gap-2">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">2</div>
+                                <h3 className="text-sm font-bold tracking-tight mb-3 flex items-center gap-2">
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">2</div>
                                     Shipping Address
                                 </h3>
 
@@ -341,7 +341,7 @@ export function UserDetailsForm({ user, onFormValidityChange, onUserUpdate }: Us
                                 {hasShippingAddress && (
                                     <Button type="button" variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
                                 )}
-                                <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full px-6 shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02]">
+                                <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl px-6 shadow-sm">
                                     {form.formState.isSubmitting ? 'Saving...' : 'Save & Continue'}
                                 </Button>
                             </div>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Facebook, Instagram, Twitter, Youtube, Linkedin, Truck, CreditCard, ShieldCheck, Tag } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const mainLinks = [
   { label: "About", href: "/about" },
@@ -65,75 +66,87 @@ const PaymentMethods = () => (
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-primary text-primary-foreground/80">
-      {/* Decorative background blur accent */}
+    <footer className="relative overflow-hidden border-t border-white/5 bg-gray-950 dark:bg-slate-900 text-gray-300">
+      {/* Subtle decorative gradient */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute -left-20 bottom-0 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary/8 blur-[120px]" />
+        <div className="absolute -left-32 bottom-0 h-[400px] w-[400px] rounded-full bg-primary/5 blur-[100px]" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
-          <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-5">
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+          {/* Brand column */}
+          <div className="lg:col-span-4">
+            <Link href="/" className="inline-block mb-4 transition-opacity hover:opacity-80">
               <Logo className="h-8 w-auto text-white" />
             </Link>
-            <p className="max-w-sm mt-4 leading-relaxed text-primary-foreground/70">Delivering the freshest, locally-sourced produce from our farms to your family's table.</p>
-             <div className="flex gap-3 mt-7">
-                {socialLinks.map((social) => (
-                <Link href={social.href} key={social.name} aria-label={social.name} className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-foreground/10 bg-primary-foreground/5 text-primary-foreground/70 transition-all duration-300 hover:scale-105 hover:bg-primary-foreground/15 hover:text-white hover:shadow-lg">
-                    <social.icon className="h-4 w-4" />
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-gray-500">
+              Delivering the freshest, locally-sourced produce from our farms to your family's table.
+            </p>
+            <div className="flex gap-2 mt-8">
+              {socialLinks.map((social) => (
+                <Link
+                  href={social.href}
+                  key={social.name}
+                  aria-label={social.name}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-gray-500 transition-all duration-300 hover:bg-primary hover:text-white hover:scale-105"
+                >
+                  <social.icon className="h-4 w-4" />
                 </Link>
-                ))}
+              ))}
             </div>
           </div>
-          <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
+
+          {/* Links columns */}
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div>
-                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">My Account</h4>
-                <ul className="space-y-3">
-                  {accountLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Account</h4>
+              <ul className="space-y-3">
+                {accountLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-gray-500 transition-colors duration-200 hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
-                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">Helpful Links</h4>
-                <ul className="space-y-3">
-                  {helpfulLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Resources</h4>
+              <ul className="space-y-3">
+                {helpfulLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-gray-500 transition-colors duration-200 hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
-                <h4 className="font-extrabold tracking-tight text-white mb-5 text-sm uppercase">Main Menu</h4>
-                <ul className="space-y-3">
-                  {mainLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-sm transition-colors duration-200 hover:text-white">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Company</h4>
+              <ul className="space-y-3">
+                {mainLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-gray-500 transition-colors duration-200 hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-        <div className="mt-14 pt-8 border-t border-primary-foreground/10 flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-primary-foreground/60">&copy; {new Date().getFullYear()} Richmond Vege Mart. All Rights Reserved.</p>
-           <div className="flex items-center gap-3">
-                <p className="text-sm text-primary-foreground/60">We accept:</p>
-                <div className="flex items-center gap-2">
-                    <PaymentMethods />
-                </div>
-           </div>
+
+        {/* Bottom bar */}
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col-reverse sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-gray-600">
+            &copy; {new Date().getFullYear()} Richmond Vege Mart. All rights reserved.
+          </p>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-gray-600">We accept</span>
+            <PaymentMethods />
+          </div>
         </div>
       </div>
     </footer>

@@ -82,15 +82,15 @@ function SuccessContent() {
   if (error) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center flex flex-col items-center justify-center min-h-[400px] sm:px-6 lg:px-8">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-destructive/10">
-          <AlertTriangle className="h-10 w-10 text-destructive" />
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10">
+          <AlertTriangle className="h-7 w-7 text-destructive" />
         </div>
-        <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline text-destructive">Order Processing Failed</h1>
-        <p className="mt-3 text-muted-foreground max-w-md leading-relaxed">{error}</p>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight text-destructive">Order Processing Failed</h1>
+        <p className="mt-2 text-sm text-muted-foreground max-w-md leading-relaxed">{error}</p>
         {sessionId && (
           <p className="mt-4 text-xs text-muted-foreground">Session ID: {sessionId}</p>
         )}
-        <Button asChild className="mt-8 rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button asChild className="mt-8 rounded-xl px-8 shadow-sm">
           <Link href="/products">Continue Shopping</Link>
         </Button>
       </div>
@@ -100,7 +100,7 @@ function SuccessContent() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 text-center flex flex-col items-center justify-center min-h-[400px] sm:px-6 lg:px-8">
       <Loader2 className="mx-auto h-16 w-16 animate-spin text-primary" />
-      <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline">Processing your order...</h1>
+      <h1 className="mt-6 text-2xl font-bold tracking-tight">Processing your order...</h1>
       <p className="mt-3 text-muted-foreground leading-relaxed">
         Please wait while we confirm your payment and create your order. Do not close this page.
       </p>

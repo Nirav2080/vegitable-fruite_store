@@ -27,10 +27,10 @@ export default async function AdminOrdersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight font-headline">Orders</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Orders</h1>
           <p className="text-sm text-muted-foreground mt-1">{orders.length} total orders</p>
         </div>
-        <Button className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           <File className="mr-2 h-4 w-4" />
           Export
         </Button>
@@ -39,13 +39,13 @@ export default async function AdminOrdersPage() {
       {/* Status Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {statusCards.map((s) => (
-          <Card key={s.label} className={`rounded-2xl border-border/60 bg-gradient-to-br ${s.gradient}`}>
+          <Card key={s.label} className={`rounded-2xl border-border/30 bg-gradient-to-br ${s.gradient}`}>
             <CardContent className="flex items-center gap-3 p-4">
               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-background/80 ${s.iconColor}`}>
                 <s.icon className="h-4.5 w-4.5" />
               </div>
               <div>
-                <p className="text-xl font-extrabold tracking-tight leading-none">{s.count}</p>
+                <p className="text-xl font-bold tracking-tight leading-none">{s.count}</p>
                 <p className="text-xs text-muted-foreground font-medium mt-0.5">{s.label}</p>
               </div>
             </CardContent>
@@ -53,7 +53,7 @@ export default async function AdminOrdersPage() {
         ))}
       </div>
 
-      <Card className="rounded-2xl border-border/60">
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>All Orders</CardTitle>
           <CardDescription>Manage and track your store&apos;s orders.</CardDescription>

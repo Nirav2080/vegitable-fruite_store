@@ -12,8 +12,8 @@ export default async function EditBannerPage({ params }: { params: { id: string 
 
   return (
     <div>
-      <h1 className="text-3xl font-extrabold tracking-tight font-headline mb-6">Edit Banner</h1>
-      <Card className="rounded-2xl border-border/60">
+      <h1 className="text-3xl font-bold tracking-tight mb-6">Edit Banner</h1>
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>Banner Details</CardTitle>
         </CardHeader>

@@ -94,12 +94,12 @@ export function ProductReviews({ productId, reviews }: ProductReviewsProps) {
   return (
     <div className="grid md:grid-cols-2 gap-12">
         <div>
-            <h3 className="text-2xl font-extrabold tracking-tight font-headline mb-6">Customer Reviews</h3>
+            <h3 className="text-2xl font-bold tracking-tight mb-6">Customer Reviews</h3>
             {reviews.length > 0 ? (
                 <div className="space-y-6">
                     {reviews.map((review) => (
-                        <div key={review._id.toString()} className="flex gap-4 p-4 rounded-2xl border border-border/60 transition-all duration-300 hover:shadow-sm">
-                            <Avatar className="ring-1 ring-border/60">
+                        <div key={review._id.toString()} className="flex gap-4 p-4 rounded-2xl border border-border/30 transition-all duration-300 hover:shadow-sm">
+                            <Avatar className="ring-1 ring-border/30">
                                 <AvatarImage src={review.avatar} alt={review.author}/>
                                 <AvatarFallback className="bg-primary/10 text-primary">{review.author.charAt(0)}</AvatarFallback>
                             </Avatar>
@@ -122,7 +122,7 @@ export function ProductReviews({ productId, reviews }: ProductReviewsProps) {
             )}
         </div>
         <div>
-            <h3 className="text-2xl font-extrabold tracking-tight font-headline mb-4">Write a Review</h3>
+            <h3 className="text-2xl font-bold tracking-tight mb-4">Write a Review</h3>
              <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                      <FormField
@@ -164,7 +164,7 @@ export function ProductReviews({ productId, reviews }: ProductReviewsProps) {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" disabled={isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+                    <Button type="submit" disabled={isSubmitting} className="rounded-xl shadow-sm transition-all duration-300">
                         {isSubmitting ? 'Submitting...' : 'Submit Review'}
                     </Button>
                 </form>

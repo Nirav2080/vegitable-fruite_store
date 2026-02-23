@@ -113,7 +113,7 @@ export function BrandForm({ brand }: BrandFormProps) {
                     <FormLabel>Brand Logo</FormLabel>
                      <div className="flex gap-4 items-start">
                         {logoPreview && (
-                            <div className="relative w-24 h-24 p-2 border border-border/60 rounded-xl flex items-center justify-center bg-muted">
+                            <div className="relative w-24 h-24 p-2 border border-border/30 rounded-xl flex items-center justify-center bg-muted">
                                 <Image src={logoPreview} alt="Brand logo preview" fill className="object-contain" />
                                 <Button
                                     type="button"
@@ -152,7 +152,7 @@ export function BrandForm({ brand }: BrandFormProps) {
             )}
             />
         
-        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Brand')}
         </Button>
       </form>

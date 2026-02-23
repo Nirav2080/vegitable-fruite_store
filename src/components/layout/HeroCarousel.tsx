@@ -18,24 +18,14 @@ interface HeroCarouselProps {
 /* ── Empty / fallback state ─────────────────────────────── */
 function HeroFallback() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50/80 to-teal-50">
-      {/* Decorative background blobs */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-primary/5 blur-3xl sm:h-96 sm:w-96" />
-        <div className="absolute -bottom-16 -right-16 h-64 w-64 rounded-full bg-emerald-200/30 blur-3xl sm:h-80 sm:w-80" />
-        <div className="absolute left-1/2 top-1/3 h-48 w-48 -translate-x-1/2 rounded-full bg-teal-100/40 blur-2xl" />
-      </div>
-
+    <section className="relative overflow-hidden bg-secondary/30">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid min-h-[420px] items-center gap-8 py-12 sm:min-h-[460px] sm:py-16 md:min-h-[500px] lg:grid-cols-2 lg:gap-12 lg:py-20">
           {/* Text content — centered on mobile, left-aligned on lg */}
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-            <span className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-              Fresh &amp; Organic
-            </span>
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-3">Fresh &amp; Organic</p>
 
-            <h1 className="max-w-xl text-3xl font-extrabold leading-[1.12] tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-[3.5rem] font-headline">
+            <h1 className="max-w-xl text-3xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-4xl md:text-5xl">
               Farm Fresh Fruits &amp; Vegetables{' '}
               <span className="text-primary">Delivered Fast</span>
             </h1>
@@ -45,13 +35,13 @@ function HeroFallback() {
             </p>
 
             <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center sm:gap-4">
-              <Button asChild size="lg" className="w-full rounded-full px-8 text-base shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30 sm:w-auto">
+              <Button asChild size="lg" className="w-full rounded-xl px-8 text-base shadow-sm sm:w-auto">
                 <Link href="/products">
                   Shop Now
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="w-full rounded-full px-8 text-base sm:w-auto">
+              <Button asChild variant="outline" size="lg" className="w-full rounded-xl px-8 text-base border-border/30 sm:w-auto">
                 <Link href="/products">
                   Browse Categories
                 </Link>
@@ -79,19 +69,19 @@ function HeroFallback() {
           <div className="hidden lg:flex items-center justify-center">
             <div className="relative grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-4 pt-8">
-                <div className="h-40 w-40 overflow-hidden rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 shadow-lg xl:h-48 xl:w-48">
-                  <div className="flex h-full w-full items-center justify-center text-6xl xl:text-7xl">🥬</div>
+                <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
+                  <Image src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=400&fit=crop&q=80" alt="Fresh vegetables" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
                 </div>
-                <div className="h-40 w-40 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-amber-100 shadow-lg xl:h-48 xl:w-48">
-                  <div className="flex h-full w-full items-center justify-center text-6xl xl:text-7xl">🥕</div>
+                <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
+                  <Image src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&h=400&fit=crop&q=80" alt="Fresh carrots" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
                 </div>
               </div>
               <div className="flex flex-col gap-4">
-                <div className="h-40 w-40 overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 to-rose-100 shadow-lg xl:h-48 xl:w-48">
-                  <div className="flex h-full w-full items-center justify-center text-6xl xl:text-7xl">🍎</div>
+                <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
+                  <Image src="https://images.unsplash.com/photo-1568702846914-96b305d2uj78?w=400&h=400&fit=crop&q=80" alt="Fresh apples" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
                 </div>
-                <div className="h-40 w-40 overflow-hidden rounded-2xl bg-gradient-to-br from-yellow-50 to-lime-100 shadow-lg xl:h-48 xl:w-48">
-                  <div className="flex h-full w-full items-center justify-center text-6xl xl:text-7xl">🍋</div>
+                <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
+                  <Image src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=400&fit=crop&q=80" alt="Fresh fruits" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
                 </div>
               </div>
               {/* Floating accent circle */}
@@ -197,13 +187,13 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
                     <div className="flex flex-col items-center text-center md:items-start md:text-left md:max-w-2xl lg:max-w-3xl">
                       {/* Supertitle badge */}
                       {banner.supertitle && (
-                        <span className="mb-3 inline-block rounded-full border border-white/30 bg-white/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white backdrop-blur-sm sm:text-xs">
+                        <span className="mb-3 inline-block rounded-xl border border-white/20 bg-white/10 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-white backdrop-blur-sm sm:text-xs">
                           {banner.supertitle}
                         </span>
                       )}
 
                       {/* Title */}
-                      <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl font-headline drop-shadow-md">
+                      <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl drop-shadow-md">
                         {banner.title}
                       </h1>
 
@@ -218,7 +208,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
                       <Button
                         asChild
                         size="lg"
-                        className="mt-7 rounded-full px-8 text-sm font-semibold shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:shadow-primary/40 sm:mt-8 sm:w-auto sm:text-base"
+                        className="mt-7 rounded-xl px-8 text-sm font-semibold shadow-sm sm:mt-8 sm:w-auto sm:text-base"
                       >
                         <Link href={banner.href}>
                           Shop Now
@@ -241,7 +231,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
             type="button"
             aria-label="Previous slide"
             onClick={scrollPrev}
-            className="absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 p-2.5 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:flex lg:left-5 lg:p-3"
+            className="absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-xl border border-white/20 bg-black/30 p-2.5 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:flex lg:left-5 lg:p-3"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -249,7 +239,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
             type="button"
             aria-label="Next slide"
             onClick={scrollNext}
-            className="absolute right-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/30 p-2.5 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:flex lg:right-5 lg:p-3"
+            className="absolute right-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-xl border border-white/20 bg-black/30 p-2.5 text-white backdrop-blur-sm transition-colors hover:bg-black/50 md:flex lg:right-5 lg:p-3"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

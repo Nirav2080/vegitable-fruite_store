@@ -54,7 +54,7 @@ export function DynamicSearch() {
             ref={inputRef}
             type="search"
             placeholder="Search products..."
-            className=" pr-10 bg-secondary text-foreground rounded-full h-10 border-none focus-visible:ring-2 focus-visible:ring-primary"
+            className=" pr-10 bg-secondary text-foreground rounded-xl h-10 border-none focus-visible:ring-2 focus-visible:ring-primary"
             value={query}
             onChange={(e) => {
               const newQuery = e.target.value;
@@ -77,7 +77,7 @@ export function DynamicSearch() {
         </div>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] mt-2 rounded-2xl border-border/60 shadow-lg shadow-primary/5" 
+        className="w-[var(--radix-popover-trigger-width)] mt-2 rounded-2xl border-border/30 shadow-md shadow-black/[0.04]" 
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
         >

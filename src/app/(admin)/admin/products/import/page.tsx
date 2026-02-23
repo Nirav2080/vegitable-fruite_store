@@ -7,8 +7,8 @@ export default function ImportProductsPage() {
   const exampleJson = `[{"weight":"500g","price":12.99,"stock":50}]`;
   return (
     <div>
-      <h1 className="text-3xl font-extrabold tracking-tight font-headline mb-6">Import Products</h1>
-      <Card className="rounded-2xl border-border/60">
+      <h1 className="text-3xl font-bold tracking-tight mb-6">Import Products</h1>
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>Bulk Product Upload</CardTitle>
           <CardDescription>

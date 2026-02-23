@@ -76,12 +76,12 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         <div className='flex gap-4'>
           <div className="flex flex-col gap-2">
             {images.map((img, index) => (
-              <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-xl overflow-hidden border-2 transition-all duration-200 ${selectedImage === index ? 'border-primary shadow-md shadow-primary/20' : 'border-border/60 hover:border-primary/40'}`}>
+              <button key={index} onClick={() => setSelectedImage(index)} className={`w-20 h-20 relative rounded-xl overflow-hidden border-2 transition-all duration-200 ${selectedImage === index ? 'border-primary shadow-sm' : 'border-border/30 hover:border-primary/40'}`}>
                 <Image src={img} alt={`${product.name} thumbnail ${index + 1}`} fill className="object-contain" />
               </button>
             ))}
           </div>
-          <div className="aspect-square relative rounded-2xl overflow-hidden border border-border/60 flex-1 bg-gradient-to-br from-green-50/40 via-white to-emerald-50/30">
+          <div className="aspect-square relative rounded-2xl overflow-hidden border border-border/30 flex-1 bg-secondary/30">
             <Image
               src={images[selectedImage]}
               alt={product.name}
@@ -92,7 +92,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
         </div>
 
         <div className='-mt-2'>
-          <h1 className="text-3xl font-extrabold tracking-tight font-headline">{product.name}</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{product.name}</h1>
            <div className="flex items-center gap-4 mt-2">
              <div className="flex items-center gap-2">
                 {renderStars(product.rating || 0)}
@@ -105,7 +105,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
           
            {selectedVariant.stock > 0 ? (
                 <div className='flex items-center gap-2 mt-4 text-green-600'>
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-green-100">
                         <CheckCircle2 className="h-4 w-4"/>
                     </div>
                     <span className='font-semibold'>In Stock</span>
@@ -132,7 +132,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                       key={variant.weight}
                       variant={selectedVariant?.weight === variant.weight ? 'default' : 'outline'}
                       onClick={() => setSelectedVariant(variant)}
-                      className="rounded-full"
+                      className="rounded-xl"
                     >
                       {variant.weight}
                     </Button>
@@ -147,23 +147,23 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
                 {selectedVariant.originalPrice && (
                     <>
                         <span className="text-xl text-muted-foreground line-through">${selectedVariant.originalPrice.toFixed(2)}</span>
-                        <Badge variant="destructive" className="rounded-full">Save {discountPercentage}%</Badge>
+                        <Badge variant="destructive" className="rounded-lg">Save {discountPercentage}%</Badge>
                     </>
                 )}
             </div>
 
           <div className="mt-6">
             <div className="flex items-center gap-4">
-              <div className="flex items-center border border-border/60 rounded-full">
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)} className="rounded-full">
+              <div className="flex items-center border border-border/30 rounded-xl">
+                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(-1)} className="rounded-xl">
                   <Minus className="h-4 w-4" />
                 </Button>
                 <span className="w-10 text-center font-bold">{quantity}</span>
-                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)} className="rounded-full">
+                <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(1)} className="rounded-xl">
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" onClick={handleAddToCart} disabled={selectedVariant.stock === 0} className="flex-1 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+              <Button size="lg" onClick={handleAddToCart} disabled={selectedVariant.stock === 0} className="flex-1 rounded-xl shadow-sm">
                 <ShoppingCart className="mr-2 h-5 w-5" /> {selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </Button>
             </div>
@@ -186,7 +186,7 @@ export function ProductDetailsClient({ product, relatedProducts }: ProductDetail
       <Separator className="my-12" />
 
       <div>
-        <h2 className="text-2xl font-extrabold tracking-tight font-headline mb-6 text-center">You Might Also Like</h2>
+        <h2 className="text-xl font-bold tracking-tight mb-6 text-center">You Might Also Like</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
         </div>

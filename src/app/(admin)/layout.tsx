@@ -41,7 +41,8 @@ import { Badge } from '@/components/ui/badge';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { AdminThemeProvider } from '@/components/theme/AdminThemeProvider';
+import { AdminThemeToggle } from '@/components/theme/AdminThemeToggle';
 import { getOrders } from '@/lib/actions/orders';
 
 
@@ -129,12 +130,10 @@ export default function AdminLayout({
 
   if (pathname === '/admin/login') {
     return <>{children}</>;
-  }
-
-  if (!isClient) {
+  }  if (!isClient) {
     return (
        <div className="flex min-h-screen bg-muted/30">
-        <div className="w-64 border-r border-border/60 p-4 bg-background">
+        <div className="w-64 border-r border-border/30 p-4 bg-background">
             <Skeleton className="h-10 w-40 mb-8 rounded-xl" />
             <div className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (
@@ -143,7 +142,7 @@ export default function AdminLayout({
             </div>
         </div>
         <div className="flex-1">
-            <div className="h-14 border-b border-border/60 px-6 flex items-center">
+            <div className="h-14 border-b border-border/30 px-6 flex items-center">
               <Skeleton className="h-6 w-48 rounded-lg" />
             </div>
             <div className="p-6 space-y-4">
@@ -179,15 +178,16 @@ export default function AdminLayout({
   const breadcrumb = getBreadcrumb();
 
   return (
+    <AdminThemeProvider>
     <SidebarProvider>
       <Sidebar className="border-r-0">
         <SidebarHeader className="border-b border-border/40 pb-4">
           <Link href="/admin" className="flex items-center gap-2.5 px-1 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/25 transition-transform group-hover:scale-105">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-sm transition-transform group-hover:scale-105">
               <Package2 className="h-4.5 w-4.5 text-primary-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-extrabold tracking-tight leading-none">Admin Panel</span>
+              <span className="text-base font-bold tracking-tight leading-none">Admin Panel</span>
               <span className="text-[10px] text-muted-foreground font-medium">Store Management</span>
             </div>
           </Link>
@@ -234,7 +234,7 @@ export default function AdminLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border/60 bg-background/80 backdrop-blur-xl px-4 lg:h-[60px] lg:px-6">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border/30 bg-background/80 backdrop-blur-xl px-4 lg:h-[60px] lg:px-6">
           <SidebarTrigger className="md:hidden" />
 
           {/* Breadcrumb */}
@@ -252,16 +252,16 @@ export default function AdminLayout({
 
           <div className="flex-1" />
 
-          <ThemeToggle />
+          <AdminThemeToggle />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted h-9 w-9">
+              <Button variant="ghost" size="icon" className="rounded-xl hover:bg-muted h-9 w-9">
                 <CircleUser className="h-5 w-5" />
                 <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 rounded-xl border-border/60 shadow-lg">
+            <DropdownMenuContent align="end" className="w-48 rounded-xl border-border/30 shadow-lg">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-0.5">
                   <p className="text-sm font-semibold">Admin</p>
@@ -288,5 +288,6 @@ export default function AdminLayout({
         </main>
       </SidebarInset>
     </SidebarProvider>
+    </AdminThemeProvider>
   );
 }

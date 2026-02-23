@@ -7,7 +7,7 @@ import { Logo } from "@/components/icons/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus, Search, MapPin, ChevronDown } from "lucide-react";
+import { ShoppingCart, User, Menu, Heart, LogOut, Package, Settings, LogIn, UserPlus } from "lucide-react";
 import { DynamicSearch } from "@/components/search/DynamicSearch";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
@@ -22,6 +22,7 @@ import {
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 
 const mainNavLinks = [
@@ -74,40 +75,47 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:gap-4 sm:h-18 sm:px-6 lg:h-20 lg:px-8">
-        <Link href="/" className="flex items-center shrink-0">
-          <Logo className="h-7 sm:h-8 md:h-10 w-auto text-primary" />
+    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/50 transition-all duration-300">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:h-[4.5rem] sm:gap-3 sm:px-6 lg:h-20 lg:px-8">
+        {/* Logo */}
+        <Link href="/" className="flex items-center shrink-0 transition-opacity duration-200 hover:opacity-80">
+          <Logo className="h-5 min-[400px]:h-7 sm:h-8 md:h-9 w-auto text-primary" />
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium">
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center gap-0.5">
           {mainNavLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="rounded-full px-4 py-2 text-foreground/70 transition-all duration-200 hover:bg-accent hover:text-foreground">
+            <Link
+              key={link.href}
+              href={link.href}
+              className="relative rounded-xl px-4 py-2 text-sm font-medium text-foreground/60 transition-all duration-200 hover:bg-accent hover:text-foreground"
+            >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2 md:gap-4">
-          <Button variant="outline" className="hidden md:flex items-center gap-2 rounded-full border-border/60 text-sm shadow-sm transition-all duration-200 hover:shadow-md">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span>Auckland</span>
-            <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-          </Button>
-
-          <div className="hidden md:flex w-full max-w-xs">
+        {/* Actions group */}
+        <div className="flex flex-1 items-center justify-end gap-1 sm:gap-1.5 lg:gap-3">
+          {/* Search (desktop) */}
+          <div className="hidden md:flex w-full max-w-[240px] lg:max-w-xs">
             <DynamicSearch />
           </div>
 
+          {/* Account dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative shrink-0 hover:bg-accent hidden sm:flex">
-                <User className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative shrink-0 rounded-xl text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground hidden sm:flex"
+              >
+                <User className="h-[1.15rem] w-[1.15rem]" />
                 <span className="sr-only">My Account</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-56 rounded-xl border-border/40 shadow-xl shadow-black/5">
+              <DropdownMenuLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {isClient && isLoggedIn ? (
                 <>
@@ -155,63 +163,92 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button asChild variant="ghost" size="icon" className="relative shrink-0 rounded-full transition-all duration-200 hover:bg-accent hover:shadow-sm">
+          {/* Wishlist */}
+          <Button asChild variant="ghost" size="icon" className="relative shrink-0 rounded-xl text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground">
             <Link href="/wishlist">
-              <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Heart className="h-[1.15rem] w-[1.15rem]" />
               {isClient && wishlistCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-1.5 -right-1.5 h-5 w-5 p-0 flex items-center justify-center text-[10px] font-bold rounded-full shadow-sm">{wishlistCount}</Badge>
+                <span className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm shadow-black/[0.06]">{wishlistCount}</span>
               )}
               <span className="sr-only">Wishlist</span>
             </Link>
           </Button>
-          <Button asChild variant="ghost" size="icon" className="relative shrink-0 rounded-full transition-all duration-200 hover:bg-accent hover:shadow-sm">
+
+          {/* Theme toggle — hidden on tiny screens; available in mobile sheet */}
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
+
+          {/* Cart */}
+          <Button asChild variant="ghost" size="icon" className="relative shrink-0 rounded-xl text-muted-foreground transition-all duration-200 hover:bg-accent hover:text-foreground">
             <Link href="/cart">
-              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ShoppingCart className="h-[1.15rem] w-[1.15rem]" />
               {isClient && cartCount > 0 && (
-                <Badge variant="destructive" className="absolute -top-1.5 -right-1.5 h-5 w-5 p-0 flex items-center justify-center text-[10px] font-bold rounded-full shadow-sm">{cartCount}</Badge>
+                <span className="absolute -top-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm shadow-black/[0.06]">{cartCount}</span>
               )}
               <span className="sr-only">Shopping Cart</span>
             </Link>
           </Button>
+
+          {/* Mobile menu */}
           <div className="lg:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:bg-accent shrink-0">
-                  <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+                <Button variant="ghost" size="icon" className="shrink-0 rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground">
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="flex flex-col p-0">
-                <SheetHeader className="p-4 pb-0 flex flex-row items-center justify-end ">
+              <SheetContent side="right" className="flex flex-col p-0 w-[85vw] max-w-sm border-border/30 overflow-hidden">
+                {/* Sticky close row */}
+                <SheetHeader className="shrink-0 flex flex-row items-center justify-between px-5 pt-5 pb-3 border-b border-border/20">
+                  <Link href="/" onClick={() => setOpen(false)}>
+                    <Logo className="h-5 w-auto text-primary" />
+                  </Link>
                   <SheetClose />
                 </SheetHeader>
-                <div className="p-5 mt-6 pt-0">
+
+                {/* Scrollable body */}
+                <div className="flex-1 overflow-y-auto overscroll-contain">
+
+                {/* Mobile search */}
+                <div className="px-5 pt-4 pb-2">
                   <DynamicSearch />
                 </div>
-                <nav className="flex flex-col gap-0.5 px-3 pt-0">
+
+                {/* Theme toggle in mobile sheet */}
+                <div className="px-5 py-3 mt-1 flex items-center justify-between border-t border-border/20">
+                  <span className="text-sm font-medium text-muted-foreground">Appearance</span>
+                  <ThemeToggle />
+                </div>
+
+                <nav className="flex flex-col gap-0.5 px-3 pb-4">
                   {mainNavLinks.map((link) => (
                     <SheetClose asChild key={link.href}>
-                      <Link href={link.href} className="text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent">
+                      <Link
+                        href={link.href}
+                        className="text-[15px] font-medium rounded-xl px-4 py-3.5 text-foreground/70 transition-colors duration-200 hover:bg-accent hover:text-foreground"
+                      >
                         {link.label}
                       </Link>
                     </SheetClose>
                   ))}
-                  <Separator className="my-2" />
+                  <Separator className="my-3" />
                   {isClient && isLoggedIn ? (
                     <>
                       <SheetClose asChild>
-                        <Link href="/account" className="flex items-center gap-3 text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent">
+                        <Link href="/account" className="flex items-center gap-3 text-[15px] font-medium rounded-xl px-4 py-3.5 text-foreground/70 transition-colors duration-200 hover:bg-accent hover:text-foreground">
                           <User className="h-4 w-4" />
                           <span>My Account</span>
                         </Link>
                       </SheetClose>
                       <SheetClose asChild>
-                        <Link href="/account/orders" className="flex items-center gap-3 text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent">
+                        <Link href="/account/orders" className="flex items-center gap-3 text-[15px] font-medium rounded-xl px-4 py-3.5 text-foreground/70 transition-colors duration-200 hover:bg-accent hover:text-foreground">
                           <Package className="h-4 w-4" />
                           <span>Order History</span>
                         </Link>
                       </SheetClose>
                       <SheetClose asChild>
-                        <button onClick={handleLogout} className="flex items-center gap-3 text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent text-destructive w-full text-left">
+                        <button onClick={handleLogout} className="flex items-center gap-3 text-[15px] font-medium rounded-xl px-4 py-3.5 text-destructive w-full text-left transition-colors duration-200 hover:bg-destructive/5">
                           <LogOut className="h-4 w-4" />
                           <span>Logout</span>
                         </button>
@@ -220,13 +257,13 @@ export function Header() {
                   ) : (
                     <>
                       <SheetClose asChild>
-                        <Link href="/login" className="flex items-center gap-3 text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent">
+                        <Link href="/login" className="flex items-center gap-3 text-[15px] font-medium rounded-xl px-4 py-3.5 text-foreground/70 transition-colors duration-200 hover:bg-accent hover:text-foreground">
                           <LogIn className="h-4 w-4" />
                           <span>Login</span>
                         </Link>
                       </SheetClose>
                       <SheetClose asChild>
-                        <Link href="/register" className="flex items-center gap-3 text-base font-semibold rounded-xl px-4 py-3 transition-colors duration-200 hover:bg-accent">
+                        <Link href="/register" className="flex items-center gap-3 text-[15px] font-medium rounded-xl px-4 py-3.5 text-foreground/70 transition-colors duration-200 hover:bg-accent hover:text-foreground">
                           <UserPlus className="h-4 w-4" />
                           <span>Sign Up</span>
                         </Link>
@@ -234,6 +271,8 @@ export function Header() {
                     </>
                   )}
                 </nav>
+
+                </div>{/* end scrollable body */}
               </SheetContent>
             </Sheet>
           </div>

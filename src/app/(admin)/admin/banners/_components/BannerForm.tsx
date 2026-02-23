@@ -211,7 +211,7 @@ export function BannerForm({ banner }: BannerFormProps) {
             control={form.control}
             name="isActive"
             render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4">
+            <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/30 p-4">
                 <div className="space-y-0.5">
                 <FormLabel className="text-base">
                     Active
@@ -229,7 +229,7 @@ export function BannerForm({ banner }: BannerFormProps) {
             </FormItem>
             )}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Banner')}
         </Button>
       </form>

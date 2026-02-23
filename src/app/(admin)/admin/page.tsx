@@ -49,7 +49,7 @@ export default async function AdminDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-extrabold tracking-tight font-headline">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground text-sm">Welcome back! Here&apos;s an overview of your store.</p>
       </div>
 
@@ -79,7 +79,7 @@ export default async function AdminDashboard() {
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
+        <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Revenue</CardTitle>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/20 transition-transform group-hover:scale-110">
@@ -87,7 +87,7 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold tracking-tight">${data.totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold tracking-tight">${data.totalRevenue.toFixed(2)}</div>
             <div className="mt-1">
               <GrowthIndicator value={data.revenueGrowth} />
               <span className="text-xs text-muted-foreground ml-1">vs last month</span>
@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
+        <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Orders</CardTitle>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20 transition-transform group-hover:scale-110">
@@ -103,7 +103,7 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold tracking-tight">{data.totalSales}</div>
+            <div className="text-2xl font-bold tracking-tight">{data.totalSales}</div>
             <div className="mt-1">
               <GrowthIndicator value={data.salesGrowth} />
               <span className="text-xs text-muted-foreground ml-1">vs last month</span>
@@ -111,7 +111,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
+        <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Customers</CardTitle>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 shadow-lg shadow-purple-500/20 transition-transform group-hover:scale-110">
@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold tracking-tight">{data.totalCustomers}</div>
+            <div className="text-2xl font-bold tracking-tight">{data.totalCustomers}</div>
             <div className="mt-1">
               <GrowthIndicator value={data.customerGrowth} />
               <span className="text-xs text-muted-foreground ml-1">vs last month</span>
@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/60 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
+        <Card className="rounded-2xl border-border/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Products</CardTitle>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg shadow-amber-500/20 transition-transform group-hover:scale-110">
@@ -135,7 +135,7 @@ export default async function AdminDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-extrabold tracking-tight">{data.totalProducts}</div>
+            <div className="text-2xl font-bold tracking-tight">{data.totalProducts}</div>
             <p className="text-xs text-muted-foreground mt-1">
               {data.totalCategories} categories · {data.totalBrands} brands
             </p>
@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
 
       {/* Charts + Order Status Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 rounded-2xl border-border/60">
+        <Card className="lg:col-span-2 rounded-2xl border-border/30">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
@@ -160,7 +160,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/60">
+        <Card className="rounded-2xl border-border/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5 text-primary" />
@@ -195,13 +195,13 @@ export default async function AdminDashboard() {
 
       {/* Recent Orders + Top Products Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 rounded-2xl border-border/60">
+        <Card className="lg:col-span-2 rounded-2xl border-border/30">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle>Recent Orders</CardTitle>
               <CardDescription>Latest orders from your store</CardDescription>
             </div>
-            <Button asChild variant="outline" size="sm" className="rounded-full border-border/60">
+            <Button asChild variant="outline" size="sm" className="rounded-xl border-border/30">
               <Link href="/admin/orders">
                 View All
                 <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-border/60">
+        <Card className="rounded-2xl border-border/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
@@ -290,7 +290,7 @@ export default async function AdminDashboard() {
           { href: '/admin/banners/new', icon: Award, label: 'Add Banner', color: 'from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20', iconColor: 'text-amber-600' },
         ].map((item) => (
           <Link key={item.href} href={item.href}>
-            <Card className={`rounded-2xl border-border/60 bg-gradient-to-br ${item.color} transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer`}>
+            <Card className={`rounded-2xl border-border/30 bg-gradient-to-br ${item.color} transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer`}>
               <CardContent className="flex flex-col items-center justify-center py-6 gap-2">
                 <item.icon className={`h-6 w-6 ${item.iconColor}`} />
                 <span className="text-sm font-semibold">{item.label}</span>

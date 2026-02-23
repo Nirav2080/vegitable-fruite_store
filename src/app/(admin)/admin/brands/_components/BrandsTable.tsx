@@ -75,7 +75,7 @@ export function BrandsTable({ data }: { data: Brand[] }) {
           {data.map((brand) => (
             <TableRow key={brand.id}>
               <TableCell>
-                  <div className="w-12 h-12 border border-border/60 rounded-xl flex items-center justify-center bg-muted">
+                  <div className="w-12 h-12 border border-border/30 rounded-xl flex items-center justify-center bg-muted">
                     {brand.logo ? (
                       <Image 
                         src={brand.logo}
@@ -92,10 +92,10 @@ export function BrandsTable({ data }: { data: Brand[] }) {
               <TableCell className="font-medium">{brand.name}</TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
-                    <Button asChild variant="outline" size="icon" className="rounded-full">
+                    <Button asChild variant="outline" size="icon" className="rounded-xl">
                        <Link href={`/admin/brands/${brand.id}/edit`}><Pencil className="h-4 w-4" /></Link>
                     </Button>
-                    <Button variant="destructive" size="icon" className="rounded-full" onClick={() => openDeleteDialog(brand.id)}>
+                    <Button variant="destructive" size="icon" className="rounded-xl" onClick={() => openDeleteDialog(brand.id)}>
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
@@ -106,7 +106,7 @@ export function BrandsTable({ data }: { data: Brand[] }) {
       </Table>
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-2xl border-border/60">
+        <AlertDialogContent className="rounded-2xl border-border/30">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -114,8 +114,8 @@ export function BrandsTable({ data }: { data: Brand[] }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="rounded-full bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="rounded-xl bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

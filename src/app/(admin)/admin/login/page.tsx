@@ -51,12 +51,12 @@ export default function AdminLoginPage() {
       {/* Decorative blur blobs */}
       <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
-      <Card className="relative mx-auto max-w-sm rounded-2xl border-border/60 shadow-xl shadow-primary/5">
+      <Card className="relative mx-auto max-w-sm rounded-2xl border-border/30 shadow-xl shadow-primary/5">
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
           </div>
-          <CardTitle className="text-2xl font-extrabold tracking-tight">Admin Login</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">Admin Login</CardTitle>
           <CardDescription className="leading-relaxed">
             Enter your email and password below to login.
           </CardDescription>
@@ -87,7 +87,7 @@ export default function AdminLoginPage() {
                 placeholder='password'
                 />
             </div>
-            <Button type="submit" className="w-full rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30" disabled={isLoading}>
+            <Button type="submit" className="w-full rounded-xl shadow-sm transition-all duration-300 hover:shadow-md" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>

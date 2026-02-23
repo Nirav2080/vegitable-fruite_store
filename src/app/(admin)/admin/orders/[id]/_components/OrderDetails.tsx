@@ -76,7 +76,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
     return (
         <div className="space-y-6">
             {/* Status Timeline */}
-            <Card className="rounded-2xl border-border/60">
+            <Card className="rounded-2xl border-border/30">
                 <CardContent className="pt-6">
                     {isCancelled ? (
                         <div className="flex items-center justify-center gap-3 py-4">
@@ -116,13 +116,13 @@ export function OrderDetails({ order }: OrderDetailsProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Order Items */}
-                <Card className="lg:col-span-2 rounded-2xl border-border/60">
+                <Card className="lg:col-span-2 rounded-2xl border-border/30">
                     <CardHeader>
                         <CardTitle className="text-lg">Order Items ({order.items.length})</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {order.items.map((item: EnrichedOrderItem, index) => (
-                            <div key={index} className="flex items-center gap-4 p-4 border border-border/60 rounded-xl hover:bg-muted/30 transition-colors">
+                            <div key={index} className="flex items-center gap-4 p-4 border border-border/30 rounded-xl hover:bg-muted/30 transition-colors">
                                 <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-muted flex-shrink-0">
                                     {item.image ? (
                                         <Image src={item.image} alt={item.name} fill className="object-contain" />
@@ -166,7 +166,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                 {/* Sidebar */}
                 <div className="space-y-6">
                     {/* Update Status */}
-                    <Card className="rounded-2xl border-border/60">
+                    <Card className="rounded-2xl border-border/30">
                         <CardHeader>
                             <CardTitle className="text-lg">Update Status</CardTitle>
                         </CardHeader>
@@ -179,13 +179,13 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                                 <SelectTrigger className="rounded-lg">
                                     <SelectValue placeholder="Change status" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-border/60">
+                                <SelectContent className="rounded-xl border-border/30">
                                     {orderStatuses.map(s => (
                                         <SelectItem key={s} value={s}>{s}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Button onClick={handleStatusUpdate} disabled={isUpdating || status === order.status} className="w-full rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+                            <Button onClick={handleStatusUpdate} disabled={isUpdating || status === order.status} className="w-full rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
                                 <Save className="mr-2 h-4 w-4" />
                                 {isUpdating ? 'Updating...' : 'Update Status'}
                             </Button>
@@ -193,7 +193,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
                     </Card>
 
                     {/* Customer Info */}
-                    <Card className="rounded-2xl border-border/60">
+                    <Card className="rounded-2xl border-border/30">
                         <CardHeader>
                             <CardTitle className="text-lg">Customer</CardTitle>
                         </CardHeader>
@@ -234,7 +234,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
 
                     {/* Shipping Address */}
                     {order.shippingAddress && (
-                        <Card className="rounded-2xl border-border/60">
+                        <Card className="rounded-2xl border-border/30">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     <MapPin className="h-4 w-4" /> Shipping Address
@@ -253,7 +253,7 @@ export function OrderDetails({ order }: OrderDetailsProps) {
 
                     {/* Billing Address */}
                     {order.billingAddress && (
-                        <Card className="rounded-2xl border-border/60">
+                        <Card className="rounded-2xl border-border/30">
                             <CardHeader>
                                 <CardTitle className="text-lg flex items-center gap-2">
                                     <Mail className="h-4 w-4" /> Billing Address

@@ -108,7 +108,7 @@ export default function AccountOrdersPage() {
 
     return (
         <div>
-            <h2 className="text-2xl font-extrabold tracking-tight font-headline mb-4">My Orders</h2>
+            <h2 className="text-xl font-bold tracking-tight mb-4">My Orders</h2>
              <Table>
                 <TableHeader>
                     <TableRow>
@@ -127,13 +127,13 @@ export default function AccountOrdersPage() {
                             {format(new Date(order.date), 'dd MMM yyyy')}
                         </TableCell>
                         <TableCell>
-                        <Badge className={cn(getStatusClass(order.status), 'rounded-full')} variant="outline">
+                        <Badge className={cn(getStatusClass(order.status), 'rounded-lg')} variant="outline">
                             {order.status}
                         </Badge>
                         </TableCell>
                         <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
                         <TableCell className="text-right flex gap-2 justify-end">
-                           <Button asChild variant="outline" size="icon" className="rounded-full border-border/60 transition-all duration-200 hover:shadow-sm">
+                           <Button asChild variant="outline" size="icon" className="rounded-xl border-border/30 transition-all duration-200 hover:shadow-sm">
                                <Link href={`/order/${order.id}`}>
                                    <Eye className="h-4 w-4" />
                                </Link>

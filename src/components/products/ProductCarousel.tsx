@@ -96,14 +96,14 @@ export function ProductCarousel({
         disabled={!canScrollPrev}
         className={cn(
           'absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-20',
-          'h-10 w-10 md:h-11 md:w-11 rounded-full',
+          'h-10 w-10 md:h-11 md:w-11 rounded-xl',
           'flex items-center justify-center',
           'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md',
-          'border border-gray-200/80 dark:border-gray-700/80',
-          'shadow-lg shadow-black/10',
+          'border border-border/30',
+          'shadow-sm shadow-black/[0.04]',
           'text-gray-700 dark:text-gray-200',
           'transition-all duration-300 ease-out',
-          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-xl hover:shadow-primary/20 hover:scale-110',
+          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md',
           'disabled:opacity-0 disabled:pointer-events-none',
           'opacity-0 group-hover/carousel:opacity-100',
           'focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
@@ -118,14 +118,14 @@ export function ProductCarousel({
         disabled={!canScrollNext}
         className={cn(
           'absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-20',
-          'h-10 w-10 md:h-11 md:w-11 rounded-full',
+          'h-10 w-10 md:h-11 md:w-11 rounded-xl',
           'flex items-center justify-center',
           'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md',
-          'border border-gray-200/80 dark:border-gray-700/80',
-          'shadow-lg shadow-black/10',
+          'border border-border/30',
+          'shadow-sm shadow-black/[0.04]',
           'text-gray-700 dark:text-gray-200',
           'transition-all duration-300 ease-out',
-          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-xl hover:shadow-primary/20 hover:scale-110',
+          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md',
           'disabled:opacity-0 disabled:pointer-events-none',
           'opacity-0 group-hover/carousel:opacity-100',
           'focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
@@ -146,7 +146,7 @@ export function ProductCarousel({
                 'rounded-full transition-all duration-300 ease-out',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                 index === selectedIndex
-                  ? 'w-7 h-2.5 bg-primary shadow-sm shadow-primary/30'
+                  ? 'w-7 h-2.5 bg-primary shadow-sm shadow-black/[0.06]'
                   : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
               )}
               aria-label={`Go to slide group ${index + 1}`}
@@ -178,14 +178,14 @@ export function CarouselNavButtons({
         onClick={onPrev}
         disabled={!canScrollPrev}
         className={cn(
-          'h-9 w-9 md:h-10 md:w-10 rounded-full',
+          'h-9 w-9 md:h-10 md:w-10 rounded-xl',
           'flex items-center justify-center',
-          'border-2 border-gray-200 dark:border-gray-700',
+          'border border-border/30',
           'bg-white dark:bg-gray-900',
           'text-gray-600 dark:text-gray-300',
           'transition-all duration-200',
-          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md hover:shadow-primary/20',
-          'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:hover:shadow-none'
+          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md',
+          'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-border/30 disabled:hover:shadow-none'
         )}
         aria-label="Previous"
       >
@@ -195,14 +195,14 @@ export function CarouselNavButtons({
         onClick={onNext}
         disabled={!canScrollNext}
         className={cn(
-          'h-9 w-9 md:h-10 md:w-10 rounded-full',
+          'h-9 w-9 md:h-10 md:w-10 rounded-xl',
           'flex items-center justify-center',
-          'border-2 border-gray-200 dark:border-gray-700',
+          'border border-border/30',
           'bg-white dark:bg-gray-900',
           'text-gray-600 dark:text-gray-300',
           'transition-all duration-200',
-          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md hover:shadow-primary/20',
-          'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-gray-200 disabled:hover:shadow-none'
+          'hover:bg-primary hover:text-white hover:border-primary hover:shadow-md',
+          'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-gray-600 disabled:hover:border-border/30 disabled:hover:shadow-none'
         )}
         aria-label="Next"
       >

@@ -171,8 +171,8 @@ export default function AccountProfilePage() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl font-extrabold tracking-tight font-headline">My Profile</h2>
-                <p className="text-muted-foreground leading-relaxed">Update your personal information and email address.</p>
+                <h2 className="text-xl font-bold tracking-tight">My Profile</h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">Update your personal information and email address.</p>
             </div>
             <Separator />
             <Form {...form}>
@@ -182,7 +182,7 @@ export default function AccountProfilePage() {
                             <AvatarImage src={user.avatar} alt="User avatar" />
                             <AvatarFallback className="bg-primary/10 text-primary font-semibold">{userInitials}</AvatarFallback>
                         </Avatar>
-                        <Button type="button" variant="outline" className="rounded-full border-border/60 transition-all duration-300 hover:shadow-sm">Change Photo</Button>
+                        <Button type="button" variant="outline" className="rounded-xl border-border/30 shadow-sm">Change Photo</Button>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -321,7 +321,7 @@ export default function AccountProfilePage() {
                     </div>
 
                     <div className="pt-2">
-                        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+                        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm">
                             {form.formState.isSubmitting ? 'Saving...' : 'Save Changes'}
                         </Button>
                     </div>

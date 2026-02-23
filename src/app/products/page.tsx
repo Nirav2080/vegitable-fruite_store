@@ -22,13 +22,14 @@ function ProductsSkeleton() {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="space-y-4">
-                    <Skeleton className="h-48 w-full" />
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-4/5" />
-                        <Skeleton className="h-4 w-1/2" />
+                <div key={i} className="space-y-3 rounded-2xl border border-border/30 p-4">
+                    <Skeleton className="aspect-[4/3.5] w-full rounded-xl" />
+                    <Skeleton className="h-4 w-3/4 rounded-lg" />
+                    <Skeleton className="h-3 w-1/2 rounded-lg" />
+                    <div className="flex justify-between pt-1">
+                      <Skeleton className="h-5 w-16 rounded-lg" />
+                      <Skeleton className="h-9 w-16 rounded-xl" />
                     </div>
-                     <Skeleton className="h-8 w-1/3" />
                 </div>
             ))}
         </div>
@@ -49,9 +50,9 @@ function FilterSidebarContent({ categories, attributes, brands, selectedFilters,
 
     return (
         <div className="space-y-6">
-            <Card>
+            <Card className="rounded-2xl border-border/30 shadow-none">
                 <CardHeader>
-                    <CardTitle>Filter By</CardTitle>
+                    <CardTitle className="text-sm font-semibold">Filter By</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Accordion type="multiple" defaultValue={['category', 'attributes', 'brand']} className="w-full">
@@ -299,7 +300,8 @@ function ProductsPageContent() {
 
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:py-12 lg:px-8">
+    <div>
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 md:py-16 lg:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
         <aside className="hidden lg:block lg:col-span-1 sticky top-24">
             <FilterSidebarContent 
@@ -312,30 +314,27 @@ function ProductsPageContent() {
         </aside>
 
         <main className="lg:col-span-3">
-          <header className="mb-8">
-              <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
-                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-                  Our Products
-              </span>
-              <h1 className="mt-2 text-3xl font-extrabold tracking-tight font-headline md:text-4xl">Organic Products</h1>
-              <p className="mt-3 text-muted-foreground max-w-2xl leading-relaxed">Discover our favorites fashionable discoveries, a selection of cool items to integrate in your wardrobe. Compose a unique style with personality which matches your own.</p>
+          <header className="mb-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Our Products</p>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Fresh & Organic Products</h1>
+              <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">Discover our curated selection of farm-fresh produce, organic items, and seasonal favourites delivered to your door.</p>
           </header>
           
-          <div className="hidden lg:flex justify-between items-center mb-6 p-4 border border-border/60 rounded-2xl bg-gradient-to-r from-green-50/30 to-emerald-50/20">
+          <div className="hidden lg:flex justify-between items-center mb-6 p-3.5 border border-border/30 rounded-2xl bg-secondary/30">
             <div className='flex items-center gap-4'>
-                <div className="flex items-center gap-1.5">
-                    <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-xl bg-background" onClick={() => setViewMode('grid')}><LayoutGrid className="h-4 w-4" /></Button>
-                    <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-xl" onClick={() => setViewMode('list')}><List className="h-4 w-4" /></Button>
+                <div className="flex items-center gap-1">
+                    <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-xl h-8 w-8" onClick={() => setViewMode('grid')}><LayoutGrid className="h-3.5 w-3.5" /></Button>
+                    <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-xl h-8 w-8" onClick={() => setViewMode('list')}><List className="h-3.5 w-3.5" /></Button>
                 </div>
-                <p className="text-muted-foreground text-sm">{isLoading ? 'Loading...' : `Showing ${filteredProducts.length} products.`}</p>
+                <p className="text-muted-foreground text-xs">{isLoading ? 'Loading...' : `Showing ${filteredProducts.length} products`}</p>
             </div>
             <div className="flex items-center gap-2">
-              <Label>Sort by:</Label>
+              <Label className="text-xs text-muted-foreground">Sort:</Label>
               <Select defaultValue="popularity">
-                <SelectTrigger className="w-[180px] bg-background">
+                <SelectTrigger className="w-[160px] bg-card rounded-xl text-xs h-8 border-border/30">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   <SelectItem value="popularity">Popularity</SelectItem>
                   <SelectItem value="price-asc">Price: Low to High</SelectItem>
                   <SelectItem value="price-desc">Price: High to Low</SelectItem>
@@ -345,11 +344,11 @@ function ProductsPageContent() {
             </div>
           </div>
           
-           <div className="lg:hidden flex justify-between items-center mb-6 p-3 border border-border/60 rounded-2xl bg-gradient-to-r from-green-50/30 to-emerald-50/20">
+           <div className="lg:hidden flex justify-between items-center mb-6 p-3 border border-border/30 rounded-2xl bg-secondary/30">
              <Sheet>
                 <SheetTrigger asChild>
-                    <Button className="rounded-full shadow-sm">
-                        <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
+                    <Button size="sm" className="rounded-xl shadow-sm">
+                        <SlidersHorizontal className="mr-2 h-3.5 w-3.5" /> Filter
                     </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-full max-w-sm flex flex-col p-0">
@@ -369,25 +368,25 @@ function ProductsPageContent() {
             </Sheet>
             <div className="flex items-center gap-2">
               <Select defaultValue="popularity">
-                <SelectTrigger className="w-[150px] bg-background">
+                <SelectTrigger className="w-[140px] bg-card rounded-xl text-xs h-8 border-border/30">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   <SelectItem value="popularity">Popularity</SelectItem>
                   <SelectItem value="price-asc">Price: Low to High</SelectItem>
                   <SelectItem value="price-desc">Price: High to Low</SelectItem>
                   <SelectItem value="newest">Newest</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-xl bg-background" onClick={() => setViewMode('grid')}><LayoutGrid className="h-4 w-4" /></Button>
-              <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-xl" onClick={() => setViewMode('list')}><List className="h-4 w-4" /></Button>
+              <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-xl h-8 w-8" onClick={() => setViewMode('grid')}><LayoutGrid className="h-3.5 w-3.5" /></Button>
+              <Button variant={viewMode === 'list' ? 'default' : 'ghost'} size="icon" className="rounded-xl h-8 w-8" onClick={() => setViewMode('list')}><List className="h-3.5 w-3.5" /></Button>
             </div>
           </div>
 
 
           {isLoading ? <ProductsSkeleton /> : (
             viewMode === 'grid' ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
@@ -401,6 +400,7 @@ function ProductsPageContent() {
             )
           )}
         </main>
+      </div>
       </div>
     </div>
   );

@@ -127,12 +127,12 @@ export default function CheckoutPage() {
         return (
             <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
                 <div className="mx-auto max-w-md">
-                    <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-50 to-emerald-50">
-                        <ShoppingCart className="h-10 w-10 text-muted-foreground" />
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary/50">
+                        <ShoppingCart className="h-7 w-7 text-muted-foreground" />
                     </div>
-                    <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline">Your Cart is Empty</h1>
-                    <p className="mt-3 text-muted-foreground leading-relaxed">You need to add items to your cart before you can check out.</p>
-                    <Button asChild className="mt-8 rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+                    <h1 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">Your Cart is Empty</h1>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">You need to add items to your cart before you can check out.</p>
+                    <Button asChild className="mt-8 rounded-xl px-8 shadow-sm">
                         <Link href="/products">Start Shopping</Link>
                     </Button>
                 </div>
@@ -141,8 +141,8 @@ export default function CheckoutPage() {
     }
 
     return (
-      <div className="bg-gradient-to-br from-green-50/20 via-background to-emerald-50/10 min-h-screen">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-12 lg:px-8">
+      <div className="min-h-screen">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-14 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <CheckoutProgress currentStep={2} />
             
@@ -155,12 +155,12 @@ export default function CheckoutPage() {
                     <CheckoutAuth />
                 )}
 
-                <div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
-                  <h2 className="text-lg font-bold tracking-tight mb-3 flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">3</div>
+                <div className="rounded-2xl border border-border/30 bg-background p-6 shadow-sm">
+                  <h2 className="text-sm font-bold tracking-tight mb-3 flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">3</div>
                     Payment Method
                   </h2>
-                  <div className="border border-border/60 rounded-xl p-4 bg-muted/20">
+                  <div className="border border-border/30 rounded-xl p-4 bg-secondary/20">
                     <div className="flex items-center gap-3">
                       <ShieldCheck className="h-5 w-5 text-green-600 flex-shrink-0" />
                       <p className="text-sm leading-relaxed">You will be redirected to our secure payment partner, <span className="font-semibold">Stripe</span>, to complete your purchase.</p>
@@ -176,8 +176,8 @@ export default function CheckoutPage() {
 
               {/* Right: Order Summary */}
               <div className="lg:col-span-2">
-                <div className="rounded-2xl border border-border/60 bg-background p-6 sticky top-24 shadow-sm">
-                  <h2 className="text-lg font-bold tracking-tight mb-4">Order Summary</h2>
+                <div className="rounded-2xl border border-border/30 bg-background p-6 sticky top-24 shadow-sm">
+                  <h2 className="text-sm font-bold tracking-tight mb-4">Order Summary</h2>
                   
                   <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                     {cartItems.map(item => (
@@ -232,7 +232,7 @@ export default function CheckoutPage() {
                       </div>
                   </div>
 
-                  <Button onClick={handleCheckout} disabled={isLoading || cartCount === 0 || !user || !isFormValid} size="lg" className="w-full mt-6 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/30">
+                  <Button onClick={handleCheckout} disabled={isLoading || cartCount === 0 || !user || !isFormValid} size="lg" className="w-full mt-6 rounded-xl shadow-sm">
                       {isLoading ? (
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       ) : (

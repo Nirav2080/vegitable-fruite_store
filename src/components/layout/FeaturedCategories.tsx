@@ -46,19 +46,16 @@ export function FeaturedCategories() {
 
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-10">
                 <div>
-                    <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-                        Categories
-                    </span>
-                    <h2 className="mt-2 text-2xl font-extrabold tracking-tight font-headline md:text-3xl">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Categories</p>
+                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         Shop by Categories
                     </h2>
                 </div>
-                <Button asChild variant="outline" className="hidden md:flex rounded-full border-primary/20 text-primary transition-all duration-200 hover:bg-primary/5 hover:shadow-sm">
+                <Button asChild variant="outline" size="sm" className="hidden md:flex rounded-xl border-border/40 text-muted-foreground transition-all duration-200 hover:text-foreground hover:border-border/60">
                     <Link href="/products">
-                        View All <ArrowRight className="ml-2 h-4 w-4" />
+                        View All <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                     </Link>
                 </Button>
             </div>
@@ -70,8 +67,8 @@ export function FeaturedCategories() {
                     {categories.map((category) => (
                         <CarouselItem key={category.id} className="basis-1/3 sm:basis-1/4 md:basis-1/6 lg:basis-1/8 pl-4">
                             <Link href={`/products?category=${encodeURIComponent(category.name)}`} className="group block">
-                                <div className="bg-background border border-border/60 rounded-2xl p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/5 group-hover:-translate-y-1 group-hover:border-primary/20">
-                                    <div className="relative w-full h-2/3 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl overflow-hidden">
+                                <div className="bg-card border border-border/30 rounded-2xl p-4 flex flex-col items-center justify-start aspect-square transition-all duration-300 group-hover:shadow-lg group-hover:shadow-black/[0.03] group-hover:-translate-y-1 group-hover:border-border/50">
+                                    <div className="relative w-full h-2/3 bg-secondary/40 rounded-xl overflow-hidden">
                                         {category.icon ? (
                                             <Image
                                                 src={category.icon}
@@ -89,8 +86,8 @@ export function FeaturedCategories() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-md" />
-                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-border/60 bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-md" />
+                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-xl border border-border/30 bg-card/80 backdrop-blur-sm hover:bg-card hover:shadow-md" />
+                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-xl border border-border/30 bg-card/80 backdrop-blur-sm hover:bg-card hover:shadow-md" />
             </Carousel>
         </div>
     );

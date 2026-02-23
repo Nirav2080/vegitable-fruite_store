@@ -323,7 +323,7 @@ export function ProductForm({ product }: ProductFormProps) {
               )}
             />
 
-            <Card className="rounded-2xl border-border/60">
+            <Card className="rounded-2xl border-border/30">
               <CardHeader>
                 <CardTitle>Product Variants</CardTitle>
                 <FormDescription>
@@ -342,12 +342,12 @@ export function ProductForm({ product }: ProductFormProps) {
                      }
 
                     return (
-                    <div key={field.id} className="p-4 border border-border/60 rounded-xl relative space-y-4">
+                    <div key={field.id} className="p-4 border border-border/30 rounded-xl relative space-y-4">
                       <Button 
                         type="button" 
                         variant="destructive" 
                         size="icon" 
-                        className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                        className="absolute top-2 right-2 h-6 w-6 rounded-xl"
                         onClick={() => removeVariant(index)}
                       >
                         <X className="h-4 w-4" />
@@ -414,7 +414,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="mt-4 rounded-full"
+                  className="mt-4 rounded-xl"
                   onClick={() => appendVariant({ weight: '', price: 0, originalPrice: 0, stock: 0 })}
                 >
                   <PlusCircle className="mr-2 h-4 w-4" />
@@ -481,7 +481,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     control={form.control}
                     name="isOrganic"
                     render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/60 p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/30 p-4">
                         <FormControl>
                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
@@ -498,7 +498,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     control={form.control}
                     name="isFeatured"
                     render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/60 p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/30 p-4">
                         <FormControl>
                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
@@ -515,7 +515,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     control={form.control}
                     name="isDeal"
                     render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/60 p-4">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border border-border/30 p-4">
                         <FormControl>
                             <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
@@ -529,7 +529,7 @@ export function ProductForm({ product }: ProductFormProps) {
                     )}
                 />
             </div>
-        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
             {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Product')}
         </Button>
       </form>

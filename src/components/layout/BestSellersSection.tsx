@@ -45,13 +45,10 @@ export function BestSellersSection({ products, categories }: BestSellersSectionP
   return (
     <>
       {/* Header with inline nav buttons */}
-      <div className="flex items-end justify-between mb-8 gap-4">
+      <div className="flex items-end justify-between mb-10 gap-4">
         <div className="text-left min-w-0">
-          <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Trending
-          </span>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight font-headline sm:text-3xl md:text-4xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Trending Now</p>
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Popular Products
           </h2>
         </div>
@@ -65,16 +62,17 @@ export function BestSellersSection({ products, categories }: BestSellersSectionP
 
       {/* Category filter pills */}
       {categoriesWithProducts.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-2 mb-10">
           {categoriesWithProducts.map(category => (
             <Button
               key={category}
               variant={selectedCategory === category ? 'default' : 'outline'}
+              size="sm"
               className={cn(
-                "rounded-full transition-all duration-200",
+                "rounded-xl text-[13px] transition-all duration-200",
                 selectedCategory === category
-                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
-                  : "bg-white dark:bg-gray-900 hover:shadow-sm"
+                  ? "shadow-sm shadow-black/[0.04]"
+                  : "border-border/40 text-muted-foreground hover:text-foreground hover:border-border"
               )}
               onClick={() => setSelectedCategory(category)}
             >
@@ -111,7 +109,7 @@ export function BestSellersSection({ products, categories }: BestSellersSectionP
                 'rounded-full transition-all duration-300 ease-out',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                 index === selectedIndex
-                  ? 'w-7 h-2.5 bg-primary shadow-sm shadow-primary/30'
+                  ? 'w-7 h-2.5 bg-primary shadow-sm shadow-black/[0.06]'
                   : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
               )}
               aria-label={`Go to slide group ${index + 1}`}

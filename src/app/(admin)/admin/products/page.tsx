@@ -20,17 +20,17 @@ export default async function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight font-headline">Products</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
           <p className="text-sm text-muted-foreground mt-1">{products.length} products · {totalStock} total stock</p>
         </div>
         <div className="flex gap-2">
-            <Button asChild variant="outline" className="rounded-full border-border/60 transition-all duration-300 hover:shadow-sm">
+            <Button asChild variant="outline" className="rounded-xl border-border/30 transition-all duration-300 hover:shadow-sm">
                 <Link href="/admin/products/import">
                     <Upload className="mr-2 h-4 w-4" />
                     Import
                 </Link>
             </Button>
-            <Button asChild className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+            <Button asChild className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
                 <Link href="/admin/products/new">
                     <PlusCircle className="mr-2 h-5 w-5" />
                     Add Product
@@ -57,7 +57,7 @@ export default async function AdminProductsPage() {
         </div>
       )}
 
-      <Card className="rounded-2xl border-border/60">
+      <Card className="rounded-2xl border-border/30">
         <CardHeader>
           <CardTitle>All Products</CardTitle>
           <CardDescription>Manage your product catalog, pricing, and inventory.</CardDescription>

@@ -171,7 +171,7 @@ export function OfferForm({ offer }: OfferFormProps) {
           )}
         />
         
-        <Card className="rounded-2xl border-border/60">
+        <Card className="rounded-2xl border-border/30">
             <CardHeader><CardTitle>Discount Details</CardTitle></CardHeader>
             <CardContent className="space-y-6">
                 <FormField
@@ -274,7 +274,7 @@ export function OfferForm({ offer }: OfferFormProps) {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Applicable Products</FormLabel>
-                                <ScrollArea className="h-48 w-full rounded-xl border border-border/60 p-4">
+                                <ScrollArea className="h-48 w-full rounded-xl border border-border/30 p-4">
                                      {products.map((product) => (
                                         <div key={product.id} className="flex items-center space-x-2 mb-2">
                                             <Checkbox
@@ -369,7 +369,7 @@ export function OfferForm({ offer }: OfferFormProps) {
             control={form.control}
             name="isActive"
             render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/60 p-4">
+            <FormItem className="flex flex-row items-center justify-between rounded-xl border border-border/30 p-4">
                 <div className="space-y-0.5">
                 <FormLabel className="text-base">
                     Active
@@ -387,7 +387,7 @@ export function OfferForm({ offer }: OfferFormProps) {
             </FormItem>
             )}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+        <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
           {form.formState.isSubmitting ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Offer')}
         </Button>
       </form>

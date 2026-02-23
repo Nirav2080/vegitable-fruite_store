@@ -36,11 +36,11 @@ export default async function AdminOrderDetailsPage({ params }: { params: { id: 
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Button asChild variant="outline" size="icon" className="rounded-full border-border/60 h-9 w-9">
+                    <Button asChild variant="outline" size="icon" className="rounded-xl border-border/30 h-9 w-9">
                         <Link href="/admin/orders"><ArrowLeft className="h-4 w-4" /></Link>
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-extrabold tracking-tight font-headline">
+                        <h1 className="text-3xl font-bold tracking-tight">
                             Order #{order.id.slice(-6).toUpperCase()}
                         </h1>
                         <p className="text-sm text-muted-foreground mt-0.5">

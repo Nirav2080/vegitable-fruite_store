@@ -3,10 +3,10 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import { PT_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import clientPromise from '@/lib/db';
 
-const ptSans = PT_Sans({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-pt-sans' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: 'RICHMOND VEGE MART | A Symphony of Flavours',
@@ -45,11 +45,12 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-body antialiased", ptSans.variable)}>
+      <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem={false}
+          storageKey="customer-theme"
           disableTransitionOnChange
         >
           <DatabaseWarningBanner />

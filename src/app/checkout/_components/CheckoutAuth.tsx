@@ -62,9 +62,9 @@ export function CheckoutAuth() {
     }
 
     return (
-        <div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm">
-            <h2 className="text-lg font-bold tracking-tight mb-4 flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">1</div>
+        <div className="rounded-2xl border border-border/30 bg-background p-6 shadow-sm">
+            <h2 className="text-sm font-bold tracking-tight mb-4 flex items-center gap-2">
+                <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">1</div>
                 Customer Information
             </h2>
              <Tabs defaultValue="login" className="w-full">
@@ -94,7 +94,7 @@ export function CheckoutAuth() {
                                 <Input id="login-password" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className="pl-10" />
                             </div>
                         </div>
-                        <Button type="submit" className="w-full rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02]" disabled={isLoading}>
+                        <Button type="submit" className="w-full rounded-xl shadow-sm" disabled={isLoading}>
                             {isLoading ? 'Logging in...' : 'Login & Continue'}
                         </Button>
                     </form>
@@ -137,7 +137,7 @@ export function CheckoutAuth() {
                                 <Input id="reg-password" type="password" placeholder="Min 8 characters" required value={regPassword} onChange={(e) => setRegPassword(e.target.value)} className="pl-10" />
                             </div>
                         </div>
-                        <Button type="submit" className="w-full rounded-full shadow-md shadow-primary/25 transition-all duration-300 hover:scale-[1.02]" disabled={isLoading}>
+                        <Button type="submit" className="w-full rounded-xl shadow-sm" disabled={isLoading}>
                             {isLoading ? 'Creating Account...' : 'Create Account & Continue'}
                         </Button>
                         <p className="text-xs text-center text-muted-foreground">By creating an account you agree to our Terms &amp; Conditions.</p>

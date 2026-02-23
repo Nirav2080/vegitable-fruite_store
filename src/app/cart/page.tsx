@@ -25,12 +25,12 @@ export default function CartPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-md">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-50 to-emerald-50">
-            <ShoppingCart className="h-10 w-10 text-muted-foreground" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-secondary/50">
+            <ShoppingCart className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h1 className="mt-6 text-3xl font-extrabold tracking-tight font-headline">Your Cart is Empty</h1>
-          <p className="mt-3 text-muted-foreground leading-relaxed">Looks like you haven&apos;t added anything to your cart yet.</p>
-          <Button asChild className="mt-8 rounded-full px-8 shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/30">
+          <h1 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">Your Cart is Empty</h1>
+          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">Looks like you haven&apos;t added anything to your cart yet.</p>
+          <Button asChild className="mt-8 rounded-xl px-8 shadow-sm">
             <Link href="/products">Start Shopping</Link>
           </Button>
         </div>
@@ -39,14 +39,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 md:py-12 lg:px-8">
-      <header className="text-center mb-10">
-        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-          Shopping Cart
-        </span>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight font-headline sm:text-4xl">Your Shopping Cart</h1>
-        <p className="mt-2 text-muted-foreground">Review your items.</p>
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 md:py-16 lg:px-8">
+      <header className="mb-10">
+        <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Shopping Cart</p>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Your Shopping Cart</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Review your items before checkout.</p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -58,7 +55,7 @@ export default function CartPage() {
                     return null; 
                   }
                   return (
-                    <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border border-border/60 rounded-2xl transition-all duration-200 hover:shadow-sm hover:border-primary/10">
+                    <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border border-border/30 rounded-2xl transition-all duration-200 hover:shadow-sm hover:border-border/50">
                         <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden bg-muted">
                             {Array.isArray(item.images) && item.images.length > 0 ? (
                                 <Image
@@ -103,8 +100,8 @@ export default function CartPage() {
             </div>
         </div>
         <aside className="lg:col-span-1">
-            <div className="sticky top-24 border border-border/60 rounded-2xl p-6 bg-gradient-to-br from-green-50/30 to-emerald-50/20">
-                <h2 className="text-xl font-extrabold tracking-tight font-headline mb-4">Order Summary</h2>
+            <div className="sticky top-24 border border-border/30 rounded-2xl p-6 bg-secondary/30">
+                <h2 className="text-base font-bold tracking-tight mb-4">Order Summary</h2>
 
                  {!couponCode ? (
                     <div className="flex gap-2 mb-4">
@@ -153,10 +150,10 @@ export default function CartPage() {
                     <span>Total</span>
                     <span>${cartTotal.toFixed(2)}</span>
                 </div>
-                 <Button asChild size="lg" className="w-full mt-6 rounded-full shadow-lg shadow-primary/25 transition-all duration-300 hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/30">
+                 <Button asChild size="lg" className="w-full mt-6 rounded-xl shadow-sm">
                     <Link href="/checkout">Proceed to Checkout</Link>
                 </Button>
-                <Button asChild size="lg" className="w-full mt-2 rounded-full" variant="outline">
+                <Button asChild size="lg" className="w-full mt-2 rounded-xl" variant="outline">
                     <Link href="/products">Continue Shopping</Link>
                 </Button>
             </div>
