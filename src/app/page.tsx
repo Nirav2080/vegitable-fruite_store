@@ -1,39 +1,36 @@
 
 import React, { Suspense } from "react";
-import { getProducts, getCategories, getActiveOffers, getActiveBanners } from "@/lib/cached-data";
+import { getProducts, getCategories, getActiveBanners } from "@/lib/cached-data";
 import { FeaturedCategories } from "@/components/layout/FeaturedCategories";
-import { DealsSection } from "@/components/layout/DealsSection";
 import { PopularProductsSection as PopularProductsSlider } from "@/components/layout/PopularProductsSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroCarousel } from "@/components/layout/HeroCarousel";
 import { TrustSection } from "@/components/layout/TrustSection";
 import { BestSellersSection } from "@/components/layout/BestSellersSection";
-import { OffersSection } from "@/components/layout/OffersSection";
-import { ShopByBrandSection } from "@/components/layout/ShopByBrandSection";
 
 async function getPageData() {
   try {
-    const [products, categories, offers, banners] = await Promise.all([
+    const [products, categories, banners] = await Promise.all([
       getProducts(),
       getCategories(),
-      getActiveOffers(),
       getActiveBanners(),
     ]);
     
-    const popularProducts = products.filter(p => p.isFeatured).slice(0, 8);
-    const organicProducts = products.filter(p => p.isOrganic).slice(0, 4);
-    const dealProducts = products.filter(p => p.isDeal).slice(0,4);
+    // Sort all products by date for the "All Products" section (newest first)
+    const allProducts = [...products].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
-    return { categories, popularProducts, organicProducts, dealProducts, offers, banners };
+    // Filter popular products for the "Popular Products" slider
+    const popularProducts = products.filter(p => p.isFeatured).slice(0, 10);
+
+    return { products: allProducts, categories, popularProducts, banners };
   } catch (error) {
     console.error("Failed to fetch page data, returning default values:", error);
-    // Return default empty values if there's an error (e.g., DB connection issue)
     return {
+      products: [],
       categories: [],
       popularProducts: [],
-      organicProducts: [],
-      dealProducts: [],
-      offers: [],
       banners: [],
     };
   }
@@ -77,8 +74,8 @@ function ProductsGridSkeleton() {
 
 
 export default async function Home() {
-  const { categories, popularProducts, organicProducts, dealProducts, offers, banners } = await getPageData();
-  const filterCategories = ['All', ...categories.slice(0, 6).map(c => c.name)];
+  const { products, categories, popularProducts, banners } = await getPageData();
+  const filterCategories = ['All', ...categories.map(c => c.name)];
   
   return (
     <div className="flex flex-col">
@@ -86,45 +83,34 @@ export default async function Home() {
         <HeroCarousel banners={banners} />
       </Suspense>
       
-      {/* Section 1 — ODD (white) — BestSellers */}
+      {/* 2. All Products with category filter */}
       <section className="bg-background">
         <div className="mx-auto max-w-7xl w-full px-4 py-16 sm:px-6 sm:py-20 md:py-24 lg:px-8 overflow-hidden">
           <Suspense fallback={<ProductsGridSkeleton />}>
             <BestSellersSection 
-              products={popularProducts} 
-              categories={filterCategories} 
+              products={products} 
+              categories={filterCategories}
+              title="All Products"
+              subtitle="Our Selection"
             />
           </Suspense>
         </div>
       </section>
 
-      {/* Section 2 — EVEN (tinted) — FeaturedCategories */}
+      {/* 3. Categories */}
       <section className="bg-secondary/30 py-16 sm:py-20 md:py-24">
         <FeaturedCategories />
       </section>
 
-      {/* Section 3 — ODD (white) — DealsSection */}
-      <Suspense fallback={<Skeleton className="h-72 w-full rounded-none" />}>
-        <DealsSection products={dealProducts} />
-      </Suspense>
+      {/* 4. Popular products without filter */}
+      <section className="bg-background">
+        <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
+          <PopularProductsSlider products={popularProducts} title="Popular Products" link="/products?filter=isFeatured" />
+        </Suspense>
+      </section>
 
-      {/* Section 4 — EVEN (tinted) — OffersSection */}
-      <Suspense fallback={<Skeleton className="h-64 w-full rounded-none" />}>
-        <OffersSection offers={offers} />
-      </Suspense>
-
-      {/* Section 5 — ODD (white) — TrustSection */}
+      {/* 5. Our Promise */}
       <TrustSection />
-
-      {/* Section 6 — EVEN (tinted) — PopularProducts */}
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-none" />}>
-        <PopularProductsSlider products={organicProducts} title="Fresh Fruits & Vegetables" link="/products?filter=isOrganic" />
-      </Suspense>
-
-      {/* Section 7 — ODD (white) — ShopByBrand */}
-      <Suspense fallback={<Skeleton className="h-72 w-full rounded-none" />}>
-        <ShopByBrandSection />
-      </Suspense>
 
     </div>
   );

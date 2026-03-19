@@ -84,11 +84,13 @@ export function DynamicSearch() {
         {results.length > 0 ? (
           <div className="space-y-1">
             {results.map((product) => (
-              <Link
+              // Product detail page link disabled for future use:
+              // <Link key={product.id} href={`/products/${product.slug}`}
+              //   className="flex items-center gap-4 hover:bg-primary/5 p-2.5 rounded-xl transition-colors duration-200"
+              //   onClick={handleLinkClick}>
+              <div
                 key={product.id}
-                href={`/products/${product.slug}`}
-                className="flex items-center gap-4 hover:bg-primary/5 p-2.5 rounded-xl transition-colors duration-200"
-                onClick={handleLinkClick}
+                className="flex items-center gap-4 p-2.5 rounded-xl"
               >
                 <Image
                   src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'https://placehold.co/40x40/EEE/31343C'}
@@ -101,7 +103,8 @@ export function DynamicSearch() {
                   <p className="font-semibold text-sm">{product.name}</p>
                   <p className="text-sm text-primary font-bold">${product.price.toFixed(2)}</p>
                 </div>
-              </Link>
+              {/* </Link> */}
+              </div>
             ))}
           </div>
         ) : (

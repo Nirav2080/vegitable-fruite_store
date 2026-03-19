@@ -11,9 +11,16 @@ import { cn } from "@/lib/utils";
 interface BestSellersSectionProps {
     products: Product[];
     categories: string[];
+    title?: string;
+    subtitle?: string;
 }
 
-export function BestSellersSection({ products, categories }: BestSellersSectionProps) {
+export function BestSellersSection({ 
+    products, 
+    categories, 
+    title = "Popular Products", 
+    subtitle = "Trending Now" 
+}: BestSellersSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const filteredBestSelling = useMemo(() => {
@@ -47,9 +54,9 @@ export function BestSellersSection({ products, categories }: BestSellersSectionP
       {/* Header with inline nav buttons */}
       <div className="flex items-end justify-between mb-10 gap-4">
         <div className="text-left min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Trending Now</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">{subtitle}</p>
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Popular Products
+            {title}
           </h2>
         </div>
         <CarouselNavButtons

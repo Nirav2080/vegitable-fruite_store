@@ -48,7 +48,9 @@ const unitOptions = [
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
-  description: z.string().min(10, { message: "Description must be at least 10 characters." }),
+  // description field disabled for future use:
+  // description: z.string().min(10, { message: "Description must be at least 10 characters." }),
+  description: z.string().optional().default(""),
   categoryId: z.string().min(1, { message: "Please select a category." }),
   brandId: z.string().optional(),
   unitType: z.string().optional(),
@@ -95,7 +97,7 @@ export function ProductForm({ product }: ProductFormProps) {
       unitType: product.unitType || '',
   } : {
       name: "",
-      description: "",
+      // description: "", // description field disabled for future use
       categoryId: "",
       brandId: "",
       unitType: '',
@@ -224,6 +226,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 </FormItem>
             )}
             />
+          {/* Description field disabled for future use:
           <FormField
             control={form.control}
             name="description"
@@ -244,6 +247,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 </FormItem>
             )}
             />
+          */}
           <FormField
                 control={form.control}
                 name="images"

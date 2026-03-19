@@ -34,7 +34,7 @@ export interface Product {
   id: string;
   slug: string;
   name: string;
-  description: string;
+  description?: string; // disabled for future use, was: description: string;
   images: string[];
   categoryId: string | ObjectId;
   category: string;

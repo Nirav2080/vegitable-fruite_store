@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { useState } from 'react'
+import { getProductMode, parseWeightToGrams, formatWeight, getPieceLabel } from '@/lib/utils'
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, subtotal, cartTotal, cartCount, applyDiscount, couponCode, discountAmount, totalSavings, originalSubtotal, savingsFromSales } = useCart()
@@ -54,6 +55,22 @@ export default function CartPage() {
                   if (!item.selectedVariant) {
                     return null; 
                   }
+                  
+                  const mode = getProductMode(item.selectedVariant, item.unitType);
+                  const isWeight = mode === 'weight';
+                  const variantGrams = isWeight ? (parseWeightToGrams(item.selectedVariant.weight) || 1000) : 0;
+                  const currentWeightGrams = isWeight ? item.quantity * variantGrams : 0;
+                  
+                  // For weight items, step by 100g. For piece items, step by 1.
+                  const stepSize = isWeight ? (100 / variantGrams) : 1;
+                  
+                  const displayQty = isWeight 
+                    ? formatWeight(currentWeightGrams) 
+                    : item.quantity;
+
+                  // Minimum quantity shouldn't be zero
+                  const isMinQty = isWeight ? (currentWeightGrams <= 100) : (item.quantity <= 1);
+
                   return (
                     <div key={item.id} className="grid grid-cols-[auto,1fr,auto] md:grid-cols-[auto,1fr,auto,auto] items-center gap-4 p-4 border border-border/30 rounded-2xl transition-all duration-200 hover:shadow-sm hover:border-border/50">
                         <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-md overflow-hidden bg-muted">
@@ -73,17 +90,19 @@ export default function CartPage() {
                         <div className="flex-1">
                             <h3 className="font-semibold text-sm md:text-base">{item.name}</h3>
                             <p className="text-xs md:text-sm text-muted-foreground">
-                              {item.unitType === 'weight' ? 'Weight' : 'Unit'}: {item.selectedVariant.weight}
+                              {isWeight ? 'Weight Option' : 'Unit'}: {item.selectedVariant.weight}
                             </p>
-                            <p className="font-bold text-primary mt-1 text-sm md:text-base">${item.selectedVariant.price.toFixed(2)}</p>
+                            <p className="font-bold text-primary mt-1 text-sm md:text-base">
+                              ${item.selectedVariant.price.toFixed(2)} {isWeight ? '/ variant' : ''}
+                            </p>
                         </div>
                         <div className="flex flex-col md:flex-row items-center gap-2">
                              <div className="flex items-center border rounded-md">
-                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity - stepSize)} disabled={isMinQty}>
                                     <Minus className="h-4 w-4" />
                                 </Button>
-                                <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
-                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                                <span className="w-16 text-center text-sm font-bold truncate px-1">{displayQty}</span>
+                                <Button variant="ghost" size="icon" className="h-7 w-7 md:h-8 md:w-8" onClick={() => updateQuantity(item.id, item.quantity + stepSize)}>
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </div>

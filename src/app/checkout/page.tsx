@@ -16,6 +16,7 @@ import { getCurrentUser } from '@/lib/actions/users'
 import { CheckoutProgress } from './_components/CheckoutProgress'
 import { CheckoutAuth } from './_components/CheckoutAuth'
 import { UserDetailsForm } from './_components/UserDetailsForm'
+import { getProductMode, parseWeightToGrams, formatWeight } from '@/lib/utils'
 
 
 export default function CheckoutPage() {
@@ -180,26 +181,37 @@ export default function CheckoutPage() {
                   <h2 className="text-sm font-bold tracking-tight mb-4">Order Summary</h2>
                   
                   <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                    {cartItems.map(item => (
-                        <div key={item.id} className="flex items-start gap-3">
-                            <div className="relative h-14 w-14 rounded-lg overflow-hidden border flex-shrink-0">
-                                <Image
-                                    src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : ''}
-                                    alt={item.name}
-                                    fill
-                                    className="object-contain"
-                                />
-                                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                                    {item.quantity}
-                                </span>
-                            </div>
-                            <div className="flex-grow min-w-0">
-                                <p className="font-semibold text-sm leading-tight truncate">{item.name}</p>
-                                <p className="text-xs text-muted-foreground">{item.selectedVariant.weight}</p>
-                            </div>
-                            <p className="font-semibold text-sm whitespace-nowrap">${(item.selectedVariant.price * item.quantity).toFixed(2)}</p>
-                        </div>
-                    ))}
+                    {cartItems.map(item => {
+                        const mode = getProductMode(item.selectedVariant, item.unitType);
+                        const isWeight = mode === 'weight';
+                        const variantGrams = isWeight ? (parseWeightToGrams(item.selectedVariant.weight) || 1000) : 0;
+                        const currentWeightGrams = isWeight ? item.quantity * variantGrams : 0;
+                        
+                        return (
+                          <div key={item.id} className="flex items-start gap-3">
+                              <div className="relative h-14 w-14 rounded-lg overflow-hidden border flex-shrink-0">
+                                  <Image
+                                      src={Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : ''}
+                                      alt={item.name}
+                                      fill
+                                      className="object-contain"
+                                  />
+                                  {!isWeight && (
+                                    <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                                        {item.quantity}
+                                    </span>
+                                  )}
+                              </div>
+                              <div className="flex-grow min-w-0">
+                                  <p className="font-semibold text-sm leading-tight truncate">{item.name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {isWeight ? formatWeight(currentWeightGrams) : item.selectedVariant.weight}
+                                  </p>
+                              </div>
+                              <p className="font-semibold text-sm whitespace-nowrap">${(item.selectedVariant.price * item.quantity).toFixed(2)}</p>
+                          </div>
+                        )
+                    })}
                   </div>
 
                   <Separator className="my-4" />
