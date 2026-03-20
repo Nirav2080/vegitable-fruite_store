@@ -428,14 +428,10 @@ export async function importProducts(formData: FormData): Promise<{message: stri
     }
 
     const categoriesCollection = db.collection<Category>('categories');
-    const brandsCollection = db.collection<Brand>('brands');
     const productsCollection = db.collection<Product>('products');
 
     const existingCategories = await categoriesCollection.find({}).toArray();
     const categoryMap = new Map(existingCategories.map(c => [c.name.toLowerCase(), c._id]));
-
-    const existingBrands = await brandsCollection.find({}).toArray();
-    const brandMap = new Map(existingBrands.map(b => [b.name.toLowerCase(), b._id]));
     
     let productsToInsert = [];
     let productsToUpdate = [];
@@ -445,8 +441,14 @@ export async function importProducts(formData: FormData): Promise<{message: stri
     for (const row of data as any[]) {
         try {
             // Description no longer required — disabled for future use
-            if (!row.Name || !row.Category || !row.Variants) {
+            if (!row.Name || !row.Category) {
                 console.warn("Skipping row due to missing required fields:", row);
+                errorCount++;
+                continue;
+            }
+
+            if (!row.Variants && row.Price === undefined) {
+                console.warn("Skipping row due to missing Prices:", row);
                 errorCount++;
                 continue;
             }
@@ -463,32 +465,29 @@ export async function importProducts(formData: FormData): Promise<{message: stri
                 categoryMap.set(lowerCategoryName, categoryId);
             }
 
-            let brandId;
-            const brandName = row.Brand?.trim();
-            if (brandName) {
-                const lowerBrandName = brandName.toLowerCase();
-                if (brandMap.has(lowerBrandName)) {
-                    brandId = brandMap.get(lowerBrandName);
-                } else {
-                    const newBrand: Omit<Brand, 'id'> = { 
-                        name: brandName, 
-                        logo: `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(brandName)}`,
-                        createdAt: new Date()
-                    };
-                    const result = await brandsCollection.insertOne(newBrand as any);
-                    brandId = result.insertedId;
-                    brandMap.set(lowerBrandName, brandId);
+            let variants = [];
+            if (row.Variants) {
+                try {
+                    variants = JSON.parse(row.Variants);
+                    if (!Array.isArray(variants) || variants.length === 0) throw new Error();
+                } catch {
+                    console.warn(`Skipping product "${row.Name}" due to invalid Variants JSON.`);
+                    errorCount++;
+                    continue;
                 }
-            }
-
-            let variants;
-            try {
-                variants = JSON.parse(row.Variants);
-                if (!Array.isArray(variants) || variants.length === 0) throw new Error();
-            } catch {
-                console.warn(`Skipping product "${row.Name}" due to invalid Variants JSON.`);
-                errorCount++;
-                continue;
+            } else {
+                const price = parseFloat(row.Price);
+                if (isNaN(price)) {
+                    console.warn(`Skipping product "${row.Name}" due to invalid Price.`);
+                    errorCount++;
+                    continue;
+                }
+                
+                variants = [{
+                    weight: row.Weight?.toString() || '1kg',
+                    price: price,
+                    stock: parseInt(row.Stock) || 100
+                }];
             }
 
             const slug = row.Name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -496,11 +495,7 @@ export async function importProducts(formData: FormData): Promise<{message: stri
             const productData = {
                 name: row.Name,
                 slug,
-                description: row.Description,
                 categoryId: categoryId?.toString(),
-                brandId: brandId?.toString(),
-                isFeatured: row.isFeatured === true || String(row.isFeatured).toUpperCase() === 'TRUE',
-                isOrganic: row.isOrganic === true || String(row.isOrganic).toUpperCase() === 'TRUE',
                 isDeal: row.isDeal === true || String(row.isDeal).toUpperCase() === 'TRUE',
                 images: row.Images ? String(row.Images).split(',').map((url: string) => url.trim()) : [],
                 variants: variants,

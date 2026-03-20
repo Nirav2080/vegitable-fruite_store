@@ -74,19 +74,19 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
 
         {/* Dot indicators */}
         {scrollSnaps.length > 1 && (
-          <div className="flex items-center justify-center gap-1.5 mt-6">
-            {scrollSnaps.map((_, index) => (
+          <div className="flex flex-wrap items-center justify-center gap-1.5 mt-6">
+            {scrollSnaps.filter((_, i) => i % 4 === 0).map((_, groupIndex) => (
               <button
-                key={index}
-                onClick={() => scrollTo(index)}
+                key={groupIndex}
+                onClick={() => scrollTo(groupIndex * 4)}
                 className={cn(
                   'rounded-full transition-all duration-300 ease-out',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                  index === selectedIndex
+                  Math.floor(selectedIndex / 4) === groupIndex
                     ? 'w-7 h-2.5 bg-primary shadow-sm shadow-black/[0.06]'
                     : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                 )}
-                aria-label={`Go to slide group ${index + 1}`}
+                aria-label={`Go to slide group ${groupIndex + 1}`}
               />
             ))}
           </div>
