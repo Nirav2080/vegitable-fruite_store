@@ -20,11 +20,11 @@ const REVALIDATE_TIME = 60;
 // Products
 export const getProducts = cache(async () => {
     return dbGetProducts();
-}, ['products'], { revalidate: REVALIDATE_TIME });
+}, ['products'], { revalidate: REVALIDATE_TIME, tags: ['products'] });
 
 export const getProductById = cache(async (id: string) => {
     return dbGetProductById(id);
-}, ['product'], { revalidate: REVALIDATE_TIME });
+}, ['product'], { revalidate: REVALIDATE_TIME, tags: ['products'] });
 
 // Dashboard
 export const getDashboardData = cache(async () => {

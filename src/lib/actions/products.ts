@@ -2,7 +2,7 @@
 'use server'
 
 import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import type { Product, ProductVariant, Category, ProductSearchResult, Brand } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import clientPromise from '@/lib/db';
@@ -180,6 +180,7 @@ export async function createProduct(data: unknown) {
     
     revalidatePath('/admin/products');
     revalidatePath('/products');
+    revalidateTag('products');
 }
 
 export async function updateProduct(id: string, data: unknown) {
@@ -221,11 +222,11 @@ export async function updateProduct(id: string, data: unknown) {
       notFound();
   }
 
-  revalidatePath('/admin/products');
-  revalidatePath(`/admin/products/${id}/edit`);
   revalidatePath('/products');
   revalidatePath(`/products/${slug}`);
   revalidatePath('/');
+  revalidateTag('products');
+  if (id) revalidateTag(`product-${id}`);
 }
 
 export async function deleteProduct(id: string) {
@@ -243,6 +244,8 @@ export async function deleteProduct(id: string) {
     revalidatePath('/admin/products');
     revalidatePath('/products');
     revalidatePath('/');
+    revalidateTag('products');
+    if (id) revalidateTag(`product-${id}`);
 }
 
 export async function getDashboardData() {
@@ -490,6 +493,27 @@ export async function importProducts(formData: FormData): Promise<{message: stri
                 }];
             }
 
+            const rawImageUrls = row.Images ? String(row.Images).split(',').map((url: string) => url.trim()) : [];
+            const processedImages = [];
+            for (const url of rawImageUrls) {
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                    try {
+                        const res = await fetch(url);
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        const arrayBuffer = await res.arrayBuffer();
+                        const buffer = Buffer.from(arrayBuffer);
+                        const contentType = res.headers.get('content-type') || 'image/jpeg';
+                        const base64 = buffer.toString('base64');
+                        processedImages.push(`data:${contentType};base64,${base64}`);
+                    } catch (err) {
+                        console.warn(`Failed to fetch image ${url}. Using raw URL fallback.`, err);
+                        processedImages.push(url);
+                    }
+                } else {
+                    processedImages.push(url);
+                }
+            }
+
             const slug = row.Name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
             const productData = {
@@ -497,7 +521,7 @@ export async function importProducts(formData: FormData): Promise<{message: stri
                 slug,
                 categoryId: categoryId?.toString(),
                 isDeal: row.isDeal === true || String(row.isDeal).toUpperCase() === 'TRUE',
-                images: row.Images ? String(row.Images).split(',').map((url: string) => url.trim()) : [],
+                images: processedImages,
                 variants: variants,
                 createdAt: new Date(),
                 reviews: [],
