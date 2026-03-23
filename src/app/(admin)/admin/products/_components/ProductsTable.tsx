@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2, ImageIcon } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, ImageIcon, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from '@/lib/types';
@@ -34,6 +35,7 @@ import { useRouter } from 'next/navigation';
 export function ProductsTable({ data }: { data: Product[] }) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const { toast } = useToast();
     const router = useRouter();
 
@@ -63,8 +65,24 @@ export function ProductsTable({ data }: { data: Product[] }) {
         setIsDeleteDialogOpen(true);
     };
 
+    const filteredData = data.filter(product => 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
   return (
-    <>
+    <div className="space-y-4">
+      <div className="flex items-center">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search products..."
+            className="w-full bg-background pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -82,7 +100,13 @@ export function ProductsTable({ data }: { data: Product[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((product) => {
+          {filteredData.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                No products found.
+              </TableCell>
+            </TableRow>
+          ) : filteredData.map((product) => {
             const defaultVariant = product.variants?.[0];
             const totalStock = product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0;
             const inStock = totalStock > 0;
@@ -159,6 +183,6 @@ export function ProductsTable({ data }: { data: Product[] }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }

@@ -267,27 +267,27 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Smart +/- stepper */}
-        <div className="mt-auto rounded-xl border border-border/50 bg-secondary/30 p-2 flex flex-col gap-2">
+        <div className="mt-auto rounded-xl border border-border/50 bg-secondary/30 p-1.5 sm:p-2 flex flex-col gap-1.5 sm:gap-2">
           {/* Stepper row */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Minus */}
             <button
               type="button"
               onClick={handleMinus}
               disabled={qtyValue <= MIN}
               className={cn(
-                "h-8 w-8 flex-shrink-0 rounded-lg flex items-center justify-center border transition-all duration-150",
+                "h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 rounded-lg flex items-center justify-center border transition-all duration-150",
                 qtyValue <= MIN
                   ? "border-border/30 text-muted-foreground/30 cursor-not-allowed"
                   : "border-border/50 bg-background text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary"
               )}
               aria-label="Decrease"
             >
-              <Minus className="h-3.5 w-3.5" />
+              <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </button>
 
             {/* Value display */}
-            <div className="flex-1 h-8 rounded-lg border border-primary/30 bg-primary/5 flex items-center justify-center overflow-hidden">
+            <div className="flex-1 h-7 sm:h-8 rounded-lg border border-primary/30 bg-primary/5 flex items-center justify-center overflow-hidden">
               {mode === 'weight' ? (
                 <>
                   <input
@@ -296,12 +296,12 @@ export function ProductCard({ product }: ProductCardProps) {
                     step={weightUnit === 'kg' ? "0.1" : "100"}
                     value={inputValue}
                     onChange={handleInputChange}
-                    className="w-full min-w-[2rem] h-full bg-transparent text-center text-sm font-bold text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full min-w-0 h-full bg-transparent text-center text-xs sm:text-sm font-bold text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <select
                     value={weightUnit}
                     onChange={handleUnitChange}
-                    className="h-full bg-transparent text-primary text-xs font-bold outline-none cursor-pointer pr-1"
+                    className="h-full bg-transparent text-primary text-[10px] sm:text-xs font-bold outline-none cursor-pointer pr-0.5 sm:pr-1"
                   >
                     <option value="g">g</option>
                     <option value="kg">kg</option>
@@ -315,9 +315,9 @@ export function ProductCard({ product }: ProductCardProps) {
                     step="1"
                     value={inputValue}
                     onChange={handleInputChange}
-                    className="w-full min-w-[2rem] h-full bg-transparent text-center text-sm font-bold text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full min-w-0 h-full bg-transparent text-center text-xs sm:text-sm font-bold text-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <span className="text-primary text-xs font-bold pr-2 flex-shrink-0">
+                  <span className="text-primary text-[10px] sm:text-xs font-bold pr-1 sm:pr-2 flex-shrink-0">
                     {getPieceLabel(selectedVariant, product.unitType, qtyValue)}
                   </span>
                 </>
@@ -328,19 +328,19 @@ export function ProductCard({ product }: ProductCardProps) {
             <button
               type="button"
               onClick={handlePlus}
-              className="h-8 w-8 flex-shrink-0 rounded-lg flex items-center justify-center border border-border/50 bg-background text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-150"
+              className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 rounded-lg flex items-center justify-center border border-border/50 bg-background text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-150"
               aria-label="Increase"
             >
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </button>
           </div>
 
           {/* Calculated price row */}
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between px-0.5 sm:px-1">
+            <span className="text-[10px] sm:text-[11px] text-muted-foreground whitespace-nowrap">
               {mode === 'weight' ? `${formatWeight(qtyValue)} price` : `${qtyValue}× price`}
             </span>
-            <span className="text-sm font-bold text-primary">${calculatedPrice.toFixed(2)}</span>
+            <span className="text-xs sm:text-sm font-bold text-primary truncate pl-1">${calculatedPrice.toFixed(2)}</span>
           </div>
         </div>
 

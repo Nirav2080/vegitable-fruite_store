@@ -1,10 +1,10 @@
 
 'use client'
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/products/ProductCard";
-import { CarouselNavButtons, useProductCarousel } from "@/components/products/ProductCarousel";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,12 @@ export function BestSellersSection({
     subtitle = "Trending Now" 
 }: BestSellersSectionProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   const filteredBestSelling = useMemo(() => {
     if (selectedCategory === 'All') {
@@ -38,20 +44,15 @@ export function BestSellersSection({
     });
   }, [categories, products]);
 
-  const {
-    emblaRef,
-    canScrollPrev,
-    canScrollNext,
-    selectedIndex,
-    scrollSnaps,
-    scrollPrev,
-    scrollNext,
-    scrollTo,
-  } = useProductCarousel(true, 5000);
+  const totalPages = Math.ceil(filteredBestSelling.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredBestSelling.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <>
-      {/* Header with inline nav buttons */}
+      {/* Header */}
       <div className="flex items-end justify-between mb-10 gap-4">
         <div className="text-left min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">{subtitle}</p>
@@ -59,12 +60,6 @@ export function BestSellersSection({
             {title}
           </h2>
         </div>
-        <CarouselNavButtons
-          onPrev={scrollPrev}
-          onNext={scrollNext}
-          canScrollPrev={canScrollPrev}
-          canScrollNext={canScrollNext}
-        />
       </div>
 
       {/* Category filter pills */}
@@ -89,39 +84,68 @@ export function BestSellersSection({
         </div>
       )}
 
-      {/* Carousel */}
-      <div className="relative">
-        <div ref={emblaRef} className="overflow-hidden rounded-xl">
-          <div className="flex -ml-3 md:-ml-4">
-            {filteredBestSelling.map((product) => (
-              <div
-                key={product.id}
-                className="min-w-0 shrink-0 grow-0 pl-3 md:pl-4 basis-full sm:basis-[48%] md:basis-[32%] lg:basis-[25%]"
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        {paginatedProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </div>
 
-      {/* Dot indicators */}
-      {scrollSnaps.length > 1 && (
-        <div className="flex items-center justify-center gap-1.5 mt-6">
-          {scrollSnaps.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => scrollTo(index)}
-              className={cn(
-                'rounded-full transition-all duration-300 ease-out',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                index === selectedIndex
-                  ? 'w-7 h-2.5 bg-primary shadow-sm shadow-black/[0.06]'
-                  : 'w-2.5 h-2.5 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
-              )}
-              aria-label={`Go to slide group ${index + 1}`}
-            />
-          ))}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="h-10 w-10 rounded-full"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }).map((_, i) => {
+              // Simple pagination rendering: show first, last, and pages around current
+              const pageNumber = i + 1;
+              if (
+                pageNumber === 1 || 
+                pageNumber === totalPages || 
+                (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+              ) {
+                return (
+                  <Button
+                    key={i}
+                    variant={currentPage === pageNumber ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNumber)}
+                    className={cn(
+                      "h-10 w-10 rounded-full",
+                      currentPage === pageNumber ? "" : "text-muted-foreground"
+                    )}
+                  >
+                    {pageNumber}
+                  </Button>
+                );
+              } else if (
+                pageNumber === currentPage - 2 || 
+                pageNumber === currentPage + 2
+              ) {
+                return <span key={i} className="px-1 text-muted-foreground">...</span>;
+              }
+              return null;
+            })}
+          </div>
+
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="h-10 w-10 rounded-full"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       )}
     </>

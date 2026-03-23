@@ -78,7 +78,7 @@ function HeroFallback() {
               </div>
               <div className="flex flex-col gap-4">
                 <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
-                  <Image src="https://images.unsplash.com/photo-1560806887-1e4cd0b6fac6?w=400&h=400&fit=crop&q=80" alt="Fresh apples" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
+                  <Image src="https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400&h=400&fit=crop&q=80" alt="Fresh apples" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
                 </div>
                 <div className="relative h-40 w-40 overflow-hidden rounded-2xl shadow-md xl:h-48 xl:w-48">
                   <Image src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=400&fit=crop&q=80" alt="Fresh fruits" fill className="object-cover" sizes="(min-width:1280px) 192px, 160px" />
