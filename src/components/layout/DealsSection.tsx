@@ -103,3 +103,4 @@ export function DealsSection({ products }: DealsSectionProps) {
         </section>
     );
 }
+

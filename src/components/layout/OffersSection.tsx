@@ -64,3 +64,4 @@ export function OffersSection({ offers }: OffersSectionProps) {
         </section>
     )
 }
+

@@ -104,3 +104,4 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
     </section>
   )
 }
+

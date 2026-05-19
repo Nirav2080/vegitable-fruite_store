@@ -257,3 +257,4 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
     </section>
   )
 }
+
