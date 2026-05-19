@@ -11,11 +11,16 @@ import { importProducts } from '@/lib/actions/products'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form'
 import { useRef } from 'react'
 
+const excelTypes = [
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+]
+
 const formSchema = z.object({
   file: z.any()
-    .refine((files) => files?.length > 0, 'File is required.')
+    .refine((files) => files?.length > 0, 'Excel file is required.')
     .refine(
-      (files) => files?.[0]?.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || files?.[0]?.type === 'application/vnd.ms-excel',
+      (files) => excelTypes.includes(files?.[0]?.type) || /\.xlsx?$/i.test(files?.[0]?.name ?? ''),
       'Only .xlsx or .xls files are accepted.'
     ),
 })
@@ -57,18 +62,18 @@ export function ImportForm() {
             <FormField
             control={form.control}
             name="file"
-            render={({ field }) => (
+            render={() => (
                 <FormItem>
                 <FormLabel>Excel File</FormLabel>
                 <FormControl>
                     <Input 
                         type="file" 
-                        accept=".xlsx, .xls"
+                        accept=".xlsx,.xls"
                         {...form.register("file")}
                     />
                 </FormControl>
                 <FormDescription>
-                    Upload an Excel file (.xlsx or .xls) with your product data.
+                    Product spreadsheet (.xlsx). Column names are flexible (extra spaces are OK).
                 </FormDescription>
                 <FormMessage />
                 </FormItem>

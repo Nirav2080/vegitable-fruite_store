@@ -9,6 +9,92 @@ import clientPromise from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import * as XLSX from 'xlsx';
 
+const PLACEHOLDER_BRAND_LOGO =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+type ImportRow = Record<string, unknown>;
+
+function normalizeImportRow(row: Record<string, unknown>): ImportRow {
+    const normalized: ImportRow = {};
+    for (const [key, value] of Object.entries(row)) {
+        normalized[key.trim().toLowerCase()] = value;
+    }
+    return normalized;
+}
+
+function parseBool(value: unknown, fallback = false): boolean {
+    if (typeof value === 'boolean') return value;
+    if (value === undefined || value === null || value === '') return fallback;
+    const s = String(value).trim().toUpperCase();
+    if (s === 'TRUE' || s === 'YES' || s === '1') return true;
+    if (s === 'FALSE' || s === 'NO' || s === '0') return false;
+    return fallback;
+}
+
+function isPlaceholderText(value: unknown): boolean {
+    if (value === undefined || value === null) return true;
+    return String(value).trim().toLowerCase() === 'text';
+}
+
+function getImportPrice(row: ImportRow): number | undefined {
+    const priceVal = row.price ?? row['price ($)'];
+    if (priceVal !== undefined && priceVal !== null && priceVal !== '') {
+        const price = Number(priceVal);
+        if (!isNaN(price)) return price;
+    }
+    const dealVal = row.isdeal;
+    if (dealVal !== undefined && dealVal !== null && dealVal !== '') {
+        const asNumber = Number(dealVal);
+        if (!isNaN(asNumber) && asNumber > 0) return asNumber;
+    }
+    return undefined;
+}
+
+function getImportIsDeal(row: ImportRow): boolean {
+    const dealVal = row.isdeal;
+    if (typeof dealVal === 'boolean') return dealVal;
+    const s = String(dealVal ?? '').trim().toUpperCase();
+    if (s === 'TRUE') return true;
+    if (s === 'FALSE') return false;
+    if (!isNaN(Number(dealVal))) return false;
+    return false;
+}
+
+function parseImportVariants(row: ImportRow, price: number): ProductVariant[] {
+    const rawVariants = row.variants;
+    if (rawVariants && typeof rawVariants === 'string' && rawVariants.trim().startsWith('[')) {
+        const parsed = JSON.parse(rawVariants);
+        if (!Array.isArray(parsed) || parsed.length === 0) {
+            throw new Error('Variants JSON must be a non-empty array.');
+        }
+        return parsed;
+    }
+
+    const unitLabel =
+        (typeof rawVariants === 'string' && rawVariants.trim() ? rawVariants.trim() : null) ||
+        row.weight?.toString().trim() ||
+        row.unittype?.toString().trim() ||
+        'Each';
+
+    const stock = parseInt(String(row.stock ?? ''), 10);
+    return [
+        {
+            weight: unitLabel,
+            price,
+            stock: !isNaN(stock) ? stock : 100,
+        },
+    ];
+}
+
+function getImportUnitType(row: ImportRow): string | undefined {
+    const rawVariants = row.variants;
+    if (rawVariants && typeof rawVariants === 'string' && !rawVariants.trim().startsWith('[')) {
+        return rawVariants.trim() || undefined;
+    }
+    const unitType = row.unittype?.toString().trim();
+    return unitType || undefined;
+}
+
 async function getDb() {
     const client = await clientPromise;
     if (!client) {
@@ -412,7 +498,7 @@ export async function getDashboardData() {
 export async function importProducts(formData: FormData): Promise<{message: string}> {
     const file = formData.get('file') as File;
     if (!file) {
-        throw new Error('No file uploaded.');
+        throw new Error('No Excel file uploaded.');
     }
 
     const db = await getDb();
@@ -431,33 +517,52 @@ export async function importProducts(formData: FormData): Promise<{message: stri
     }
 
     const categoriesCollection = db.collection<Category>('categories');
+    const brandsCollection = db.collection<Brand>('brands');
     const productsCollection = db.collection<Product>('products');
 
     const existingCategories = await categoriesCollection.find({}).toArray();
     const categoryMap = new Map(existingCategories.map(c => [c.name.toLowerCase(), c._id]));
-    
-    let productsToInsert = [];
-    let productsToUpdate = [];
-    let processedCount = 0;
-    let errorCount = 0;
 
-    for (const row of data as any[]) {
+    const existingBrands = await brandsCollection.find({}).toArray();
+    const brandMap = new Map(existingBrands.map(b => [b.name.toLowerCase(), b._id]));
+
+    const existingProducts = await productsCollection
+        .find({}, { projection: { name: 1, slug: 1 } })
+        .toArray();
+    const existingNames = new Set(
+        existingProducts.map((p) => p.name.toLowerCase().trim())
+    );
+    const existingSlugs = new Set(
+        existingProducts
+            .map((p) => p.slug?.toLowerCase().trim())
+            .filter((s): s is string => Boolean(s))
+    );
+    const seenInImport = new Set<string>();
+    
+    const productsToInsert: Record<string, unknown>[] = [];
+    let errorCount = 0;
+    let skippedDuplicateCount = 0;
+
+    for (const rawRow of data as Record<string, unknown>[]) {
+        const row = normalizeImportRow(rawRow);
         try {
-            // Description no longer required — disabled for future use
-            if (!row.Name || !row.Category) {
-                console.warn("Skipping row due to missing required fields:", row);
+            const name = row.name?.toString().trim();
+            const categoryName = row.category?.toString().trim();
+
+            if (!name || !categoryName) {
+                console.warn("Skipping row due to missing Name or Category:", rawRow);
                 errorCount++;
                 continue;
             }
 
-            if (!row.Variants && row.Price === undefined) {
-                console.warn("Skipping row due to missing Prices:", row);
+            const price = getImportPrice(row);
+            if (price === undefined) {
+                console.warn(`Skipping product "${name}" due to missing Price.`);
                 errorCount++;
                 continue;
             }
 
             let categoryId;
-            const categoryName = row.Category.trim();
             const lowerCategoryName = categoryName.toLowerCase();
             if (categoryMap.has(lowerCategoryName)) {
                 categoryId = categoryMap.get(lowerCategoryName);
@@ -468,81 +573,72 @@ export async function importProducts(formData: FormData): Promise<{message: stri
                 categoryMap.set(lowerCategoryName, categoryId);
             }
 
-            let variants = [];
-            if (row.Variants) {
-                try {
-                    variants = JSON.parse(row.Variants);
-                    if (!Array.isArray(variants) || variants.length === 0) throw new Error();
-                } catch {
-                    console.warn(`Skipping product "${row.Name}" due to invalid Variants JSON.`);
-                    errorCount++;
-                    continue;
-                }
-            } else {
-                const price = parseFloat(row.Price);
-                if (isNaN(price)) {
-                    console.warn(`Skipping product "${row.Name}" due to invalid Price.`);
-                    errorCount++;
-                    continue;
-                }
-                
-                variants = [{
-                    weight: row.Weight?.toString() || '1kg',
-                    price: price,
-                    stock: parseInt(row.Stock) || 100
-                }];
+            let variants: ProductVariant[];
+            try {
+                variants = parseImportVariants(row, price);
+            } catch {
+                console.warn(`Skipping product "${name}" due to invalid Variants.`);
+                errorCount++;
+                continue;
             }
 
-            const rawImageUrls = row.Images ? String(row.Images).split(',').map((url: string) => url.trim()) : [];
-            const processedImages = [];
-            for (const url of rawImageUrls) {
-                if (url.startsWith('http://') || url.startsWith('https://')) {
-                    try {
-                        const res = await fetch(url);
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        const arrayBuffer = await res.arrayBuffer();
-                        const buffer = Buffer.from(arrayBuffer);
-                        const contentType = res.headers.get('content-type') || 'image/jpeg';
-                        const base64 = buffer.toString('base64');
-                        processedImages.push(`data:${contentType};base64,${base64}`);
-                    } catch (err) {
-                        console.warn(`Failed to fetch image ${url}. Using raw URL fallback.`, err);
-                        processedImages.push(url);
-                    }
+            let brandId: ObjectId | undefined;
+            const brandName = row.brand?.toString().trim();
+            if (brandName && !isPlaceholderText(brandName)) {
+                const lowerBrandName = brandName.toLowerCase();
+                if (brandMap.has(lowerBrandName)) {
+                    brandId = brandMap.get(lowerBrandName);
                 } else {
-                    processedImages.push(url);
+                    const result = await brandsCollection.insertOne({
+                        name: brandName,
+                        logo: PLACEHOLDER_BRAND_LOGO,
+                        createdAt: new Date(),
+                    } as any);
+                    brandId = result.insertedId;
+                    brandMap.set(lowerBrandName, brandId);
                 }
             }
 
-            const slug = row.Name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            const nameKey = name.toLowerCase();
 
-            const productData = {
-                name: row.Name,
+            if (
+                existingNames.has(nameKey) ||
+                existingSlugs.has(slug) ||
+                seenInImport.has(nameKey) ||
+                seenInImport.has(slug)
+            ) {
+                skippedDuplicateCount++;
+                continue;
+            }
+            seenInImport.add(nameKey);
+            seenInImport.add(slug);
+
+            const description = isPlaceholderText(row.description) ? '' : row.description?.toString() ?? '';
+            const unitType = getImportUnitType(row);
+
+            const productData: Record<string, unknown> = {
+                name,
                 slug,
-                categoryId: categoryId?.toString(),
-                isDeal: row.isDeal === true || String(row.isDeal).toUpperCase() === 'TRUE',
-                images: processedImages,
-                variants: variants,
+                categoryId,
+                isFeatured: parseBool(row.isfeatured, false),
+                isOrganic: parseBool(row.isorganic, false),
+                isDeal: getImportIsDeal(row),
+                images: [],
+                variants,
                 createdAt: new Date(),
                 reviews: [],
                 rating: 0,
             };
 
-            const existingProduct = await productsCollection.findOne({ name: productData.name });
-            if (existingProduct) {
-                productsToUpdate.push({ 
-                    updateOne: { 
-                        filter: { _id: existingProduct._id }, 
-                        update: { $set: { ...productData, createdAt: existingProduct.createdAt } } 
-                    }
-                });
-            } else {
-                productsToInsert.push(productData);
-            }
-            processedCount++;
+            if (description) productData.description = description;
+            if (unitType) productData.unitType = unitType;
+            if (brandId) productData.brandId = brandId;
 
-        } catch (e: any) {
-            console.error("Error processing row:", row, e.message);
+            productsToInsert.push(productData);
+        } catch (e: unknown) {
+            const message = e instanceof Error ? e.message : String(e);
+            console.error("Error processing row:", rawRow, message);
             errorCount++;
         }
     }
@@ -550,18 +646,16 @@ export async function importProducts(formData: FormData): Promise<{message: stri
     if (productsToInsert.length > 0) {
         await productsCollection.insertMany(productsToInsert as any[]);
     }
-    if (productsToUpdate.length > 0) {
-        await productsCollection.bulkWrite(productsToUpdate);
-    }
     
     revalidatePath('/admin/products');
     revalidatePath('/products');
     revalidatePath('/');
 
-    let message = `${processedCount} products processed.`;
-    if (productsToInsert.length > 0) message += ` ${productsToInsert.length} created.`
-    if (productsToUpdate.length > 0) message += ` ${productsToUpdate.length} updated.`
-    if (errorCount > 0) message += ` ${errorCount} rows had errors and were skipped.`
+    let message = `${productsToInsert.length} product(s) created.`;
+    if (skippedDuplicateCount > 0) {
+        message += ` ${skippedDuplicateCount} duplicate(s) skipped (already in store or repeated in file).`;
+    }
+    if (errorCount > 0) message += ` ${errorCount} row(s) had errors and were skipped.`;
     
     return { message };
 }
