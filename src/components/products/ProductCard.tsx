@@ -175,7 +175,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const onWishlist = isClient && isInWishlist(product.id);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden group rounded-2xl border border-border/40 bg-card transition-all duration-300 hover:shadow-xl hover:shadow-black/[0.04] hover:-translate-y-1 hover:border-border/60">
+    <div className="flex flex-col h-full overflow-hidden group rounded-2xl border border-border/40 bg-card shadow-soft transition-all duration-300 hover:shadow-soft-lg hover:-translate-y-1 hover:border-primary/30">
 
       {/* Image area */}
       <div className="relative overflow-hidden bg-secondary/40 rounded-t-2xl">
@@ -260,9 +260,9 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Base price per kg / per piece */}
         <div className="flex items-baseline gap-1.5">
-          <span className="text-base font-bold text-foreground">{basePriceLabel}</span>
+          <span className="text-base font-bold text-foreground tabular-nums">{basePriceLabel}</span>
           {discountPercentage > 0 && originalBasePriceLabel && (
-            <span className="text-xs text-muted-foreground line-through">{originalBasePriceLabel}</span>
+            <span className="text-xs text-muted-foreground line-through tabular-nums">{originalBasePriceLabel}</span>
           )}
         </div>
 
@@ -340,7 +340,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-[10px] sm:text-[11px] text-muted-foreground whitespace-nowrap">
               {mode === 'weight' ? `${formatWeight(qtyValue)} price` : `${qtyValue}× price`}
             </span>
-            <span className="text-xs sm:text-sm font-bold text-primary truncate pl-1">${calculatedPrice.toFixed(2)}</span>
+            <span className="text-xs sm:text-sm font-bold text-primary truncate pl-1 tabular-nums">${calculatedPrice.toFixed(2)}</span>
           </div>
         </div>
 

@@ -3,10 +3,20 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
-import { Inter } from 'next/font/google';
+import { Inter, Fraunces } from 'next/font/google';
 import clientPromise from '@/lib/db';
 
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-inter' });
+
+// Premium serif display face for headings — gives the storefront a refined,
+// editorial "organic brand" feel while body copy stays on Inter.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal'],
+  variable: '--font-fraunces',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'RICHMOND VEGE MART | A Symphony of Flavours',
@@ -45,7 +55,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable)}>
+      <body className={cn("min-h-screen bg-background font-body antialiased", inter.variable, fraunces.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

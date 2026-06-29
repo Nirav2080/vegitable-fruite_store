@@ -50,11 +50,11 @@ function FilterSidebarContent({ categories, attributes, brands, selectedFilters,
 
     return (
         <div className="space-y-6">
-            <Card className="rounded-2xl border-border/30 shadow-none">
+            <Card className="rounded-2xl border-border/30 shadow-soft">
                 <CardHeader>
-                    <CardTitle className="text-sm font-semibold">Filter By</CardTitle>
+                    <CardTitle className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Filter By</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="p-0 max-h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin">
                     <Accordion type="multiple" defaultValue={['category', 'attributes', 'brand']} className="w-full">
                         <AccordionItem value="category">
                             <AccordionTrigger className="font-semibold px-6">Category</AccordionTrigger>
@@ -176,6 +176,7 @@ function ProductsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState<'popularity' | 'price-asc' | 'price-desc' | 'newest'>('popularity');
 
   useEffect(() => {
     async function loadData() {
@@ -266,11 +267,9 @@ function ProductsPageContent() {
   }
 
   const filteredProducts = useMemo(() => {
-    if (Object.keys(selectedFilters).length === 0) {
-        return products;
-    }
-
-    return products.filter(product => {
+    const matched = Object.keys(selectedFilters).length === 0
+      ? products
+      : products.filter(product => {
         return Object.entries(selectedFilters).every(([filterName, selectedValues]) => {
             if (!selectedValues || selectedValues.length === 0) {
                 return true;
@@ -296,7 +295,29 @@ function ProductsPageContent() {
             return true;
         });
     });
-  }, [products, selectedFilters, attributes]);
+
+    // Lowest variant price, used for price sorting.
+    const getPrice = (p: Product) =>
+      p.variants?.length ? Math.min(...p.variants.map(v => v.price)) : 0;
+
+    const sorted = [...matched];
+    switch (sortBy) {
+        case 'price-asc':
+            sorted.sort((a, b) => getPrice(a) - getPrice(b));
+            break;
+        case 'price-desc':
+            sorted.sort((a, b) => getPrice(b) - getPrice(a));
+            break;
+        case 'newest':
+            sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            break;
+        case 'popularity':
+        default:
+            sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+            break;
+    }
+    return sorted;
+  }, [products, selectedFilters, attributes, sortBy]);
 
 
   return (
@@ -316,11 +337,11 @@ function ProductsPageContent() {
         <main className="lg:col-span-3">
           <header className="mb-10">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Our Products</p>
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Fresh & Organic Products</h1>
+              <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Fresh & Organic Products</h1>
               <p className="mt-2 text-sm text-muted-foreground max-w-2xl leading-relaxed">Discover our curated selection of farm-fresh produce, organic items, and seasonal favourites delivered to your door.</p>
           </header>
           
-          <div className="hidden lg:flex justify-between items-center mb-6 p-3.5 border border-border/30 rounded-2xl bg-secondary/30">
+          <div className="hidden lg:flex justify-between items-center mb-6 p-3.5 border border-border/30 rounded-2xl bg-card shadow-soft">
             <div className='flex items-center gap-4'>
                 <div className="flex items-center gap-1">
                     <Button variant={viewMode === 'grid' ? 'default' : 'ghost'} size="icon" className="rounded-xl h-8 w-8" onClick={() => setViewMode('grid')}><LayoutGrid className="h-3.5 w-3.5" /></Button>
@@ -330,7 +351,7 @@ function ProductsPageContent() {
             </div>
             <div className="flex items-center gap-2">
               <Label className="text-xs text-muted-foreground">Sort:</Label>
-              <Select defaultValue="popularity">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
                 <SelectTrigger className="w-[160px] bg-card rounded-xl text-xs h-8 border-border/30">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -367,7 +388,7 @@ function ProductsPageContent() {
                 </SheetContent>
             </Sheet>
             <div className="flex items-center gap-2">
-              <Select defaultValue="popularity">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
                 <SelectTrigger className="w-[140px] bg-card rounded-xl text-xs h-8 border-border/30">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>

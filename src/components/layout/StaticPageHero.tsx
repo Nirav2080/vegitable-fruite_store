@@ -23,7 +23,7 @@ export function StaticPageHero({ eyebrow, title, description, className }: Stati
         <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2 sm:mb-3">
           {eyebrow}
         </p>
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl max-w-3xl text-balance">
+        <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.1] max-w-3xl text-balance">
           {title}
         </h1>
         <p className="mt-3 sm:mt-4 max-w-2xl text-base sm:text-lg text-muted-foreground leading-relaxed">

@@ -39,7 +39,7 @@ export function PopularProductsSection({ products, title, link }: PopularProduct
         <div className="flex items-end justify-between mb-10 gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Fresh Picks</p>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl truncate">{title}</h2>
+            <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl truncate">{title}</h2>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <CarouselNavButtons

@@ -20,11 +20,16 @@ const accountLinks = [
 ];
 
 const helpfulLinks = [
-    { label: "Gift-Cards", href: "/gift-cards" },
     { label: "Support", href: "/support" },
-    { label: "Our Story", href: "/about" },
     { label: "FAQs", href: "/faq" },
+    { label: "Shipping Policy", href: "/shipping-policy" },
     { label: "Refund Policy", href: "/refund-policy" },
+]
+
+const legalLinks = [
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Cookie Policy", href: "/cookie-policy" },
 ]
 
 const socialLinks = [
@@ -98,7 +103,7 @@ export function Footer() {
           </div>
 
           {/* Links columns */}
-          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Account</h4>
               <ul className="space-y-3">
@@ -127,6 +132,18 @@ export function Footer() {
               <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Company</h4>
               <ul className="space-y-3">
                 {mainLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-sm text-gray-500 transition-colors duration-200 hover:text-white">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-gray-600 mb-5">Legal</h4>
+              <ul className="space-y-3">
+                {legalLinks.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href} className="text-sm text-gray-500 transition-colors duration-200 hover:text-white">
                       {link.label}

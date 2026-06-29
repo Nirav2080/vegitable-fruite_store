@@ -21,7 +21,7 @@ export function PageCta({
 }: PageCtaProps) {
   return (
     <div className="text-center px-2">
-      <h2 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl text-balance">{title}</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl text-balance">{title}</h2>
       <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
         {description}
       </p>

@@ -44,6 +44,7 @@ import { Separator } from '@/components/ui/separator';
 import { AdminThemeProvider } from '@/components/theme/AdminThemeProvider';
 import { AdminThemeToggle } from '@/components/theme/AdminThemeToggle';
 import { getOrders } from '@/lib/actions/orders';
+import { adminLogout } from '@/lib/actions/admin-auth';
 
 
 export default function AdminLayout({
@@ -70,19 +71,14 @@ export default function AdminLayout({
     fetchOrderCount();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdminLoggedIn');
+  const handleLogout = async () => {
+    await adminLogout();
     router.push('/admin/login');
+    router.refresh();
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isLoggedIn = localStorage.getItem('isAdminLoggedIn') === 'true';
-      if (!isLoggedIn && pathname !== '/admin/login') {
-        router.push('/admin/login');
-      }
-    }
-  }, [pathname, router]);
+  // Server-side protection is enforced by middleware.ts for all /admin routes.
+  // This layout only handles presentation and logout.
 
   const navGroups = [
     {
@@ -157,12 +153,6 @@ export default function AdminLayout({
         </div>
     </div>
     );
-  }
-  
-  const isLoggedIn = typeof window !== 'undefined' ? localStorage.getItem('isAdminLoggedIn') === 'true' : false;
-
-  if (!isLoggedIn) {
-      return null;
   }
   
   const isActive = (href: string) => pathname === href || (href !== '/admin' && pathname.startsWith(href));

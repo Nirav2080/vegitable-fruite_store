@@ -15,7 +15,7 @@ export function TrustSection() {
                 {/* Header */}
                 <div className="text-center mb-12">
                     <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Our Promise</p>
-                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                    <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
                         Why Shop With Us
                     </h2>
                 </div>

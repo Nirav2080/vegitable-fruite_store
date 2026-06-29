@@ -112,6 +112,10 @@ export interface User {
   phone?: string;
   shippingAddress?: NZAddress;
   billingAddress?: NZAddress;
+  /** bcrypt hash of the active password-reset token, if any */
+  resetTokenHash?: string;
+  /** expiry timestamp for the active password-reset token */
+  resetTokenExpires?: Date;
   /** @deprecated Use shippingAddress instead */
   mobile?: string;
   /** @deprecated Use shippingAddress instead */

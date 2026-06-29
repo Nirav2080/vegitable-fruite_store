@@ -25,7 +25,7 @@ function HeroFallback() {
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-3">Fresh &amp; Organic</p>
 
-            <h1 className="max-w-xl text-3xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-4xl md:text-5xl">
+            <h1 className="font-display max-w-xl text-4xl font-semibold leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl">
               Farm Fresh Fruits &amp; Vegetables{' '}
               <span className="text-primary">Delivered Fast</span>
             </h1>
@@ -193,7 +193,7 @@ export function HeroCarousel({ banners }: HeroCarouselProps) {
                       )}
 
                       {/* Title */}
-                      <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl drop-shadow-md">
+                      <h1 className="font-display text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl drop-shadow-md">
                         {banner.title}
                       </h1>
 

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { adminLogin } from '@/lib/actions/admin-auth';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -25,21 +26,21 @@ export default function AdminLoginPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    
-    // In a real application, you would make an API call to your authentication server.
-    // For this example, we'll use hardcoded credentials.
-    if (email === 'admin@example.com' && password === 'password') {
-      toast({
-        title: 'Success',
-        description: 'Logged in successfully.',
-      });
-      // In a real app, you'd receive a token. We'll simulate this by setting a flag.
-      localStorage.setItem('isAdminLoggedIn', 'true');
-      router.push('/admin');
-    } else {
+
+    try {
+      const result = await adminLogin({ email, password });
+      if (result.success) {
+        toast({ title: 'Success', description: result.message });
+        // Session is stored in a secure httpOnly cookie by the server action.
+        router.push('/admin');
+        router.refresh();
+      } else {
+        toast({ title: 'Error', description: result.message, variant: 'destructive' });
+      }
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'Invalid email or password.',
+        description: error?.message || 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     }

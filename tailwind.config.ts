@@ -20,6 +20,8 @@ export default {
       fontFamily: {
         body: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         headline: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        // Premium serif display face for marketing/section headings.
+        display: ['var(--font-fraunces)', 'Georgia', 'serif'],
         code: ['monospace'],
       },
       colors: {
@@ -78,6 +80,13 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+      },
+      boxShadow: {
+        // Soft, layered elevation scale — reads more premium than a single
+        // hard shadow. Tuned to be subtle in light mode.
+        soft: '0 1px 2px -1px rgb(0 0 0 / 0.04), 0 2px 8px -2px rgb(0 0 0 / 0.05)',
+        'soft-md': '0 2px 4px -2px rgb(0 0 0 / 0.05), 0 8px 24px -6px rgb(0 0 0 / 0.08)',
+        'soft-lg': '0 4px 8px -4px rgb(0 0 0 / 0.06), 0 16px 40px -8px rgb(0 0 0 / 0.10)',
       },
       keyframes: {
         'accordion-down': {

@@ -236,7 +236,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('couponCode');
   };
 
-  const cartCount = isMounted ? cartItems.reduce((acc, item) => acc + item.quantity, 0) : 0;
+  const cartCount = isMounted ? cartItems.length : 0;
 
 
   return (

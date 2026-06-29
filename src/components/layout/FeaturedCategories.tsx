@@ -49,7 +49,7 @@ export function FeaturedCategories() {
             <div className="flex justify-between items-center mb-10">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.15em] text-primary mb-2">Categories</p>
-                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                    <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
                         Shop by Categories
                     </h2>
                 </div>

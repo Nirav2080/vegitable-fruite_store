@@ -72,12 +72,22 @@ export async function createCheckoutSession(
         const host = headers().get('origin') || headers().get('referer')?.replace(/\/checkout.*/, '') || 'http://localhost:9002';
 
         // ---- Build Stripe line‑items from the lightweight CheckoutItem[] ----
+        // Stripe requires `quantity` to be a positive integer. Weight‑based
+        // items carry a fractional quantity (e.g. 0.2 = 200g of a 1kg variant),
+        // so for those we send quantity: 1 and fold the fractional amount into
+        // the unit price, keeping the charged total exact (e.g. $5 × 0.2 = $1).
         const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = items.map((item) => {
-            const priceInCents = Math.round(item.price * 100);
+            const isWholeQuantity = Number.isInteger(item.quantity);
+
+            const unitAmount = isWholeQuantity
+                ? Math.round(item.price * 100)
+                : Math.round(item.price * item.quantity * 100);
+            const quantity = isWholeQuantity ? item.quantity : 1;
 
             const product_data: Stripe.Checkout.SessionCreateParams.LineItem.PriceData.ProductData = {
                 name: item.name,
-                description: item.weight,
+                // For fractional (weight) items, show the actual amount in the description.
+                description: isWholeQuantity ? item.weight : `${item.weight} × ${item.quantity}`,
             };
 
             if (item.image && !isPlaceholderUrl(item.image) && isValidImageUrl(item.image)) {
@@ -88,9 +98,9 @@ export async function createCheckoutSession(
                 price_data: {
                     currency: 'nzd',
                     product_data,
-                    unit_amount: priceInCents,
+                    unit_amount: unitAmount,
                 },
-                quantity: item.quantity,
+                quantity,
             };
         });
 
