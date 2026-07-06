@@ -29,8 +29,9 @@ import { createProduct, updateProduct } from "@/lib/actions/products"
 import { getCategories, getBrands } from "@/lib/cached-data"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
+import Webcam from "react-webcam"
 import { Upload, X, PlusCircle, Camera, RefreshCw } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -219,131 +220,57 @@ export function ProductForm({ product }: ProductFormProps) {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  const stopCamera = useCallback(() => {
-    streamRef.current?.getTracks().forEach(track => track.stop());
-    streamRef.current = null;
-  }, []);
-
-  const startCamera = useCallback(async (mode: 'environment' | 'user') => {
-    stopCamera();
-    setCameraError(null);
-
-    if (!window.isSecureContext) {
-      setCameraError("Camera access requires a secure connection (HTTPS or localhost).");
-      return;
-    }
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setCameraError("Camera capture is not supported in this browser.");
-      return;
-    }
-
-    // If the browser already recorded a "denied" decision for this site, calling
-    // getUserMedia again will NOT show the native prompt again — surface a direct
-    // way to reset it instead of retrying silently.
-    try {
-      const permission = await navigator.permissions?.query({ name: 'camera' as PermissionName });
-      if (permission?.state === 'denied') {
-        setCameraError(
-          "Camera permission was previously blocked for this site. Click the lock/camera icon in the address bar, set Camera to \"Allow\", then click Try Again."
-        );
-        return;
-      }
-    } catch {
-      // Permissions API for 'camera' isn't supported in every browser (e.g. Firefox) — fall through and let getUserMedia prompt directly.
-    }
-
-    try {
-      // Triggers the browser's native camera-permission prompt if not yet granted or denied.
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: mode } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch(() => {});
-      }
-    } catch (error) {
-      const name = error instanceof DOMException ? error.name : '';
-      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
-        setCameraError(
-          "Camera access was blocked. Click the camera/lock icon in your browser's address bar, allow Camera for this site, then click Try Again."
-        );
-      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
-        setCameraError("No camera was found on this device.");
-      } else if (name === 'NotReadableError' || name === 'TrackStartError') {
-        setCameraError("Camera is already in use by another application.");
-      } else if (name === 'OverconstrainedError') {
-        // The requested facing mode isn't available on this device — retry with any camera.
-        try {
-          const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-          streamRef.current = fallbackStream;
-          if (videoRef.current) {
-            videoRef.current.srcObject = fallbackStream;
-            await videoRef.current.play().catch(() => {});
-          }
-        } catch {
-          setCameraError("Unable to access camera. Please check camera permissions.");
-        }
-      } else {
-        setCameraError("Unable to access camera. Please check camera permissions.");
-      }
-    }
-  }, [stopCamera]);
+  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
+  const webcamRef = useRef<Webcam>(null);
 
   const openCamera = () => {
     setFacingMode('environment');
     setCameraError(null);
+    setCapturedPhoto(null);
     setIsCameraOpen(true);
   };
 
   const closeCamera = () => {
-    stopCamera();
     setIsCameraOpen(false);
+    setCapturedPhoto(null);
+    setCameraError(null);
   };
 
-  // Starts the camera only once the dialog (and its <video> element) has actually
-  // mounted, instead of racing getUserMedia against the dialog's open animation.
-  useEffect(() => {
-    if (isCameraOpen) {
-      startCamera(facingMode);
+  const handleCameraError = (error: string | DOMException) => {
+    const name = error instanceof DOMException ? error.name : '';
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+      setCameraError("Camera access was denied. Allow camera access for this site in your browser settings, then try again.");
+    } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+      setCameraError("No camera was found on this device.");
+    } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+      setCameraError("Camera is already in use by another application.");
+    } else {
+      setCameraError("Unable to access camera. Please check camera permissions.");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCameraOpen]);
+  };
 
   const switchCamera = () => {
-    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
-    setFacingMode(nextMode);
-    startCamera(nextMode);
+    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
   };
 
   const capturePhoto = () => {
-    const video = videoRef.current;
-    if (!video || video.videoWidth === 0) return;
-
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-
-    const currentImages = form.getValues('images') || [];
-    const updatedUrls = [...currentImages, dataUrl];
-    form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
-    setImagePreviews(updatedUrls);
-
-    closeCamera();
+    const dataUrl = webcamRef.current?.getScreenshot();
+    if (!dataUrl) return;
+    setCapturedPhoto(dataUrl);
   };
 
-  useEffect(() => {
-    return () => stopCamera();
-  }, [stopCamera]);
+  const retakePhoto = () => {
+    setCapturedPhoto(null);
+  };
 
+  const usePhoto = () => {
+    if (!capturedPhoto) return;
+    const currentImages = form.getValues('images') || [];
+    const updatedUrls = [...currentImages, capturedPhoto];
+    form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
+    setImagePreviews(updatedUrls);
+    closeCamera();
+  };
 
   return (
     <Form {...form}>
@@ -690,24 +617,39 @@ export function ProductForm({ product }: ProductFormProps) {
           </DialogHeader>
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-black">
             {cameraError ? (
-              <div className="flex h-full w-full items-center justify-center p-4 text-center text-sm text-destructive">
-                {cameraError}
+              <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-4 text-center">
+                <Camera className="h-8 w-8 text-destructive" />
+                <p className="text-sm text-destructive">{cameraError}</p>
               </div>
+            ) : capturedPhoto ? (
+              <Image
+                src={capturedPhoto}
+                alt="Captured preview"
+                fill
+                className="object-cover"
+              />
             ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
+              <Webcam
+                ref={webcamRef}
+                audio={false}
+                screenshotFormat="image/jpeg"
+                screenshotQuality={0.9}
+                videoConstraints={{ facingMode: { ideal: facingMode } }}
+                onUserMediaError={handleCameraError}
                 className="h-full w-full object-cover"
               />
             )}
           </div>
           <DialogFooter className="sm:justify-between gap-2">
             {cameraError ? (
-              <Button type="button" variant="outline" onClick={() => startCamera(facingMode)} className="rounded-xl">
+              <Button type="button" variant="outline" onClick={() => setCameraError(null)} className="rounded-xl">
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Try Again
+              </Button>
+            ) : capturedPhoto ? (
+              <Button type="button" variant="outline" onClick={retakePhoto} className="rounded-xl">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Retake
               </Button>
             ) : (
               <Button type="button" variant="outline" onClick={switchCamera} className="rounded-xl">
@@ -715,10 +657,17 @@ export function ProductForm({ product }: ProductFormProps) {
                 Switch Camera
               </Button>
             )}
-            <Button type="button" onClick={capturePhoto} disabled={!!cameraError} className="rounded-xl">
-              <Camera className="mr-2 h-4 w-4" />
-              Capture
-            </Button>
+            {capturedPhoto ? (
+              <Button type="button" onClick={usePhoto} className="rounded-xl">
+                <Upload className="mr-2 h-4 w-4" />
+                Use Photo
+              </Button>
+            ) : (
+              <Button type="button" onClick={capturePhoto} disabled={!!cameraError} className="rounded-xl">
+                <Camera className="mr-2 h-4 w-4" />
+                Capture
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

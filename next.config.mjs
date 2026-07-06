@@ -35,11 +35,6 @@ const nextConfig = {
       { key: 'X-Content-Type-Options', value: 'nosniff' },
       // Limit referrer information sent to other origins.
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-      // Lock down powerful browser features the storefront doesn't use.
-      {
-        key: 'Permissions-Policy',
-        value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-      },
       // Force HTTPS for a year (only meaningful in production over TLS).
       {
         key: 'Strict-Transport-Security',
@@ -56,6 +51,22 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: securityHeaders,
+      },
+      // Admin product form needs the camera for in-page photo capture; every
+      // other route keeps it locked down. Excluded from securityHeaders above
+      // and split into these two non-overlapping sources so only one
+      // Permissions-Policy value is ever sent for a given path.
+      {
+        source: '/admin/products/:path*',
+        headers: [
+          { key: 'Permissions-Policy', value: 'camera=self, microphone=(), geolocation=(), interest-cohort=()' },
+        ],
+      },
+      {
+        source: '/:path((?!admin/products).*)*',
+        headers: [
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
+        ],
       },
     ];
   },
