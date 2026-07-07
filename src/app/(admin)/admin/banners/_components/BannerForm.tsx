@@ -71,11 +71,11 @@ export function BannerForm({ banner }: BannerFormProps) {
       }
       router.push("/admin/banners");
       router.refresh();
-    } catch (error: any) {
+    } catch {
        console.error("Failed to save banner:", error);
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} banner.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} banner. Please try again.`,
         variant: "destructive",
       });
     }

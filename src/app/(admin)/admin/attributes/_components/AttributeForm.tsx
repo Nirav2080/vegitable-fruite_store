@@ -67,11 +67,11 @@ export function AttributeForm({ attribute }: AttributeFormProps) {
       }
       router.push("/admin/attributes");
       router.refresh();
-    } catch (error: any) {
+    } catch {
        console.error("Failed to save attribute:", error);
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} attribute.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} attribute. Please try again.`,
         variant: "destructive",
       });
     }

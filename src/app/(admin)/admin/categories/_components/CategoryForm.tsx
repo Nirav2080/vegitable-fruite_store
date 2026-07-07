@@ -86,11 +86,11 @@ export function CategoryForm({ category }: CategoryFormProps) {
       }
       router.push("/admin/categories");
       router.refresh();
-    } catch (error: any) {
+    } catch {
        console.error("Failed to save category:", error);
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} category.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} category. Please try again.`,
         variant: "destructive",
       });
     }

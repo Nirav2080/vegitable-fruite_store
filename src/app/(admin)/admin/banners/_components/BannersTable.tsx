@@ -48,10 +48,10 @@ export function BannersTable({ data }: { data: Banner[] }) {
                 description: "Banner deleted successfully.",
             });
             router.refresh();
-        } catch (error: any) {
+        } catch {
             toast({
                 title: "Error",
-                description: error.message || "Failed to delete banner.",
+                description: "Failed to delete banner. Please try again.",
                 variant: "destructive",
             });
         } finally {

@@ -44,10 +44,10 @@ export function BrandsTable({ data }: { data: Brand[] }) {
                 description: "Brand deleted successfully.",
             });
             router.refresh();
-        } catch (error: any) {
+        } catch {
             toast({
                 title: "Error",
-                description: String(error.message || "Failed to delete brand."),
+                description: "Failed to delete brand. Please try again.",
                 variant: "destructive",
             });
         } finally {

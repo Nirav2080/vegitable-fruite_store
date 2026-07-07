@@ -32,8 +32,8 @@ export function CheckoutAuth() {
                 localStorage.setItem('currentUser', JSON.stringify(result.user));
                 window.dispatchEvent(new Event('loginStateChange'));
             }
-        } catch (error: any) {
-            toast({ title: 'Login Failed', description: error.message || 'Invalid email or password.', variant: 'destructive' });
+        } catch {
+            toast({ title: 'Login Failed', description: 'Invalid email or password.', variant: 'destructive' });
         }
         setIsLoading(false);
     };
@@ -55,8 +55,8 @@ export function CheckoutAuth() {
                 localStorage.setItem('currentUser', JSON.stringify(result.user));
                 window.dispatchEvent(new Event('loginStateChange'));
             }
-        } catch (error: any) {
-            toast({ title: 'Registration Failed', description: error.message || 'Could not create account.', variant: 'destructive' });
+        } catch {
+            toast({ title: 'Registration Failed', description: 'Could not create account. Please try again.', variant: 'destructive' });
         }
         setIsLoading(false);
     }

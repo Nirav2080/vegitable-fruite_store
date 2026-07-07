@@ -48,10 +48,10 @@ export function ProductsTable({ data }: { data: Product[] }) {
                 description: "Product deleted successfully.",
             });
             router.refresh(); // Refresh data
-        } catch (error: any) {
+        } catch {
             toast({
                 title: "Error",
-                description: error.message || "Failed to delete product.",
+                description: "Failed to delete product. Please try again.",
                 variant: "destructive",
             });
         } finally {

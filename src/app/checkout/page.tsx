@@ -107,10 +107,10 @@ export default function CheckoutPage() {
 
             const { error } = await stripe.redirectToCheckout({ sessionId: result.sessionId });
             if (error) {
-                toast({ title: 'Payment Error', description: error.message || 'Failed to redirect to payment page.', variant: 'destructive' });
+                toast({ title: 'Payment Error', description: 'Failed to redirect to payment page. Please try again.', variant: 'destructive' });
             }
-        } catch (error: any) {
-            toast({ title: 'Error', description: error.message || 'Something went wrong. Please try again.', variant: 'destructive' });
+        } catch {
+            toast({ title: 'Error', description: 'Something went wrong. Please try again.', variant: 'destructive' });
         } finally {
             setIsLoading(false);
         }

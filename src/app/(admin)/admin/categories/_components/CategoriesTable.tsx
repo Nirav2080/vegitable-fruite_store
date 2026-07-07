@@ -44,10 +44,10 @@ export function CategoriesTable({ data }: { data: Category[] }) {
                 description: "Category deleted successfully.",
             });
             router.refresh();
-        } catch (error: any) {
+        } catch {
             toast({
                 title: "Error",
-                description: error.message || "Failed to delete category.",
+                description: "Failed to delete category. Please try again.",
                 variant: "destructive",
             });
         } finally {

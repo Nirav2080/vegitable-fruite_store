@@ -28,33 +28,26 @@ function LoginForm() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const result = await login({ email, password });
-      
+
       if (result.success) {
-        toast({
-          title: 'Success',
-          description: 'Logged in successfully.',
-        });
+        toast({ title: 'Welcome back!', description: 'You have been logged in successfully.' });
         localStorage.setItem('isCustomerLoggedIn', 'true');
         localStorage.setItem('currentUser', JSON.stringify(result.user));
-        
-        // Dispatch a custom event to notify the header
         window.dispatchEvent(new Event('loginStateChange'));
-
         const redirectTo = searchParams.get('redirectTo') || '/account';
         router.push(redirectTo);
-        router.refresh(); 
+        router.refresh();
+      } else {
+        toast({ title: 'Login failed', description: result.message, variant: 'destructive' });
       }
-    } catch (error: any) {
-       toast({
-        title: 'Error',
-        description: error.message || 'Invalid email or password.',
-        variant: 'destructive',
-      });
+    } catch {
+      toast({ title: 'Login failed', description: 'Something went wrong. Please try again.', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -95,15 +88,15 @@ function LoginForm() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='password'
-                />
+                placeholder="password"
+              />
             </div>
             <Button type="submit" className="w-full rounded-xl shadow-sm" disabled={isLoading}>
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
-           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{' '}
             <Link href="/register" className="underline">
               Sign up
             </Link>

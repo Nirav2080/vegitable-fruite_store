@@ -32,10 +32,10 @@ export default function ForgotPasswordPage() {
       } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
       }
-    } catch (error: any) {
+    } catch {
       toast({
         title: 'Error',
-        description: error?.message || 'Something went wrong. Please try again.',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     }

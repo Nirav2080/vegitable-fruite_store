@@ -59,11 +59,11 @@ export function BrandForm({ brand }: BrandFormProps) {
       }
       router.push("/admin/brands");
       router.refresh();
-    } catch (error: any) {
+    } catch {
        console.error("Failed to save brand:", error);
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} brand.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} brand. Please try again.`,
         variant: "destructive",
       });
     }

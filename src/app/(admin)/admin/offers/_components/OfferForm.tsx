@@ -110,11 +110,10 @@ export function OfferForm({ offer }: OfferFormProps) {
       }
       router.push("/admin/offers");
       router.refresh();
-    } catch (error: any) {
-       console.error("Failed to save offer:", error);
+    } catch {
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} offer.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} offer. Please try again.`,
         variant: "destructive",
       });
     }

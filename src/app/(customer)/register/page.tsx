@@ -20,7 +20,8 @@ import Link from 'next/link';
 export default function CustomerRegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,25 +29,21 @@ export default function CustomerRegisterPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      const result = await register({ name, email, password });
-      
+      const result = await register({ firstName, lastName, email, password });
+
       if (result.success) {
-        toast({
-          title: 'Success',
-          description: 'Account created successfully. Please log in.',
-        });
+        toast({ title: 'Account created!', description: 'Your account is ready. Please log in.' });
         router.push('/login');
+      } else {
+        toast({ title: 'Registration failed', description: result.message, variant: 'destructive' });
       }
-    } catch (error: any) {
-       toast({
-        title: 'Error',
-        description: error.message || 'Failed to create account.',
-        variant: 'destructive',
-      });
+    } catch {
+      toast({ title: 'Registration failed', description: 'Something went wrong. Please try again.', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -60,18 +57,31 @@ export default function CustomerRegisterPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  required
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  required
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
             </div>
-             <div className="grid gap-2">
+            <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -83,19 +93,21 @@ export default function CustomerRegisterPage() {
               />
             </div>
             <div className="grid gap-2">
-               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                placeholder="Min. 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                />
+              />
             </div>
             <Button type="submit" className="w-full rounded-xl shadow-sm" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Create Account'}
             </Button>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-2 text-center text-sm">
               Already have an account?{' '}
               <Link href="/login" className="underline">
                 Log in

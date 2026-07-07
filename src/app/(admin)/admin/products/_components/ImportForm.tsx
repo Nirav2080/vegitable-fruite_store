@@ -47,10 +47,10 @@ export function ImportForm() {
         });
         form.reset();
         formRef.current?.reset();
-    } catch(error: any) {
+    } catch {
         toast({
             title: "Error",
-            description: error.message || "An unexpected error occurred.",
+            description: "An unexpected error occurred. Please try again.",
             variant: "destructive",
         })
     }

@@ -164,11 +164,10 @@ export function ProductForm({ product }: ProductFormProps) {
       }
       router.push("/admin/products");
       router.refresh();
-    } catch (error: any) {
-       console.error("Failed to save product:", error);
+    } catch {
        toast({
         title: "Error",
-        description: String(error.message || error) || `Failed to ${isEditing ? 'update' : 'create'} product.`,
+        description: `Failed to ${isEditing ? 'update' : 'create'} product. Please try again.`,
         variant: "destructive",
       });
     }

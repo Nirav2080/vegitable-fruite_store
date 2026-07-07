@@ -37,10 +37,10 @@ export default function AdminLoginPage() {
       } else {
         toast({ title: 'Error', description: result.message, variant: 'destructive' });
       }
-    } catch (error: any) {
+    } catch {
       toast({
-        title: 'Error',
-        description: error?.message || 'Something went wrong. Please try again.',
+        title: 'Login failed',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
     }
