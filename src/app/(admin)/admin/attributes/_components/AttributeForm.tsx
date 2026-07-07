@@ -68,7 +68,6 @@ export function AttributeForm({ attribute }: AttributeFormProps) {
       router.push("/admin/attributes");
       router.refresh();
     } catch {
-       console.error("Failed to save attribute:", error);
        toast({
         title: "Error",
         description: `Failed to ${isEditing ? 'update' : 'create'} attribute. Please try again.`,

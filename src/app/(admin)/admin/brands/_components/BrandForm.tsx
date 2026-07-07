@@ -60,7 +60,6 @@ export function BrandForm({ brand }: BrandFormProps) {
       router.push("/admin/brands");
       router.refresh();
     } catch {
-       console.error("Failed to save brand:", error);
        toast({
         title: "Error",
         description: `Failed to ${isEditing ? 'update' : 'create'} brand. Please try again.`,

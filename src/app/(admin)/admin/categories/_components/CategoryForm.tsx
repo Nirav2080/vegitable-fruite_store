@@ -87,7 +87,6 @@ export function CategoryForm({ category }: CategoryFormProps) {
       router.push("/admin/categories");
       router.refresh();
     } catch {
-       console.error("Failed to save category:", error);
        toast({
         title: "Error",
         description: `Failed to ${isEditing ? 'update' : 'create'} category. Please try again.`,

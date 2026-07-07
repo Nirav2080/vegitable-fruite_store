@@ -72,7 +72,6 @@ export function BannerForm({ banner }: BannerFormProps) {
       router.push("/admin/banners");
       router.refresh();
     } catch {
-       console.error("Failed to save banner:", error);
        toast({
         title: "Error",
         description: `Failed to ${isEditing ? 'update' : 'create'} banner. Please try again.`,
