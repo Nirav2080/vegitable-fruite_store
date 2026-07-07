@@ -67,7 +67,7 @@ export async function createCheckoutSession(
         }
 
         const stripe = getStripeInstance();
-        const host = headers().get('origin') || headers().get('referer')?.replace(/\/checkout.*/, '') || 'http://localhost:9002';
+        const host = headers().get('origin') || headers().get('referer')?.replace(/\/checkout.*/, '') || 'http://localhost:3000';
 
         // ---- Build Stripe line‑items from the lightweight CheckoutItem[] ----
         // Stripe requires `quantity` to be a positive integer. Weight‑based
