@@ -1,12 +1,12 @@
 import { MongoClient, type Db } from 'mongodb'
+import { getDbName, getMongoConfigSource, getMongoUri } from '@/lib/mongo-config'
 
-const uri = process.env.MONGODB_URI
+const uri = getMongoUri()
 
-if (!uri) {
-  throw new Error('Please add your MONGODB_URI to the .env file')
+const options = {
+  serverSelectionTimeoutMS: 10000,
+  connectTimeoutMS: 10000,
 }
-
-const options = {}
 
 let client: MongoClient
 let clientPromise: Promise<MongoClient | null>
@@ -18,16 +18,16 @@ declare global {
 
 function connectClient(): Promise<MongoClient | null> {
   return client.connect().then((c) => {
-    console.log(`✅ MongoDB connected successfully (${process.env.NODE_ENV})`)
+    console.log(
+      `✅ MongoDB connected successfully (${process.env.NODE_ENV}, source: ${getMongoConfigSource()})`
+    )
     return c
   }).catch((err: Error) => {
     console.error('❌ MongoDB connection failed:', err.message)
     if (err.message.includes('bad auth')) {
       console.error(
-        'Authentication failed. Verify MONGODB_URI on your server:\n' +
-        '- username and password are correct\n' +
-        '- special characters in password are URL-encoded (@ → %40)\n' +
-        '- the database user exists on this Atlas cluster'
+        'Authentication failed. On production, prefer separate env vars:\n' +
+        'MONGODB_USER, MONGODB_PASSWORD (plain text), MONGODB_HOST, DB_NAME'
       )
     }
     return null
@@ -49,7 +49,7 @@ export async function getDatabase(): Promise<Db | null> {
   try {
     const connectedClient = await clientPromise
     if (!connectedClient) return null
-    return connectedClient.db(process.env.DB_NAME || 'aotearoa-organics')
+    return connectedClient.db(getDbName())
   } catch {
     return null
   }
