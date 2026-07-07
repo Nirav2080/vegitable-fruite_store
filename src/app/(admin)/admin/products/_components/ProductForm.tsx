@@ -28,12 +28,12 @@ import type { Product, Category, Brand } from "@/lib/types"
 import { createProduct, updateProduct } from "@/lib/actions/products"
 import { getCategories, getBrands } from "@/lib/cached-data"
 import { useToast } from "@/hooks/use-toast"
+import { useCameraPermission } from "@/hooks/use-camera-permission"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import Webcam from "react-webcam"
 import { Upload, X, PlusCircle, Camera, RefreshCw } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -217,39 +217,42 @@ export function ProductForm({ product }: ProductFormProps) {
   };
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [cameraError, setCameraError] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const webcamRef = useRef<Webcam>(null);
+  const {
+    permission: cameraPermission,
+    isRequesting: isRequestingCamera,
+    error: cameraError,
+    requestPermission,
+    reportError,
+    clearError,
+  } = useCameraPermission();
 
-  const openCamera = () => {
+  const cameraReady = cameraPermission === 'granted' && !cameraError;
+
+  const openCamera = async () => {
     setFacingMode('environment');
-    setCameraError(null);
     setCapturedPhoto(null);
+    clearError();
     setIsCameraOpen(true);
+    await requestPermission('environment');
   };
 
   const closeCamera = () => {
     setIsCameraOpen(false);
     setCapturedPhoto(null);
-    setCameraError(null);
+    clearError();
   };
 
-  const handleCameraError = (error: string | DOMException) => {
-    const name = error instanceof DOMException ? error.name : '';
-    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
-      setCameraError("Camera access was denied. Allow camera access for this site in your browser settings, then try again.");
-    } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
-      setCameraError("No camera was found on this device.");
-    } else if (name === 'NotReadableError' || name === 'TrackStartError') {
-      setCameraError("Camera is already in use by another application.");
-    } else {
-      setCameraError("Unable to access camera. Please check camera permissions.");
-    }
+  const retryCamera = async () => {
+    await requestPermission(facingMode);
   };
 
-  const switchCamera = () => {
-    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
+  const switchCamera = async () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    await requestPermission(nextMode);
   };
 
   const capturePhoto = () => {
@@ -615,7 +618,13 @@ export function ProductForm({ product }: ProductFormProps) {
             <DialogTitle>Take a photo</DialogTitle>
           </DialogHeader>
           <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-black">
-            {cameraError ? (
+            {isRequestingCamera ? (
+              <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-4 text-center">
+                <Camera className="h-8 w-8 animate-pulse text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Requesting camera access...</p>
+                <p className="text-xs text-muted-foreground">Allow camera permission in your browser popup.</p>
+              </div>
+            ) : cameraError ? (
               <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-4 text-center">
                 <Camera className="h-8 w-8 text-destructive" />
                 <p className="text-sm text-destructive">{cameraError}</p>
@@ -627,23 +636,23 @@ export function ProductForm({ product }: ProductFormProps) {
                 fill
                 className="object-cover"
               />
-            ) : (
+            ) : cameraReady ? (
               <Webcam
                 ref={webcamRef}
                 audio={false}
                 screenshotFormat="image/jpeg"
                 screenshotQuality={0.9}
                 videoConstraints={{ facingMode: { ideal: facingMode } }}
-                onUserMediaError={handleCameraError}
+                onUserMediaError={reportError}
                 className="h-full w-full object-cover"
               />
-            )}
+            ) : null}
           </div>
           <DialogFooter className="sm:justify-between gap-2">
             {cameraError ? (
-              <Button type="button" variant="outline" onClick={() => setCameraError(null)} className="rounded-xl">
+              <Button type="button" variant="outline" onClick={retryCamera} disabled={isRequestingCamera} className="rounded-xl">
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Try Again
+                Allow Camera
               </Button>
             ) : capturedPhoto ? (
               <Button type="button" variant="outline" onClick={retakePhoto} className="rounded-xl">
@@ -651,7 +660,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 Retake
               </Button>
             ) : (
-              <Button type="button" variant="outline" onClick={switchCamera} className="rounded-xl">
+              <Button type="button" variant="outline" onClick={switchCamera} disabled={isRequestingCamera || !!cameraError} className="rounded-xl">
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Switch Camera
               </Button>
@@ -662,7 +671,7 @@ export function ProductForm({ product }: ProductFormProps) {
                 Use Photo
               </Button>
             ) : (
-              <Button type="button" onClick={capturePhoto} disabled={!!cameraError} className="rounded-xl">
+              <Button type="button" onClick={capturePhoto} disabled={!!cameraError || isRequestingCamera || !cameraReady} className="rounded-xl">
                 <Camera className="mr-2 h-4 w-4" />
                 Capture
               </Button>

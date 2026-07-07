@@ -21,6 +21,11 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: 'RICHMOND VEGE MART | A Symphony of Flavours',
   description: 'Discover a symphony of flavours at Richmond Vege Mart. Your source for fresh, quality produce, delivering a delightful experience with every bite.',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 
