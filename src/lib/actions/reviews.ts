@@ -3,7 +3,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import type { Review, Product, User } from '@/lib/types';
 import { AuthError } from '../exceptions';
@@ -15,11 +15,7 @@ const reviewSchema = z.object({
 });
 
 async function getDb() {
-    const client = await clientPromise;
-    if (!client) {
-      return null;
-    }
-    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+    return getDatabase();
 }
 
 export async function addReview(productId: string, data: unknown) {

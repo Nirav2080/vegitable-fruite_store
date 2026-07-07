@@ -4,16 +4,14 @@ import { z } from 'zod';
 import { randomBytes } from 'crypto';
 import { headers } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import type { User } from '@/lib/types';
 import { sendEmail, buildPasswordResetEmail } from '@/lib/email';
 
 const TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 async function getDb() {
-  const client = await clientPromise;
-  if (!client) return null;
-  return client.db(process.env.DB_NAME || 'aotearoa-organics');
+  return getDatabase();
 }
 
 function getBaseUrl(): string {

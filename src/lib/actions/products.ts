@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import type { Product, ProductVariant, Category, ProductSearchResult, Brand } from '@/lib/types';
 import { notFound } from 'next/navigation';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import * as XLSX from 'xlsx';
 
@@ -96,11 +96,7 @@ function getImportUnitType(row: ImportRow): string | undefined {
 }
 
 async function getDb() {
-    const client = await clientPromise;
-    if (!client) {
-      return null;
-    }
-    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+    return getDatabase();
 }
 
 async function getProductsCollection() {

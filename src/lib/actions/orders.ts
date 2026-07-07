@@ -2,17 +2,13 @@
 'use server'
 
 import type { Order, OrderItem, User } from '@/lib/types';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 
 async function getDb() {
-    const client = await clientPromise;
-    if (!client) {
-      return null;
-    }
-    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+    return getDatabase();
 }
 
 async function getOrdersCollection() {

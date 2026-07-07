@@ -2,7 +2,7 @@
 'use server'
 
 import { z } from 'zod';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import type { User } from '@/lib/types';
 import bcrypt from 'bcryptjs';
 
@@ -27,12 +27,7 @@ type ActionResult<T = undefined> = {
 }
 
 async function getDb() {
-    try {
-        const client = await clientPromise;
-        return client.db(process.env.DB_NAME || 'aotearoa-organics');
-    } catch {
-        return null;
-    }
+    return getDatabase();
 }
 
 export async function login(data: unknown): Promise<ActionResult> {

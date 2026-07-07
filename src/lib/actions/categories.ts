@@ -5,15 +5,11 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import type { Category, Product } from '@/lib/types';
 import { notFound } from 'next/navigation';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
 async function getDb() {
-    const client = await clientPromise;
-    if (!client) {
-      return null;
-    }
-    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+    return getDatabase();
 }
 
 async function getCategoriesCollection() {

@@ -4,7 +4,7 @@
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import type { CheckoutItem, Offer } from '@/lib/types';
-import clientPromise from '@/lib/db';
+import { getDatabase } from '@/lib/db';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -22,9 +22,7 @@ function getStripeInstance(): Stripe {
 }
 
 async function getDb() {
-    const client = await clientPromise;
-    if (!client) return null;
-    return client.db(process.env.DB_NAME || 'aotearoa-organics');
+    return getDatabase();
 }
 
 const isPlaceholderUrl = (url: string): boolean => {
