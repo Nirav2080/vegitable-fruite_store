@@ -1,6 +1,9 @@
 import { Logo } from "@/components/icons/Logo";
-import { Facebook, Instagram, Twitter, Youtube, Linkedin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Facebook, Instagram, Twitter, Youtube, Linkedin, Truck, CreditCard, ShieldCheck, Tag } from "lucide-react";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const mainLinks = [
   { label: "About", href: "/about" },
@@ -36,6 +39,13 @@ const socialLinks = [
   { name: "Youtube", icon: Youtube, href: "#" },
   { name: "Linkedin", icon: Linkedin, href: "#" },
 ];
+
+const infoItems = [
+    { icon: Truck, title: "Free Delivery", description: "From $50" },
+    { icon: CreditCard, title: "Safe Payment", description: "Secured by Stripe" },
+    { icon: ShieldCheck, title: "Money Back", description: "30-day guarantee" },
+    { icon: Tag, title: "Best Prices", description: "For all products" }
+]
 
 const PaymentMethods = () => (
     <div className="flex items-center gap-2">

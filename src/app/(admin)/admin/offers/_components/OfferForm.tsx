@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
+import { useImageUpload } from "@/hooks/use-image-upload"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -119,17 +120,22 @@ export function OfferForm({ offer }: OfferFormProps) {
     }
   }
 
+    const { isUploading, uploadFile } = useImageUpload();
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const result = event.target?.result as string;
-            setImagePreview(result);
-            form.setValue('image', result, { shouldValidate: true, shouldDirty: true });
-        };
-        reader.readAsDataURL(file);
+        uploadFile(file, 'offers').then(url => {
+            setImagePreview(url);
+            form.setValue('image', url, { shouldValidate: true, shouldDirty: true });
+        }).catch(() => {
+            toast({
+                title: "Error uploading image",
+                description: "There was an issue uploading the offer image.",
+                variant: "destructive"
+            });
+        });
         e.target.value = '';
     };
 
@@ -326,16 +332,17 @@ export function OfferForm({ offer }: OfferFormProps) {
                         </div>
                     ) : (
                         <FormControl>
-                            <div className="w-full p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
+                            <div className={`w-full p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                     <Upload className="w-8 h-8 text-muted-foreground" />
-                                    <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
+                                    <span className="text-sm text-muted-foreground">{isUploading ? 'Uploading...' : 'Click or drag to upload an image'}</span>
                                 </label>
-                                <Input 
-                                    id="image-upload" 
-                                    type="file" 
+                                <Input
+                                    id="image-upload"
+                                    type="file"
                                     accept="image/*"
                                     className="hidden"
+                                    disabled={isUploading}
                                     onChange={handleImageChange}
                                 />
                             </div>

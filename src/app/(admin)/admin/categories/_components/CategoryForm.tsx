@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { getCategories } from "@/lib/cached-data";
+import { useImageUpload } from "@/hooks/use-image-upload"
 
 const formSchema = z.object({
   name: z.string().min(1, "Category name is required"),
@@ -95,19 +96,24 @@ export function CategoryForm({ category }: CategoryFormProps) {
     }
   }
 
+  const { isUploading, uploadFile } = useImageUpload();
+
   const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setIconPreview(result);
-        form.setValue('icon', result, { shouldValidate: true, shouldDirty: true });
-    };
-    reader.readAsDataURL(file);
+    uploadFile(file, 'categories').then(url => {
+        setIconPreview(url);
+        form.setValue('icon', url, { shouldValidate: true, shouldDirty: true });
+    }).catch(() => {
+        toast({
+            title: "Error uploading image",
+            description: "There was an issue uploading the category image.",
+            variant: "destructive"
+        });
+    });
     e.target.value = '';
   };
   
@@ -184,16 +190,17 @@ export function CategoryForm({ category }: CategoryFormProps) {
                         )}
                         <div className="flex-1">
                              <FormControl>
-                                <div className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
+                                <div className={`w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <label htmlFor="icon-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
+                                        <span className="text-sm text-muted-foreground">{isUploading ? 'Uploading...' : 'Click or drag to upload an image'}</span>
                                     </label>
-                                    <Input 
-                                        id="icon-upload" 
-                                        type="file" 
+                                    <Input
+                                        id="icon-upload"
+                                        type="file"
                                         accept="image/*"
                                         className="hidden"
+                                        disabled={isUploading}
                                         onChange={handleIconChange}
                                     />
                                 </div>

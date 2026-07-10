@@ -2,7 +2,8 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      // Images now go through /api/upload; this only needs to cover XLSX bulk-import files.
+      bodySizeLimit: '4mb',
     },
   },
   images: {
@@ -22,6 +23,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
       }
     ],
   },

@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
+import { useImageUpload } from "@/hooks/use-image-upload"
 
 const formSchema = z.object({
   supertitle: z.string().min(1, "Supertitle is required"),
@@ -80,17 +81,22 @@ export function BannerForm({ banner }: BannerFormProps) {
     }
   }
 
+  const { isUploading, uploadFile } = useImageUpload();
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setImagePreview(result);
-        form.setValue('image', result, { shouldValidate: true, shouldDirty: true });
-    };
-    reader.readAsDataURL(file);
+    uploadFile(file, 'banners').then(url => {
+        setImagePreview(url);
+        form.setValue('image', url, { shouldValidate: true, shouldDirty: true });
+    }).catch(() => {
+        toast({
+            title: "Error uploading image",
+            description: "There was an issue uploading the banner image.",
+            variant: "destructive"
+        });
+    });
     e.target.value = '';
   };
 
@@ -168,16 +174,17 @@ export function BannerForm({ banner }: BannerFormProps) {
                         </div>
                     ) : (
                         <FormControl>
-                            <div className="w-full p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
+                            <div className={`w-full p-8 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                 <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                     <Upload className="w-8 h-8 text-muted-foreground" />
-                                    <span className="text-sm text-muted-foreground">Click or drag to upload an image</span>
+                                    <span className="text-sm text-muted-foreground">{isUploading ? 'Uploading...' : 'Click or drag to upload an image'}</span>
                                 </label>
-                                <Input 
-                                    id="image-upload" 
-                                    type="file" 
+                                <Input
+                                    id="image-upload"
+                                    type="file"
                                     accept="image/*"
                                     className="hidden"
+                                    disabled={isUploading}
                                     onChange={handleImageChange}
                                 />
                             </div>

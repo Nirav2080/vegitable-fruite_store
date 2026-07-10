@@ -29,6 +29,7 @@ import { createProduct, updateProduct } from "@/lib/actions/products"
 import { getCategories, getBrands } from "@/lib/cached-data"
 import { useToast } from "@/hooks/use-toast"
 import { useCameraPermission } from "@/hooks/use-camera-permission"
+import { useImageUpload } from "@/hooks/use-image-upload"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
@@ -173,35 +174,22 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   }
 
+  const { isUploading, uploadFile, uploadDataUrl } = useImageUpload();
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
     const currentImages = form.getValues('images') || [];
 
-    const filePromises = files.map(file => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            resolve(event.target.result as string);
-          } else {
-            reject(new Error("Failed to read file"));
-          }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(filePromises).then(newImageUrls => {
+    Promise.all(files.map(file => uploadFile(file, 'products'))).then(newImageUrls => {
         const updatedUrls = [...currentImages, ...newImageUrls];
         form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
         setImagePreviews(updatedUrls);
-    }).catch(error => {
+    }).catch(() => {
         toast({
             title: "Error uploading image",
-            description: "There was an issue reading one of the image files.",
+            description: "There was an issue uploading one of the image files.",
             variant: "destructive"
         })
     })
@@ -267,11 +255,19 @@ export function ProductForm({ product }: ProductFormProps) {
 
   const usePhoto = () => {
     if (!capturedPhoto) return;
-    const currentImages = form.getValues('images') || [];
-    const updatedUrls = [...currentImages, capturedPhoto];
-    form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
-    setImagePreviews(updatedUrls);
-    closeCamera();
+    uploadDataUrl(capturedPhoto, 'products').then(url => {
+      const currentImages = form.getValues('images') || [];
+      const updatedUrls = [...currentImages, url];
+      form.setValue('images', updatedUrls, { shouldValidate: true, shouldDirty: true });
+      setImagePreviews(updatedUrls);
+      closeCamera();
+    }).catch(() => {
+      toast({
+        title: "Error uploading photo",
+        description: "There was an issue uploading the captured photo.",
+        variant: "destructive"
+      });
+    });
   };
 
   return (
@@ -320,10 +316,10 @@ export function ProductForm({ product }: ProductFormProps) {
                         <FormLabel>Product Images</FormLabel>
                         <FormControl>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
+                                <div className={`w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <label htmlFor="image-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Click or drag to upload images</span>
+                                        <span className="text-sm text-muted-foreground">{isUploading ? 'Uploading...' : 'Click or drag to upload images'}</span>
                                     </label>
                                     <Input
                                         id="image-upload"
@@ -331,13 +327,15 @@ export function ProductForm({ product }: ProductFormProps) {
                                         multiple
                                         accept="image/*"
                                         className="hidden"
+                                        disabled={isUploading}
                                         onChange={handleImageChange}
                                     />
                                 </div>
                                 <button
                                     type="button"
                                     onClick={openCamera}
-                                    className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted flex flex-col items-center gap-2"
+                                    disabled={isUploading}
+                                    className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted flex flex-col items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
                                 >
                                     <Camera className="w-8 h-8 text-muted-foreground" />
                                     <span className="text-sm text-muted-foreground">Open camera and take a photo</span>
@@ -666,9 +664,9 @@ export function ProductForm({ product }: ProductFormProps) {
               </Button>
             )}
             {capturedPhoto ? (
-              <Button type="button" onClick={usePhoto} className="rounded-xl">
+              <Button type="button" onClick={usePhoto} disabled={isUploading} className="rounded-xl">
                 <Upload className="mr-2 h-4 w-4" />
-                Use Photo
+                {isUploading ? 'Uploading...' : 'Use Photo'}
               </Button>
             ) : (
               <Button type="button" onClick={capturePhoto} disabled={!!cameraError || isRequestingCamera || !cameraReady} className="rounded-xl">

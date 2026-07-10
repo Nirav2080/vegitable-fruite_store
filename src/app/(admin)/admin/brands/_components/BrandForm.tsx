@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
+import { useImageUpload } from "@/hooks/use-image-upload"
 
 const formSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
@@ -68,17 +69,22 @@ export function BrandForm({ brand }: BrandFormProps) {
     }
   }
 
+  const { isUploading, uploadFile } = useImageUpload();
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setLogoPreview(result);
-        form.setValue('logo', result, { shouldValidate: true, shouldDirty: true });
-    };
-    reader.readAsDataURL(file);
+    uploadFile(file, 'brands').then(url => {
+        setLogoPreview(url);
+        form.setValue('logo', url, { shouldValidate: true, shouldDirty: true });
+    }).catch(() => {
+        toast({
+            title: "Error uploading logo",
+            description: "There was an issue uploading the logo image.",
+            variant: "destructive"
+        });
+    });
     e.target.value = '';
   };
 
@@ -127,16 +133,17 @@ export function BrandForm({ brand }: BrandFormProps) {
                         )}
                         <div className="flex-1">
                              <FormControl>
-                                <div className="w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted">
+                                <div className={`w-full p-4 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-muted ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <label htmlFor="logo-upload" className="flex flex-col items-center gap-2 cursor-pointer">
                                         <Upload className="w-8 h-8 text-muted-foreground" />
-                                        <span className="text-sm text-muted-foreground">Click or drag to upload a logo</span>
+                                        <span className="text-sm text-muted-foreground">{isUploading ? 'Uploading...' : 'Click or drag to upload a logo'}</span>
                                     </label>
-                                    <Input 
-                                        id="logo-upload" 
-                                        type="file" 
+                                    <Input
+                                        id="logo-upload"
+                                        type="file"
                                         accept="image/*"
                                         className="hidden"
+                                        disabled={isUploading}
                                         onChange={handleLogoChange}
                                     />
                                 </div>
